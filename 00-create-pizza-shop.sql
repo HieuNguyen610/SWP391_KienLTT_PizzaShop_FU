@@ -4,11 +4,11 @@
 -- Table for users (local and social login)
 CREATE TABLE IF NOT EXISTS users (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,     -- Unique user ID
-    username VARCHAR(50) NOT NULL UNIQUE,     -- Username for login
+    firstname VARCHAR(50) NOT NULL,           -- First name (remove full_name)
+    lastname VARCHAR(50) NOT NULL,            -- Last name
     password VARCHAR(255) NOT NULL,           -- Hashed password
     email VARCHAR(100) NOT NULL UNIQUE,       -- User email
     phone VARCHAR(20),                        -- User phone number
-    full_name VARCHAR(100),                   -- Full name
     status VARCHAR(20) DEFAULT 'ACTIVE',      -- Account status
     provider VARCHAR(30),                     -- Social login provider (e.g., 'google', 'facebook')
     provider_id VARCHAR(100),                 -- Social login provider user id
@@ -59,39 +59,52 @@ CREATE TABLE IF NOT EXISTS discounts (
     value DECIMAL(10,2),                      -- Discount value
     valid_from DATE,                          -- Start date
     valid_to DATE,                            -- End date
+    quantity INT DEFAULT 0,                   -- Number of uses left
     is_active BOOLEAN DEFAULT TRUE,           -- Is the discount active?
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Creation timestamp
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, -- Last update timestamp
     is_deleted BOOLEAN DEFAULT FALSE          -- Soft delete flag
 );
 
--- Table for pizza menu
-CREATE TABLE IF NOT EXISTS pizzas (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,     -- Unique pizza ID
-    name VARCHAR(100) NOT NULL,               -- Pizza name
-    description TEXT,                         -- Description
-    base_price DECIMAL(10,2) NOT NULL,        -- Base price
-    image_url VARCHAR(255),                   -- Image URL
-    is_active BOOLEAN DEFAULT TRUE,           -- Is the pizza available?
+-- Table for food categories
+CREATE TABLE IF NOT EXISTS food_categories (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,     -- Unique category ID
+    name VARCHAR(50) NOT NULL UNIQUE,         -- Category name (e.g., pizza, pasta, drink)
+    description VARCHAR(255),                 -- Description of the category
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Creation timestamp
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, -- Last update timestamp
     is_deleted BOOLEAN DEFAULT FALSE          -- Soft delete flag
 );
 
--- Table for pizza sizes
-CREATE TABLE IF NOT EXISTS pizza_sizes (
+-- Table for food menu
+CREATE TABLE IF NOT EXISTS foods (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,     -- Unique food ID
+    name VARCHAR(100) NOT NULL,               -- Food name
+    description TEXT,                         -- Description
+    base_price DECIMAL(10,2) NOT NULL,        -- Base price
+    image_url VARCHAR(255),                   -- Image URL
+    category_id BIGINT NOT NULL,              -- Reference to food category
+    is_active BOOLEAN DEFAULT TRUE,           -- Is the food available?
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Creation timestamp
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, -- Last update timestamp
+    is_deleted BOOLEAN DEFAULT FALSE,         -- Soft delete flag
+    FOREIGN KEY (category_id) REFERENCES food_categories(id) ON DELETE RESTRICT
+);
+
+-- Table for food sizes
+CREATE TABLE IF NOT EXISTS food_sizes (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,     -- Unique size ID
-    pizza_id BIGINT NOT NULL,                 -- Reference to pizza
-    size VARCHAR(10) NOT NULL,                -- Size (S, M, L)
+    food_id BIGINT NOT NULL,                  -- Reference to food
+    size VARCHAR(10) NOT NULL,                -- Size (S, M, L, STD, ONE.. etc.)
     price DECIMAL(10,2) NOT NULL,             -- Price for this size
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Creation timestamp
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, -- Last update timestamp
     is_deleted BOOLEAN DEFAULT FALSE,         -- Soft delete flag
-    FOREIGN KEY (pizza_id) REFERENCES pizzas(id) ON DELETE CASCADE
+    FOREIGN KEY (food_id) REFERENCES foods(id) ON DELETE CASCADE
 );
 
--- Table for pizza toppings
-CREATE TABLE IF NOT EXISTS pizza_toppings (
+-- Table for toppings
+CREATE TABLE IF NOT EXISTS toppings (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,     -- Unique topping ID
     name VARCHAR(100) NOT NULL,               -- Topping name
     price DECIMAL(10,2) NOT NULL,             -- Price for topping
@@ -101,13 +114,13 @@ CREATE TABLE IF NOT EXISTS pizza_toppings (
     is_deleted BOOLEAN DEFAULT FALSE          -- Soft delete flag
 );
 
--- Table for default toppings per pizza (mapping, no audit/soft delete fields, ON DELETE CASCADE)
-CREATE TABLE IF NOT EXISTS pizza_pizza_toppings (
-    pizza_id BIGINT NOT NULL,                 -- Reference to pizza
+-- Table for default toppings per food (mapping, no audit/soft delete fields, ON DELETE CASCADE)
+CREATE TABLE IF NOT EXISTS food_toppings_map (
+    food_id BIGINT NOT NULL,                  -- Reference to food
     topping_id BIGINT NOT NULL,               -- Reference to topping
-    PRIMARY KEY (pizza_id, topping_id),
-    FOREIGN KEY (pizza_id) REFERENCES pizzas(id) ON DELETE CASCADE,
-    FOREIGN KEY (topping_id) REFERENCES pizza_toppings(id) ON DELETE CASCADE
+    PRIMARY KEY (food_id, topping_id),
+    FOREIGN KEY (food_id) REFERENCES foods(id) ON DELETE CASCADE,
+    FOREIGN KEY (topping_id) REFERENCES toppings(id) ON DELETE CASCADE
 );
 
 -- Table for ingredients
@@ -122,13 +135,13 @@ CREATE TABLE IF NOT EXISTS ingredients (
     is_deleted BOOLEAN DEFAULT FALSE          -- Soft delete flag
 );
 
--- Table for pizza-ingredient mapping (no audit/soft delete fields, ON DELETE CASCADE)
-CREATE TABLE IF NOT EXISTS pizza_ingredients (
-    pizza_id BIGINT NOT NULL,                 -- Reference to pizza
+-- Table for food-ingredient mapping (no audit/soft delete fields, ON DELETE CASCADE)
+CREATE TABLE IF NOT EXISTS food_ingredients (
+    food_id BIGINT NOT NULL,                  -- Reference to food
     ingredient_id BIGINT NOT NULL,            -- Reference to ingredient
     amount DECIMAL(10,2) NOT NULL,            -- Amount of ingredient
-    PRIMARY KEY (pizza_id, ingredient_id),
-    FOREIGN KEY (pizza_id) REFERENCES pizzas(id) ON DELETE CASCADE,
+    PRIMARY KEY (food_id, ingredient_id),
+    FOREIGN KEY (food_id) REFERENCES foods(id) ON DELETE CASCADE,
     FOREIGN KEY (ingredient_id) REFERENCES ingredients(id) ON DELETE CASCADE
 );
 
@@ -146,8 +159,8 @@ CREATE TABLE IF NOT EXISTS carts (
 CREATE TABLE IF NOT EXISTS cart_items (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,     -- Unique cart item ID
     cart_id BIGINT NOT NULL,                  -- Reference to cart
-    pizza_id BIGINT NOT NULL,                 -- Reference to pizza
-    size_id BIGINT NOT NULL,                  -- Reference to pizza size
+    food_id BIGINT NOT NULL,                  -- Reference to food
+    size_id BIGINT NOT NULL,                  -- Reference to food size
     quantity INT NOT NULL,                    -- Quantity
     price DECIMAL(10,2) NOT NULL,             -- Price
     notes VARCHAR(255),                       -- Notes
@@ -155,17 +168,18 @@ CREATE TABLE IF NOT EXISTS cart_items (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, -- Last update timestamp
     is_deleted BOOLEAN DEFAULT FALSE,         -- Soft delete flag
     FOREIGN KEY (cart_id) REFERENCES carts(id) ON DELETE CASCADE,
-    FOREIGN KEY (pizza_id) REFERENCES pizzas(id) ON DELETE CASCADE,
-    FOREIGN KEY (size_id) REFERENCES pizza_sizes(id) ON DELETE CASCADE
+    FOREIGN KEY (food_id) REFERENCES foods(id) ON DELETE CASCADE,
+    FOREIGN KEY (size_id) REFERENCES food_sizes(id) ON DELETE CASCADE
 );
 
 -- Table for toppings on cart items (mapping, no audit/soft delete fields, ON DELETE CASCADE)
 CREATE TABLE IF NOT EXISTS cart_item_toppings (
     cart_item_id BIGINT NOT NULL,             -- Reference to cart item
     topping_id BIGINT NOT NULL,               -- Reference to topping
+    price DECIMAL(10,2) NOT NULL DEFAULT 0,   -- Price of topping at time of adding to cart
     PRIMARY KEY (cart_item_id, topping_id),
     FOREIGN KEY (cart_item_id) REFERENCES cart_items(id) ON DELETE CASCADE,
-    FOREIGN KEY (topping_id) REFERENCES pizza_toppings(id) ON DELETE CASCADE
+    FOREIGN KEY (topping_id) REFERENCES toppings(id) ON DELETE CASCADE
 );
 
 -- Table for orders
@@ -190,8 +204,8 @@ CREATE TABLE IF NOT EXISTS orders (
 CREATE TABLE IF NOT EXISTS order_items (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,     -- Unique order item ID
     order_id BIGINT NOT NULL,                 -- Reference to order
-    pizza_id BIGINT NOT NULL,                 -- Reference to pizza
-    size_id BIGINT NOT NULL,                  -- Reference to pizza size
+    food_id BIGINT NOT NULL,                  -- Reference to food
+    size_id BIGINT NOT NULL,                  -- Reference to food size
     quantity INT NOT NULL,                    -- Quantity
     price DECIMAL(10,2) NOT NULL,             -- Price
     notes VARCHAR(255),                       -- Notes
@@ -199,17 +213,18 @@ CREATE TABLE IF NOT EXISTS order_items (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, -- Last update timestamp
     is_deleted BOOLEAN DEFAULT FALSE,         -- Soft delete flag
     FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
-    FOREIGN KEY (pizza_id) REFERENCES pizzas(id) ON DELETE CASCADE,
-    FOREIGN KEY (size_id) REFERENCES pizza_sizes(id) ON DELETE CASCADE
+    FOREIGN KEY (food_id) REFERENCES foods(id) ON DELETE CASCADE,
+    FOREIGN KEY (size_id) REFERENCES food_sizes(id) ON DELETE CASCADE
 );
 
 -- Table for toppings on order items (mapping, no audit/soft delete fields, ON DELETE CASCADE)
 CREATE TABLE IF NOT EXISTS order_item_toppings (
     order_item_id BIGINT NOT NULL,            -- Reference to order item
     topping_id BIGINT NOT NULL,               -- Reference to topping
+    price DECIMAL(10,2) NOT NULL DEFAULT 0,   -- Price of topping at time of order
     PRIMARY KEY (order_item_id, topping_id),
     FOREIGN KEY (order_item_id) REFERENCES order_items(id) ON DELETE CASCADE,
-    FOREIGN KEY (topping_id) REFERENCES pizza_toppings(id) ON DELETE CASCADE
+    FOREIGN KEY (topping_id) REFERENCES toppings(id) ON DELETE CASCADE
 );
 
 -- Table for order status history
@@ -244,7 +259,7 @@ CREATE TABLE IF NOT EXISTS reviews (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,     -- Unique review ID
     user_id BIGINT NOT NULL,                  -- Reference to user
     order_id BIGINT NOT NULL,                 -- Reference to order
-    pizza_id BIGINT NOT NULL,                 -- Reference to pizza
+    food_id BIGINT NOT NULL,                  -- Reference to food
     rating INT NOT NULL,                      -- Rating
     comment VARCHAR(255),                     -- Review comment
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Creation timestamp
@@ -252,7 +267,7 @@ CREATE TABLE IF NOT EXISTS reviews (
     is_deleted BOOLEAN DEFAULT FALSE,         -- Soft delete flag
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
-    FOREIGN KEY (pizza_id) REFERENCES pizzas(id) ON DELETE CASCADE
+    FOREIGN KEY (food_id) REFERENCES foods(id) ON DELETE CASCADE
 );
 
 -- Table for invoices
