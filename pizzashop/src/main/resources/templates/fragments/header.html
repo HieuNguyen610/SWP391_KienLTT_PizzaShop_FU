@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+</head>
+<body>
+
+<header th:fragment="page_header">
+    <nav class="main-nav">
+        <div class="logo">
+            <a href="/"><img src="/images/logo.png" alt="Logo Pizza Shop" style="height: 60px;"></a>
+        </div>
+        <div class="order-options">
+            <button class="active">Order delivery</button>
+            <button>Order pickup</button>
+        </div>
+        <div class="search-bar">
+            <input type="text" placeholder="Find name or place...">
+        </div>
+        <div class="user-actions">
+            <a href="/login" class="login-link">Đăng nhập / Đăng ký</a>
+        </div>
+    </nav>
+    <nav class="category-nav">
+        <ul>
+            <li><a href="#">Promotions</a></li>
+            <li><a href="#">Appetizers</a></li>
+            <li><a href="#" class="active">Pizza</a></li>
+            <li><a href="#">Pasta</a></li>
+        </ul>
+    </nav>
+</header>
+
+
+<footer th:fragment="page_footer" style="text-align: center; padding: 20px; margin-top: 40px; background-color: #f2f2f2;">
+    <p>&copy; 2025 Pizza Shop. All Rights Reserved.</p>
+</footer>
+
+</body>
+</html>
