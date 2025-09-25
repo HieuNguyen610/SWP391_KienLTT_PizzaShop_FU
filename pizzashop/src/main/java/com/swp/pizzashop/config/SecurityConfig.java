@@ -15,11 +15,14 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/", "/login", "/register", "/verify", "/do-login",
-                                 "/css/**", "/js/**", "/images/**", "/static/**", "/favicon.ico").permitAll()
-                .anyRequest().authenticated()
-            )
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/", "/login", "/register", "/do-register", "/verify", "/do-login",
+                                "/css/**", "/js/**", "/images/**", "/webfonts/**", "/favicon.ico",
+                                "/fonts/**"
+                        ).permitAll()
+
+                        .anyRequest().authenticated()
+                )
             // Disable Spring Security's built-in form login to let our controller handle POST /do-login
             .formLogin(form -> form.disable())
             .logout(logout -> logout
@@ -32,10 +35,9 @@ public class SecurityConfig {
             )
             .csrf(csrf -> csrf
                 // Allow API requests and custom login/register endpoints without CSRF token
-                .ignoringRequestMatchers("/api/**", "/do-login", "/register")
-            )
-            // Redirect unauthenticated users to /login instead of sending 401 JSON
-            .exceptionHandling(ex -> ex.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login")));
+                .ignoringRequestMatchers("/api/**", "/do-login", "/register", "/do-register")
+            );
+
         return http.build();
     }
 

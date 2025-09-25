@@ -1,29 +1,31 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 
-
-<!-- Mirrored from html.narzotech.com/restina/html/ltr/sign_up.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 07 Oct 2024 16:20:29 GMT -->
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"
-        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, target-densityDpi=device-dpi" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RESTINA - Food & Restaurant HTML Template With RTL</title>
-    <link rel="icon" type="image/png" href="assetsClient/images/favicon.png">
-    <link rel="stylesheet" href="assetsClient/css/all.min.css">
-    <link rel="stylesheet" href="assetsClient/css/bootstrap.min.css">
-    <link rel="stylesheet" href="assetsClient/css/nice-select.css">
-    <link rel="stylesheet" href="assetsClient/css/slick.css">
-    <link rel="stylesheet" href="assetsClient/css/venobox.min.css">
-    <link rel="stylesheet" href="assetsClient/css/ranger_slider.css">
-    <link rel="stylesheet" href="assetsClient/css/animate.css">
-    <link rel="stylesheet" href="assetsClient/css/scroll_button.css">
-    <link rel="stylesheet" href="assetsClient/css/custom_spacing.css">
-    <link rel="stylesheet" href="assetsClient/css/select2.min.css">
-    <link rel="stylesheet" href="assetsClient/css/colorfulTab.min.css">
-    <link rel="stylesheet" href="assetsClient/css/jquery.animatedheadline.css">
-    <link rel="stylesheet" href="assetsClient/css/animated_barfiller.css">
-    <link rel="stylesheet" href="assetsClient/css/style.css">
-    <link rel="stylesheet" href="assetsClient/css/responsive.css">
+    <!-- favicon -->
+    <link rel="icon" type="image/png" th:href="@{/images/favicon.png}">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="/css/all.min.css" th:href="@{/css/all.min.css}">
+    <link rel="stylesheet" href="/css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" href="/css/nice-select.css" th:href="@{/css/nice-select.css}">
+    <link rel="stylesheet" href="/css/slick.css" th:href="@{/css/slick.css}">
+    <link rel="stylesheet" href="/css/venobox.min.css" th:href="@{/css/venobox.min.css}">
+    <link rel="stylesheet" href="/css/ranger_slider.css" th:href="@{/css/ranger_slider.css}">
+    <link rel="stylesheet" href="/css/animate.css" th:href="@{/css/animate.css}">
+    <link rel="stylesheet" href="/css/scroll_button.css" th:href="@{/css/scroll_button.css}">
+    <link rel="stylesheet" href="/css/custom_spacing.css" th:href="@{/css/custom_spacing.css}">
+    <link rel="stylesheet" href="/css/select2.min.css" th:href="@{/css/select2.min.css}">
+    <link rel="stylesheet" href="/css/colorfulTab.min.css" th:href="@{/css/colorfulTab.min.css}">
+    <link rel="stylesheet" href="/css/jquery.animatedheadline.css" th:href="@{/css/jquery.animatedheadline.css}">
+    <link rel="stylesheet" href="/css/animated_barfiller.css" th:href="@{/css/animated_barfiller.css}">
+    <link rel="stylesheet" href="/css/style.css" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="/css/responsive.css" th:href="@{/css/responsive.css}">
+
+
 </head>
 
 <body>
@@ -43,27 +45,8 @@
                     <div class="header_right">
                         <ul>
                             <li>
-                                <select class="select_js">
-                                    <option value="">English</option>
-                                    <option value="">Japanes</option>
-                                    <option value="">Korean</option>
-                                    <option value="">Urdu</option>
-                                    <option value="">Chines</option>
-                                    <option value="">Arabic</option>
-                                </select>
-                            </li>
-                            <li>
-                                <select class="select_js">
-                                    <option value="">$ USD</option>
-                                    <option value="">ট BDT</option>
-                                    <option value="">€ EUR</option>
-                                    <option value="">£ GBP</option>
-                                    <option value="">¥ JPY</option>
-                                </select>
-                            </li>
-                            <li>
-                                <a href="dashboard.html">
-                                    <span><img src="assetsClient/images/user_icon.png" alt="user"
+                                <a href="sample_templates/dashboard.html">
+                                    <span><img th:src="@{/images/user_icon.png}" alt="user"
                                             class="img-fluid w-100"></span>
                                     My Account
                                 </a>
@@ -84,8 +67,8 @@
     ===========================-->
     <nav class="navbar navbar-expand-lg main_menu">
         <div class="container container_large">
-            <a class="navbar-brand" href="index.html">
-                <img src="assetsClient/images/logo.png" alt="RESTINA" class="img-fluid w-100">
+            <a class="navbar-brand" href="sample_templates/index.html">
+                <img th:src="@{/images/logo.png}" alt="RESTINA" class="img-fluid w-100">
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                 data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
@@ -98,55 +81,55 @@
                     <li class="nav-item">
                         <a class="nav-link" href="#">Home <i class="fal fa-plus"></i></a>
                         <ul class="droap_menu">
-                            <li><a href="index.html">home 01 (Restaurent)</a></li>
-                            <li><a href="index_2.html">home 02 (CP)</a></li>
-                            <li><a href="index_3.html">home 03 (Restaurent)</a></li>
+                            <li><a href="sample_templates/index.html">home 01 (Restaurent)</a></li>
+                            <li><a href="sample_templates/index_2.html">home 02 (CP)</a></li>
+                            <li><a href="sample_templates/index_3.html">home 03 (Restaurent)</a></li>
                         </ul>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#">About <i class="fal fa-plus"></i></a>
                         <ul class="droap_menu">
-                            <li><a href="about_us_01.html">about style 01</a></li>
-                            <li><a href="about_us_02.html">about style 02</a></li>
+                            <li><a href="sample_templates/about_us_01.html">about style 01</a></li>
+                            <li><a href="sample_templates/about_us_02.html">about style 02</a></li>
                         </ul>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#">Menu <i class="fal fa-plus"></i></a>
                         <ul class="droap_menu">
-                            <li><a href="menu_01.html">menu style 01</a></li>
-                            <li><a href="menu_02.html">menu style 02</a></li>
-                            <li><a href="menu_03.html">menu list view</a></li>
-                            <li><a href="menu_details.html">menu details</a></li>
+                            <li><a href="sample_templates/menu_01.html">menu style 01</a></li>
+                            <li><a href="sample_templates/menu_02.html">menu style 02</a></li>
+                            <li><a href="sample_templates/menu_03.html">menu list view</a></li>
+                            <li><a href="sample_templates/menu_details.html">menu details</a></li>
                         </ul>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link active" href="#">Pages <i class="fal fa-plus"></i></a>
                         <ul class="droap_menu">
-                            <li><a href="blogs.html">blogs</a></li>
-                            <li><a href="blog_details.html">blog details</a></li>
-                            <li><a href="chefs.html">chefs</a></li>
-                            <li><a href="chefs_details.html">chef details</a></li>
-                            <li><a href="cart_view.html">cart view</a></li>
-                            <li><a href="checkout.html">checkout</a></li>
-                            <li><a href="dashboard.html">dashboard</a></li>
-                            <li><a href="faq.html">FAQ's</a></li>
-                            <li><a href="payment.html">payment</a></li>
-                            <li><a href="reservation.html">reservation</a></li>
-                            <li><a href="service.html">service</a></li>
-                            <li><a href="service_details.html">service details</a></li>
-                            <li><a href="sign_in.html">sign in</a></li>
+                            <li><a href="sample_templates/blogs.html">blogs</a></li>
+                            <li><a href="sample_templates/blog_details.html">blog details</a></li>
+                            <li><a href="sample_templates/chefs.html">chefs</a></li>
+                            <li><a href="sample_templates/chefs_details.html">chef details</a></li>
+                            <li><a href="sample_templates/cart_view.html">cart view</a></li>
+                            <li><a href="sample_templates/checkout.html">checkout</a></li>
+                            <li><a href="sample_templates/dashboard.html">dashboard</a></li>
+                            <li><a href="sample_templates/faq.html">FAQ's</a></li>
+                            <li><a href="sample_templates/payment.html">payment</a></li>
+                            <li><a href="sample_templates/reservation.html">reservation</a></li>
+                            <li><a href="sample_templates/service.html">service</a></li>
+                            <li><a href="sample_templates/service_details.html">service details</a></li>
+                            <li><a href="sample_templates/sign_in.html">sign in</a></li>
                             <li><a class="active" href="sign_up.html">sign up</a></li>
-                            <li><a href="forgot_password.html">forgot password</a></li>
-                            <li><a href="privacy_policy.html">privacy policy</a></li>
-                            <li><a href="terms_condition.html">terms & condition</a></li>
-                            <li><a href="error.html">error/404</a></li>
+                            <li><a href="sample_templates/forgot_password.html">forgot password</a></li>
+                            <li><a href="sample_templates/privacy_policy.html">privacy policy</a></li>
+                            <li><a href="sample_templates/terms_condition.html">terms & condition</a></li>
+                            <li><a href="sample_templates/error.html">error/404</a></li>
                         </ul>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="contact.html">Contact</a>
+                        <a class="nav-link" href="sample_templates/contact.html">Contact</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="branch.html">Branch</a>
+                        <a class="nav-link" href="sample_templates/branch.html">Branch</a>
                     </li>
                 </ul>
                 <ul class="menu_right">
@@ -159,9 +142,9 @@
                                 class="qnty">15</span></a>
                     </li>
                     <li>
-                        <a class="menu_order common_btn" href="menu_03.html">
+                        <a class="menu_order common_btn" href="sample_templates/menu_03.html">
                             <span class="icon">
-                                <img src="assetsClient/images/cart_icon_1.png" alt="order" class="img-fluid w-100">
+                                <img src="../images/cart_icon_1.png" alt="order" class="img-fluid w-100">
                             </span>
                             order now
                         </a>
@@ -173,7 +156,9 @@
 
     <div class="menu_search_area">
         <form>
-            <input type="text" placeholder="Search Item...">
+            <label>
+                <input type="text" placeholder="Search Item...">
+            </label>
             <button class="common_btn" type="submit">Search</button>
             <span class="close_search"><i class="far fa-times"></i></span>
         </form>
@@ -190,7 +175,7 @@
                 <ul>
                     <li>
                         <div class="cart_img">
-                            <img src="assetsClient/images/cart_img_1.png" alt="product" class="img-fluid w-100">
+                            <img src="../images/cart_img_1.png" alt="product" class="img-fluid w-100">
                             <a class="del_icon" href="#"><i class="fas fa-minus-circle"></i></a>
                         </div>
                         <div class="cart_text">
@@ -200,7 +185,7 @@
                     </li>
                     <li>
                         <div class="cart_img">
-                            <img src="assetsClient/images/cart_img_2.png" alt="product" class="img-fluid w-100">
+                            <img src="../images/cart_img_2.png" alt="product" class="img-fluid w-100">
                             <a class="del_icon" href="#"><i class="fas fa-minus-circle"></i></a>
                         </div>
                         <div class="cart_text">
@@ -210,7 +195,7 @@
                     </li>
                     <li>
                         <div class="cart_img">
-                            <img src="assetsClient/images/cart_img_3.png" alt="product" class="img-fluid w-100">
+                            <img src="../images/cart_img_3.png" alt="product" class="img-fluid w-100">
                             <a class="del_icon" href="#"><i class="fas fa-minus-circle"></i></a>
                         </div>
                         <div class="cart_text">
@@ -220,7 +205,7 @@
                     </li>
                     <li>
                         <div class="cart_img">
-                            <img src="assetsClient/images/cart_img_4.png" alt="product" class="img-fluid w-100">
+                            <img src="../images/cart_img_4.png" alt="product" class="img-fluid w-100">
                             <a class="del_icon" href="#"><i class="fas fa-minus-circle"></i></a>
                         </div>
                         <div class="cart_text">
@@ -230,7 +215,7 @@
                     </li>
                     <li>
                         <div class="cart_img">
-                            <img src="assetsClient/images/cart_img_5.png" alt="product" class="img-fluid w-100">
+                            <img src="../images/cart_img_5.png" alt="product" class="img-fluid w-100">
                             <a class="del_icon" href="#"><i class="fas fa-minus-circle"></i></a>
                         </div>
                         <div class="cart_text">
@@ -241,7 +226,7 @@
                 </ul>
                 <h5>sub total <span>$3540</span></h5>
                 <div class="minicart_btn_area">
-                    <a class="common_btn" href="cart_view.html">view cart<span></span></a>
+                    <a class="common_btn" href="sample_templates/cart_view.html">view cart<span></span></a>
                 </div>
             </div>
         </div>
@@ -258,33 +243,58 @@
         <div class="row justify-content-center">
             <div class="col-xl-6 col-lg-6 wow fadeInLeft">
                 <div class="sign_in_img">
-                    <img src="assetsClient/images/sign_in_img_2.jpg" alt="sign in" class="img-fluid w-100">
+                    <img th:src="@{/images/sign_in_img_2.jpg}" alt="sign in" class="img-fluid w-100">
                 </div>
             </div>
             <div class="col-xl-6 col-md-10 col-lg-6 wow fadeInRight">
                 <div class="sign_in_form">
-                    <a class="sign_in_logo" href="index.html">
-                        <img src="assetsClient/images/logo.png" alt="sign in" class="img-fluid w-100">
+                    <a class="sign_in_logo" href="sample_templates/index.html">
+                        <img th:src="@{/images/logo.png}" alt="RESTINA" class="img-fluid w-100">
                     </a>
                     <h2>Create Account</h2>
                     <p class="description">Please Enter your Email Address to Start your Online Application</p>
-                    <form action="#">
+                    <form th:action="@{/do-register}" th:object="${registerForm}" method="post">
                         <div class="row">
                             <div class="col-md-6">
-                                <input type="text" placeholder="Fast Name">
+                                <label>
+                                    <input type="text" th:field="*{firstname}" placeholder="First Name">
+                                </label>
+                                <div th:if="${#fields.hasErrors('firstname')}"
+                                     th:errors="*{firstname}"
+                                     class="text-danger mt-1"></div>
                             </div>
                             <div class="col-md-6">
-                                <input type="text" placeholder="Last Name">
-                            </div>
-                            <div class="col-xl-12">
-                                <input type="email" placeholder="Email...">
-                            </div>
-                            <div class="col-md-6">
-                                <input type="password" placeholder="Password...">
+                                <label>
+                                    <input type="text" th:field="*{lastname}" placeholder="Last Name">
+                                </label>
+                                <div th:if="${#fields.hasErrors('lastname')}" th:errors="*{lastname}" class="text-danger"></div>
                             </div>
                             <div class="col-md-6">
-                                <input type="password" placeholder="Confirm Password...">
+                                <label>
+                                    <input type="email" th:field="*{email}" placeholder="Email...">
+                                </label>
+                                <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="text-danger"></div>
                             </div>
+                            <div class="col-md-6">
+                                <label>
+                                    <input type="tel" th:field="*{phone}" placeholder="Phone...">
+                                </label>
+                                <div th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}" class="text-danger"></div>
+                            </div>
+                            <div class="col-md-6">
+                                <label>
+                                    <input type="password" th:field="*{password}" placeholder="Password...">
+                                </label>
+                                <div th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="text-danger"></div>
+                            </div>
+                            <div class="col-md-6">
+                                <label>
+                                    <input type="password" th:field="*{confirmPassword}" placeholder="Confirm Password...">
+                                </label>
+                                <div th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}" class="text-danger"></div>
+
+                            </div>
+
                             <div class="col-12">
                                 <button class="common_btn" type="submit">sign up</button>
                             </div>
@@ -295,7 +305,7 @@
                         <li>
                             <a href="#">
                                 <span>
-                                    <img src="assetsClient/images/google_icon.svg" alt="google" class="img-fluid w-100">
+                                    <img src="../images/google_icon.svg" alt="google" class="img-fluid w-100">
                                 </span>
                                 Google
                             </a>
@@ -303,13 +313,13 @@
                         <li>
                             <a href="#">
                                 <span>
-                                    <img src="assetsClient/images/fb_icon.svg" alt="facebook" class="img-fluid w-100">
+                                    <img src="../images/fb_icon.svg" alt="facebook" class="img-fluid w-100">
                                 </span>
                                 Facebook
                             </a>
                         </li>
                     </ul>
-                    <p class="dont_account">Have an account? <a href="sign_in.html">Sign in</a></p>
+                    <p class="dont_account">Have an account? <a href="sample_templates/sign_in.html">Sign in</a></p>
                 </div>
             </div>
         </div>
@@ -327,8 +337,8 @@
             <div class="row justify-content-between wow fadeInUp">
                 <div class="col-lg-3 col-md-4">
                     <div class="footer_info">
-                        <a class="footer_logo" href="index.html">
-                            <img src="assetsClient/images/footer_logo.png" alt="RESTINA" class="img-fluid w-100">
+                        <a class="footer_logo" href="sample_templates/index.html">
+                            <img src="../images/footer_logo.png" alt="RESTINA" class="img-fluid w-100">
                         </a>
                         <p>Cras incident lobotids feudist makes viramas sagittas eu valuta.</p>
                         <ul>
@@ -368,7 +378,7 @@
                         <ul>
                             <li>
                                 <div class="img">
-                                    <img src="assetsClient/images/footer_post_img_1.jpg" alt="post" class="img-fluid w-100">
+                                    <img src="../images/footer_post_img_1.jpg" alt="post" class="img-fluid w-100">
                                 </div>
                                 <div class="text">
                                     <p><i class="far fa-clock"></i> March 24, 2024</p>
@@ -377,7 +387,7 @@
                             </li>
                             <li>
                                 <div class="img">
-                                    <img src="assetsClient/images/footer_post_img_2.jpg" alt="post" class="img-fluid w-100">
+                                    <img src="../images/footer_post_img_2.jpg" alt="post" class="img-fluid w-100">
                                 </div>
                                 <div class="text">
                                     <p><i class="far fa-clock"></i> March 24, 2024</p>
@@ -393,7 +403,9 @@
                     <div class="footer_subscribe">
                         <h2>Subscription News</h2>
                         <form>
-                            <input type="text" placeholder="Enter Your Email">
+                            <label>
+                                <input type="text" placeholder="Enter Your Email">
+                            </label>
                             <button type="submit">Subscribe</button>
                         </form>
                     </div>
@@ -427,41 +439,57 @@
 
 
     <!--jquery library js-->
-    <script src="assetsClient/js/jquery-3.7.1.min.js"></script>
-    <!--bootstrap js-->
-    <script src="assetsClient/js/bootstrap.bundle.min.js"></script>
-    <!--font-awesome js-->
-    <script src="assetsClient/js/Font-Awesome.js"></script>
-    <!--nice select js-->
-    <script src="assetsClient/js/jquery.nice-select.min.js"></script>
-    <!--marquee js-->
-    <script src="assetsClient/js/jquery.marquee.min.js"></script>
-    <!--slick js-->
-    <script src="assetsClient/js/slick.min.js"></script>
-    <!--countup js-->
-    <script src="assetsClient/js/jquery.waypoints.min.js"></script>
-    <script src="assetsClient/js/jquery.countup.min.js"></script>
-    <!--venobox js-->
-    <script src="assetsClient/js/venobox.min.js"></script>
-    <!--scroll button js-->
-    <script src="assetsClient/js/scroll_button.js"></script>
-    <!--price ranger js-->
-    <script src="assetsClient/js/ranger_jquery-ui.min.js"></script>
-    <script src="assetsClient/js/ranger_slider.js"></script>
-    <!--select 2 js-->
-    <script src="assetsClient/js/select2.min.js"></script>
-    <!--aos js-->
-    <script src="assetsClient/js/wow.min.js"></script>
-    <!--colorfulTab js-->
-    <script src="assetsClient/js/colorfulTab.min.js"></script>
-    <!--sticky sidebar js-->
-    <script src="assetsClient/js/sticky_sidebar.js"></script>
-    <!--animated barfiller js-->
-    <script src="assetsClient/js/animated_barfiller.js"></script>
-    <!--animatedheadline js-->
-    <script src="assetsClient/js/jquery.animatedheadline.min.js"></script>
+    <!-- jQuery -->
+    <script th:src="@{/js/jquery-3.7.1.min.js}"></script>
+
+    <!-- bootstrap js -->
+    <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+
+    <!-- font-awesome js -->
+    <script th:src="@{/js/Font-Awesome.js}"></script>
+
+    <!-- nice select js -->
+    <script th:src="@{/js/jquery.nice-select.min.js}"></script>
+
+    <!-- marquee js -->
+    <script th:src="@{/js/jquery.marquee.min.js}"></script>
+
+    <!-- slick js -->
+    <script th:src="@{/js/slick.min.js}"></script>
+
+    <!-- countup js -->
+    <script th:src="@{/js/jquery.waypoints.min.js}"></script>
+    <script th:src="@{/js/jquery.countup.min.js}"></script>
+
+    <!-- venobox js -->
+    <script th:src="@{/js/venobox.min.js}"></script>
+
+    <!-- scroll button js -->
+    <script th:src="@{/js/scroll_button.js}"></script>
+
+    <!-- price ranger js -->
+    <script th:src="@{/js/ranger_jquery-ui.min.js}"></script>
+    <script th:src="@{/js/ranger_slider.js}"></script>
+
+    <!-- select2 js -->
+    <script th:src="@{/js/select2.min.js}"></script>
+
+    <!-- aos js -->
+    <script th:src="@{/js/wow.min.js}"></script>
+
+    <!-- colorfulTab js -->
+    <script th:src="@{/js/colorfulTab.min.js}"></script>
+
+    <!-- sticky sidebar js -->
+    <script th:src="@{/js/sticky_sidebar.js}"></script>
+
+    <!-- animated barfiller js -->
+    <script th:src="@{/js/animated_barfiller.js}"></script>
+
+    <!-- animatedheadline js -->
+    <script th:src="@{/js/jquery.animatedheadline.min.js}"></script>
     <!--script/custom js-->
-    <script src="assetsClient/js/script.js"></script>
+    <script th:src="@{/js/script.js}"></script>
 
 </body>
 
