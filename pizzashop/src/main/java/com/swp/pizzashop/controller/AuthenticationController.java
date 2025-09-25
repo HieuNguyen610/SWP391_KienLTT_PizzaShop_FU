@@ -52,7 +52,7 @@ public class AuthenticationController {
             );
             // If authentication is successful, set the authentication in the context
             org.springframework.security.core.context.SecurityContextHolder.getContext().setAuthentication(authentication);
-            return "redirect:/";
+            return "redirect:/profile";
         } catch (AuthenticationException ex) {
             model.addAttribute("error", "Invalid email or password.");
             return "login";

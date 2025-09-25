@@ -12,9 +12,20 @@ body {
   padding: 32px 24px;
 }
 
-h2 {
+/* Add card modifier for clarity */
+.auth-card { }
+
+h2, .title {
   color: #d35400;
   text-align: center;
+  margin: 0 0 8px;
+}
+
+.subtitle {
+  text-align: center;
+  color: #666;
+  margin: 0 0 20px;
+  font-size: 14px;
 }
 
 .form-group {
@@ -28,11 +39,48 @@ label {
 }
 
 input[type="text"],
-input[type="password"] {
+input[type="password"],
+input[type="email"] {
   width: 100%;
-  padding: 10px;
+  padding: 10px 12px;
   border: 1px solid #ccc;
   border-radius: 4px;
+}
+
+.password-field {
+  position: relative;
+}
+
+.toggle-password {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #666;
+  padding: 4px;
+}
+
+.form-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 6px 0 16px;
+}
+
+.checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #333;
+}
+
+.forgot {
+  color: #2980b9;
+  text-decoration: none;
+  font-size: 14px;
 }
 
 .btn {
@@ -46,9 +94,7 @@ input[type="password"] {
   cursor: pointer;
 }
 
-.btn:hover {
-  background: #e67e22;
-}
+.btn:hover { background: #e67e22; }
 
 .error,
 .field-error {
@@ -65,6 +111,63 @@ input[type="password"] {
   border-radius: 4px;
   margin-bottom: 12px;
 }
+
+.divider {
+  position: relative;
+  text-align: center;
+  margin: 18px 0;
+  color: #888;
+  font-size: 14px;
+}
+
+.divider::before,
+.divider::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 40%;
+  height: 1px;
+  background: #e0e0e0;
+}
+
+.divider::before { left: 0; }
+.divider::after { right: 0; }
+
+.social-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.btn-social {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  text-decoration: none;
+  color: #333;
+  background: #fff;
+}
+
+.btn-social.facebook { border-color: #1877f2; color: #1877f2; }
+.btn-social.google { border-color: #db4437; color: #db4437; }
+
+.btn-social:hover { background: #fafafa; }
+
+.bottom-link {
+  text-align: center;
+  font-size: 14px;
+  color: #555;
+  margin-top: 8px;
+}
+
+.bottom-link a { color: #2980b9; text-decoration: none; }
+.bottom-link a:hover { text-decoration: underline; }
 
 .link {
   display: block;

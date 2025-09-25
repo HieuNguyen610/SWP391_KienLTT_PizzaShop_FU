@@ -2,30 +2,79 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Login - Pizza Shop</title>
+    <title>Agent Login</title>
     <link rel="stylesheet" th:href="@{/css/auth.css}" href="/css/auth.css" />
+    <link rel="stylesheet" th:href="@{/css/all.min.css}" href="/css/all.min.css" />
 </head>
 <body>
-<div class="container">
-    <h2>Login</h2>
-    <!-- Success message from registration or verification -->
-    <div th:if="${success}" class="success" th:text="${success}"></div>
+<div class="container auth-card">
+    <h1 class="title">Agent Login</h1>
+    <p class="subtitle">Hey, enter your details to sign in to your account</p>
 
-    <form th:action="@{/do-login}" th:object="${loginForm}" method="post">
-        <div th:if="${error}" class="error" th:text="${error}"></div>
+    <div th:if="${success}" class="success" th:text="${success}"></div>
+    <div th:if="${error}" class="error" th:text="${error}"></div>
+
+    <form th:action="@{/do-login}" th:object="${loginForm}" method="post" autocomplete="on">
         <div class="form-group">
             <label for="email">Email</label>
-            <input type="text" th:field="*{email}" id="email" placeholder="Enter your email" required />
+            <input type="email" th:field="*{email}" id="email" placeholder="Enter your email" required autocomplete="email" />
             <div th:if="${#fields.hasErrors('email')}" class="field-error" th:errors="*{email}"></div>
         </div>
+
         <div class="form-group">
             <label for="password">Password</label>
-            <input type="password" th:field="*{password}" id="password" placeholder="Enter your password" required />
+            <div class="password-field">
+                <input type="password" th:field="*{password}" id="password" placeholder="Enter your password" required autocomplete="current-password" />
+                <button type="button" class="toggle-password" aria-label="Show password">
+                    <i class="far fa-eye"></i>
+                </button>
+            </div>
             <div th:if="${#fields.hasErrors('password')}" class="field-error" th:errors="*{password}"></div>
         </div>
+
+        <div class="form-row">
+            <label class="checkbox">
+                <input type="checkbox" name="remember-me" />
+                <span>Remember me</span>
+            </label>
+            <a href="/forgot-password" class="forgot">Forgot password</a>
+        </div>
+
         <button type="submit" class="btn">Login</button>
+
+        <div class="divider"><span>Or sign in with</span></div>
+
+        <div class="social-buttons">
+            <a class="btn-social facebook" href="/oauth2/authorization/facebook">
+                <i class="fab fa-facebook-f"></i>
+                <span>Facebook</span>
+            </a>
+            <a class="btn-social google" href="/oauth2/authorization/google">
+                <i class="fab fa-google"></i>
+                <span>Google</span>
+            </a>
+        </div>
+
+        <p class="bottom-link">Don't have an account? <a href="/register">Request Now</a></p>
     </form>
-    <a href="/register" class="link">Don't have an account? Register</a>
 </div>
+
+<script>
+    (function() {
+        var toggle = document.querySelector('.toggle-password');
+        if (!toggle) return;
+        toggle.addEventListener('click', function() {
+            var input = document.getElementById('password');
+            var icon = toggle.querySelector('i');
+            var isPwd = input.getAttribute('type') === 'password';
+            input.setAttribute('type', isPwd ? 'text' : 'password');
+            if (icon) {
+                icon.classList.toggle('fa-eye');
+                icon.classList.toggle('fa-eye-slash');
+            }
+            toggle.setAttribute('aria-label', isPwd ? 'Hide password' : 'Show password');
+        });
+    })();
+</script>
 </body>
 </html>
