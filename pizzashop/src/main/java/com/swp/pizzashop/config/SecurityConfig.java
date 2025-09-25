@@ -6,6 +6,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -13,6 +15,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
+
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Configuration
 public class SecurityConfig {
@@ -58,10 +63,14 @@ public class SecurityConfig {
         return email -> {
             var user = userService.findByEmail(email);
             if (user == null) throw new UsernameNotFoundException("User not found");
+            Set<GrantedAuthority> authorities = user.getRoles() == null ? Set.of() :
+                    user.getRoles().stream()
+                            .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getName().toUpperCase()))
+                            .collect(Collectors.toSet());
             return User.builder()
                     .username(user.getEmail())
                     .password(user.getPassword())
-                    .roles("USER")
+                    .authorities(authorities)
                     .build();
         };
     }

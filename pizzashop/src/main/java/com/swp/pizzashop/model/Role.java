@@ -13,7 +13,8 @@ import java.time.Instant;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-@Entity(name = "roles")
+@Entity
+@Table(name = "roles")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -41,9 +42,6 @@ public class Role {
     @Column(name = "is_deleted")
     private Boolean isDeleted;
 
-    @ManyToMany
-    @JoinTable(name = "user_roles",
-            joinColumns = @JoinColumn(name = "role_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id"))
+    @ManyToMany(mappedBy = "roles")
     private Set<User> users = new LinkedHashSet<>();
 }
