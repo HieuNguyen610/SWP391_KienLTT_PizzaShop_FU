@@ -44,7 +44,10 @@ public class SecurityConfig {
                 .ignoringRequestMatchers("/api/**", "/do-login", "/register")
             )
             // Redirect unauthenticated users to /login instead of sending 401 JSON
-            .exceptionHandling(ex -> ex.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login")));
+            .exceptionHandling(ex -> ex
+                .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login"))
+                .accessDeniedPage("/error/403")
+            );
         return http.build();
     }
 
@@ -63,6 +66,13 @@ public class SecurityConfig {
         return email -> {
             var user = userService.findByEmail(email);
             if (user == null) throw new UsernameNotFoundException("User not found");
+
+            // Compute enabled flag: status must be ACTIVE and isDeleted must be false (or null)
+            boolean activeStatus = user.getStatus() != null && "ACTIVE".equalsIgnoreCase(user.getStatus().trim());
+            Boolean isDeleted = user.getIsDeleted();
+            boolean notDeleted = (isDeleted == null) || !isDeleted;
+            boolean enabled = activeStatus && notDeleted;
+
             Set<GrantedAuthority> authorities = user.getRoles() == null ? Set.of() :
                     user.getRoles().stream()
                             .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getName().toUpperCase()))
@@ -71,6 +81,10 @@ public class SecurityConfig {
                     .username(user.getEmail())
                     .password(user.getPassword())
                     .authorities(authorities)
+                    .disabled(!enabled)      // Disable account when not ACTIVE or deleted
+                    .accountLocked(false)
+                    .accountExpired(false)
+                    .credentialsExpired(false)
                     .build();
         };
     }

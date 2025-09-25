@@ -6,6 +6,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -57,10 +58,11 @@ public class AuthenticationController {
             return "login";
         }
         try {
-            assert loginForm != null;
-            UsernamePasswordAuthenticationToken authRequest =
-                    new UsernamePasswordAuthenticationToken(loginForm.getEmail(), loginForm.getPassword());
-            log.debug("Authenticating UsernamePasswordAuthenticationToken for {}", loginForm.getEmail());
+            UsernamePasswordAuthenticationToken authRequest = null;
+            if (loginForm != null) {
+                authRequest = new UsernamePasswordAuthenticationToken(loginForm.getEmail(), loginForm.getPassword());
+                log.debug("Authenticating UsernamePasswordAuthenticationToken for {}", loginForm.getEmail());
+            }
             Authentication authentication = authenticationManager.authenticate(authRequest);
 
             // Persist the authentication into SecurityContext and HTTP session explicitly
@@ -73,6 +75,10 @@ public class AuthenticationController {
                     request.getSession(false) != null ? request.getSession(false).getId() : null);
 
             return "redirect:/profile";
+        } catch (DisabledException de) {
+            log.warn("Login disabled for {}: {}", loginForm.getEmail(), de.getMessage());
+            model.addAttribute("error", "Your account is inactive or has been deleted. Please contact support.");
+            return "login";
         } catch (AuthenticationException ex) {
             log.warn("Login failed for {}: {}", loginForm.getEmail(), ex.getMessage());
             model.addAttribute("error", "Invalid email or password.");
