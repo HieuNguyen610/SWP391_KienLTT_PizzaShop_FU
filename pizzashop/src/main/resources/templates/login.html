@@ -26,7 +26,7 @@
             <div class="password-field">
                 <input type="password" th:field="*{password}" id="password" placeholder="Enter your password" required autocomplete="current-password" />
                 <button type="button" class="toggle-password" aria-label="Show password">
-                    <i class="far fa-eye"></i>
+                    <i class="fas fa-eye" aria-hidden="true"></i>
                 </button>
             </div>
             <div th:if="${#fields.hasErrors('password')}" class="field-error" th:errors="*{password}"></div>
@@ -34,7 +34,7 @@
 
         <div class="form-row">
             <label class="checkbox">
-                <input type="checkbox" name="remember-me" />
+                <input type="checkbox" name="remember-me" id="remember-me" />
                 <span>Remember me</span>
             </label>
             <a href="/forgot-password" class="forgot">Forgot password</a>
@@ -45,12 +45,8 @@
         <div class="divider"><span>Or sign in with</span></div>
 
         <div class="social-buttons">
-            <a class="btn-social facebook" href="/oauth2/authorization/facebook">
-                <i class="fab fa-facebook-f"></i>
-                <span>Facebook</span>
-            </a>
             <a class="btn-social google" href="/oauth2/authorization/google">
-                <i class="fab fa-google"></i>
+                <img th:src="@{/images/google_icon.svg}" src="/images/google_icon.svg" alt="Google" class="icon" />
                 <span>Google</span>
             </a>
         </div>
@@ -66,13 +62,15 @@
         toggle.addEventListener('click', function() {
             var input = document.getElementById('password');
             var icon = toggle.querySelector('i');
-            var isPwd = input.getAttribute('type') === 'password';
-            input.setAttribute('type', isPwd ? 'text' : 'password');
+            var showing = input.getAttribute('type') === 'text';
+            input.setAttribute('type', showing ? 'password' : 'text');
             if (icon) {
-                icon.classList.toggle('fa-eye');
-                icon.classList.toggle('fa-eye-slash');
+                icon.classList.remove('fa-eye', 'fa-eye-slash');
+                icon.classList.add(showing ? 'fa-eye' : 'fa-eye-slash');
+                // ensure solid style class present
+                icon.classList.add('fas');
             }
-            toggle.setAttribute('aria-label', isPwd ? 'Hide password' : 'Show password');
+            toggle.setAttribute('aria-label', showing ? 'Show password' : 'Hide password');
         });
     })();
 </script>

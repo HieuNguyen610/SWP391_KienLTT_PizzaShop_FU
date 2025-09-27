@@ -134,10 +134,17 @@ input[type="email"] {
 .divider::after { right: 0; }
 
 .social-buttons {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  display: flex;
+  justify-content: center;
   margin-bottom: 10px;
+  /* remove grid layout now that only one provider is shown */
+}
+
+/* Adjust single social button sizing */
+.social-buttons .btn-social {
+  width: auto;
+  min-width: 170px;
+  padding: 10px 20px;
 }
 
 .btn-social {
@@ -145,13 +152,21 @@ input[type="email"] {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  width: 100%;
+  /* width: 100%;  removed to allow intrinsic sizing */
   padding: 10px 12px;
   border: 1px solid #ddd;
   border-radius: 6px;
   text-decoration: none;
   color: #333;
   background: #fff;
+}
+
+/* Consistent sizing for svg/png social icons */
+.btn-social .icon {
+  width: 18px;
+  height: 18px;
+  display: inline-block;
+  object-fit: contain;
 }
 
 .btn-social.facebook { border-color: #1877f2; color: #1877f2; }

@@ -22,21 +22,28 @@ import java.util.stream.Collectors;
 @Configuration
 public class SecurityConfig {
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, UserDetailsService userDetailsService) throws Exception {
         http
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/", "/login", "/register", "/verify", "/do-login",
                                  "/css/**", "/js/**", "/images/**", "/static/**", "/favicon.ico").permitAll()
                 .anyRequest().authenticated()
             )
-            // Disable Spring Security's built-in form login to let our controller handle POST /do-login
-            .formLogin(form -> form.disable())
+            .formLogin(form -> form
+                .loginPage("/login")
+                .loginProcessingUrl("/do-login")
+                .usernameParameter("email")
+                .passwordParameter("password")
+                .defaultSuccessUrl("/profile", true)
+                .failureUrl("/login?error")
+                .permitAll()
+            )
             .logout(logout -> logout
                 .logoutUrl("/logout")
                 .logoutSuccessUrl("/login?logout")
                 .invalidateHttpSession(true) // Invalidate HTTP session
                 .clearAuthentication(true)    // Clear authentication
-                .deleteCookies("JSESSIONID")  // Delete JSESSIONID cookie
+                .deleteCookies("JSESSIONID", "remember-me")  // Delete JSESSIONID and remember-me cookies
                 .permitAll()
             )
             .csrf(csrf -> csrf
@@ -47,6 +54,15 @@ public class SecurityConfig {
             .exceptionHandling(ex -> ex
                 .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login"))
                 .accessDeniedPage("/error/403")
+            )
+            // Use hash-based remember-me (TokenBasedRememberMeServices)
+            .rememberMe(rememberMe -> rememberMe
+                .key("rememberMeSecretKey") //  secure key
+                .rememberMeParameter("remember-me") // Matches login.html
+                .rememberMeCookieName("remember-me")
+                .tokenValiditySeconds(7 * 24 * 60 * 60) // 7 days
+                // explicit userDetailsService required for hash-based remember-me to rebuild Authentication
+                .userDetailsService(userDetailsService)
             );
         return http.build();
     }
