@@ -63,6 +63,10 @@ public class SecurityConfig {
                 .tokenValiditySeconds(7 * 24 * 60 * 60) // 7 days
                 // explicit userDetailsService required for hash-based remember-me to rebuild Authentication
                 .userDetailsService(userDetailsService)
+            )
+            .oauth2Login(oauth2 -> oauth2
+                .loginPage("/login")
+                .defaultSuccessUrl("/profile", true)
             );
         return http.build();
     }
@@ -83,7 +87,6 @@ public class SecurityConfig {
             var user = userService.findByEmail(email);
             if (user == null) throw new UsernameNotFoundException("User not found");
 
-            // Compute enabled flag: status must be ACTIVE and isDeleted must be false (or null)
             boolean activeStatus = user.getStatus() != null && "ACTIVE".equalsIgnoreCase(user.getStatus().trim());
             Boolean isDeleted = user.getIsDeleted();
             boolean notDeleted = (isDeleted == null) || !isDeleted;
@@ -97,7 +100,7 @@ public class SecurityConfig {
                     .username(user.getEmail())
                     .password(user.getPassword())
                     .authorities(authorities)
-                    .disabled(!enabled)      // Disable account when not ACTIVE or deleted
+                    .disabled(!enabled)
                     .accountLocked(false)
                     .accountExpired(false)
                     .credentialsExpired(false)
