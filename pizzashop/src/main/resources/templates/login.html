@@ -25,8 +25,9 @@
             <label for="password">Password</label>
             <div class="password-field">
                 <input type="password" th:field="*{password}" id="password" placeholder="Enter your password" required autocomplete="current-password" />
-                <button type="button" class="toggle-password" aria-label="Show password">
-                    <i class="fas fa-eye" aria-hidden="true"></i>
+                <button type="button" class="toggle-password" aria-label="Show password"
+                        data-eye="/images/eye.png" data-eye-slash="/images/eye_2.png">
+                    <img th:src="@{/images/eye.png}" src="/images/eye.png" alt="Show password" style="width:18px;height:18px;object-fit:contain;" />
                 </button>
             </div>
             <div th:if="${#fields.hasErrors('password')}" class="field-error" th:errors="*{password}"></div>
@@ -57,20 +58,20 @@
 
 <script>
     (function() {
-        var toggle = document.querySelector('.toggle-password');
+        const toggle = document.querySelector('.toggle-password');
         if (!toggle) return;
+        const input = document.getElementById('password');
+        const img = toggle.querySelector('img');
+        const eye = toggle.getAttribute('data-eye');
+        const eyeSlash = toggle.getAttribute('data-eye-slash'); // second variant (eye_2.png) if desired
+
         toggle.addEventListener('click', function() {
-            var input = document.getElementById('password');
-            var icon = toggle.querySelector('i');
-            var showing = input.getAttribute('type') === 'text';
+            const showing = input.getAttribute('type') === 'text';
             input.setAttribute('type', showing ? 'password' : 'text');
-            if (icon) {
-                icon.classList.remove('fa-eye', 'fa-eye-slash');
-                icon.classList.add(showing ? 'fa-eye' : 'fa-eye-slash');
-                // ensure solid style class present
-                icon.classList.add('fas');
-            }
             toggle.setAttribute('aria-label', showing ? 'Show password' : 'Hide password');
+            if (eyeSlash && img) {
+                img.src = showing ? eye : eyeSlash; // when switching to text (showing password) use eyeSlash image
+            }
         });
     })();
 </script>

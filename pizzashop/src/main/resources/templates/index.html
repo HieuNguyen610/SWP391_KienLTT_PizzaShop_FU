@@ -25,7 +25,9 @@
 
         <div class="product-grid">
             <div class="product-card" th:each="pizza : ${pizzas}">
-                <img th:src="${pizza.imageUrl}" alt="Pizza Image" class="product-image">
+                <img class="product-image"
+                     th:src="${pizza.imageUrl == null ? '/images/product_img_1.jpg' : ((#strings.startsWith(pizza.imageUrl,'http') or #strings.startsWith(pizza.imageUrl,'/images/') or #strings.startsWith(pizza.imageUrl,'images/')) ? pizza.imageUrl : '/images/' + pizza.imageUrl)}"
+                     alt="Pizza Image" />
                 <h3 class="product-name" th:text="${pizza.name}">Seafood Pizza Cocktail</h3>
                 <p class="product-description" th:text="${pizza.description}">Shrimp, crab, ham and Thousand Island dressing.</p>
                 <p class="product-price">Price from only</p>
