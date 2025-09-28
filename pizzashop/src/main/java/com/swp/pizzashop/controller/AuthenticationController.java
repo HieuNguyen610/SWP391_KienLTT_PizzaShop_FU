@@ -35,14 +35,18 @@ public class AuthenticationController {
 
     @GetMapping("/login")
     public String showLoginForm(Model model, @RequestParam(value = "error", required = false) String error,
-                               @RequestParam(value = "logout", required = false) String logout) {
-        log.debug("GET /login called, error={}, logout={}", error, logout);
+                               @RequestParam(value = "logout", required = false) String logout,
+                               @RequestParam(value = "reset", required = false) String reset) {
+        log.debug("GET /login called, error={}, logout={}, reset={}", error, logout, reset);
         model.addAttribute("loginForm", new LoginForm());
         if (error != null) {
             model.addAttribute("error", messageService.get(SystemMessageCode.MSG08));
         }
         if (logout != null) {
             model.addAttribute("success", messageService.get(SystemMessageCode.MSG14));
+        }
+        if (reset != null) {
+            model.addAttribute("success", messageService.get(SystemMessageCode.MSG12));
         }
         return "login";
     }

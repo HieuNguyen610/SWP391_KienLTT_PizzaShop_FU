@@ -26,6 +26,7 @@ public class SecurityConfig {
         http
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/", "/login", "/register", "/verify", "/do-login",
+                                 "/forgot-password", "/reset-password", "/reset-password/**",
                                  "/css/**", "/js/**", "/images/**", "/static/**", "/favicon.ico").permitAll()
                 .anyRequest().authenticated()
             )
@@ -48,7 +49,7 @@ public class SecurityConfig {
             )
             .csrf(csrf -> csrf
                 // Allow API requests and custom login/register endpoints without CSRF token
-                .ignoringRequestMatchers("/api/**", "/do-login", "/register")
+                .ignoringRequestMatchers("/api/**", "/do-login", "/register", "/forgot-password", "/reset-password")
             )
             // Redirect unauthenticated users to /login instead of sending 401 JSON
             .exceptionHandling(ex -> ex
