@@ -22,6 +22,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.swp.pizzashop.form.LoginForm;
+import com.swp.pizzashop.messages.MessageService;
+import com.swp.pizzashop.messages.SystemMessageCode;
 
 @Controller
 @Slf4j
@@ -29,6 +31,7 @@ import com.swp.pizzashop.form.LoginForm;
 public class AuthenticationController {
 
     private final AuthenticationManager authenticationManager;
+    private final MessageService messageService;
 
     @GetMapping("/login")
     public String showLoginForm(Model model, @RequestParam(value = "error", required = false) String error,
@@ -36,10 +39,10 @@ public class AuthenticationController {
         log.debug("GET /login called, error={}, logout={}", error, logout);
         model.addAttribute("loginForm", new LoginForm());
         if (error != null) {
-            model.addAttribute("error", "Invalid email or password.");
+            model.addAttribute("error", messageService.get(SystemMessageCode.MSG08));
         }
         if (logout != null) {
-            model.addAttribute("success", "You have been logged out successfully.");
+            model.addAttribute("success", messageService.get(SystemMessageCode.MSG14));
         }
         return "login";
     }
@@ -77,11 +80,11 @@ public class AuthenticationController {
             return "redirect:/profile";
         } catch (DisabledException de) {
             log.warn("Login disabled for {}: {}", loginForm.getEmail(), de.getMessage());
-            model.addAttribute("error", "Your account is inactive or has been deleted. Please contact support.");
+            model.addAttribute("error", messageService.get(SystemMessageCode.MSG15));
             return "login";
         } catch (AuthenticationException ex) {
             log.warn("Login failed for {}: {}", loginForm.getEmail(), ex.getMessage());
-            model.addAttribute("error", "Invalid email or password.");
+            model.addAttribute("error", messageService.get(SystemMessageCode.MSG08));
             return "login";
         }
     }
