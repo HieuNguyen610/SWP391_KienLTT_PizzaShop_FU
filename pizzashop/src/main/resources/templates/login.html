@@ -2,30 +2,78 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Login - Pizza Shop</title>
+    <title>Agent Login</title>
     <link rel="stylesheet" th:href="@{/css/auth.css}" href="/css/auth.css" />
+    <link rel="stylesheet" th:href="@{/css/all.min.css}" href="/css/all.min.css" />
 </head>
 <body>
-<div class="container">
-    <h2>Login</h2>
-    <!-- Success message from registration or verification -->
-    <div th:if="${success}" class="success" th:text="${success}"></div>
+<div class="container auth-card">
+    <h1 class="title">Agent Login</h1>
+    <p class="subtitle">Hey, enter your details to sign in to your account</p>
 
-    <form th:action="@{/do-login}" th:object="${loginForm}" method="post">
-        <div th:if="${error}" class="error" th:text="${error}"></div>
+    <div th:if="${success}" class="success" th:text="${success}"></div>
+    <div th:if="${error}" class="error" th:text="${error}"></div>
+
+    <form th:action="@{/do-login}" th:object="${loginForm}" method="post" autocomplete="on">
         <div class="form-group">
             <label for="email">Email</label>
-            <input type="text" th:field="*{email}" id="email" placeholder="Enter your email" required />
+            <input type="email" th:field="*{email}" id="email" placeholder="Enter your email" required autocomplete="email" />
             <div th:if="${#fields.hasErrors('email')}" class="field-error" th:errors="*{email}"></div>
         </div>
+
         <div class="form-group">
             <label for="password">Password</label>
-            <input type="password" th:field="*{password}" id="password" placeholder="Enter your password" required />
+            <div class="password-field">
+                <input type="password" th:field="*{password}" id="password" placeholder="Enter your password" required autocomplete="current-password" />
+                <button type="button" class="toggle-password" aria-label="Show password"
+                        data-eye="/images/eye.png" data-eye-slash="/images/eye_2.png">
+                    <img th:src="@{/images/eye.png}" src="/images/eye.png" alt="Show password" style="width:18px;height:18px;object-fit:contain;" />
+                </button>
+            </div>
             <div th:if="${#fields.hasErrors('password')}" class="field-error" th:errors="*{password}"></div>
         </div>
+
+        <div class="form-row">
+            <label class="checkbox">
+                <input type="checkbox" name="remember-me" id="remember-me" />
+                <span>Remember me</span>
+            </label>
+            <a href="/forgot-password" class="forgot">Forgot password</a>
+        </div>
+
         <button type="submit" class="btn">Login</button>
+
+        <div class="divider"><span>Or sign in with</span></div>
+
+        <div class="social-buttons">
+            <a class="btn-social google" href="/oauth2/authorization/google">
+                <img th:src="@{/images/google_icon.svg}" src="/images/google_icon.svg" alt="Google" class="icon" />
+                <span>Google</span>
+            </a>
+        </div>
+
+        <p class="bottom-link">Don't have an account? <a href="/register">Request Now</a></p>
     </form>
-    <a href="/register" class="link">Don't have an account? Register</a>
 </div>
+
+<script>
+    (function() {
+        const toggle = document.querySelector('.toggle-password');
+        if (!toggle) return;
+        const input = document.getElementById('password');
+        const img = toggle.querySelector('img');
+        const eye = toggle.getAttribute('data-eye');
+        const eyeSlash = toggle.getAttribute('data-eye-slash'); // second variant (eye_2.png) if desired
+
+        toggle.addEventListener('click', function() {
+            const showing = input.getAttribute('type') === 'text';
+            input.setAttribute('type', showing ? 'password' : 'text');
+            toggle.setAttribute('aria-label', showing ? 'Show password' : 'Hide password');
+            if (eyeSlash && img) {
+                img.src = showing ? eye : eyeSlash; // when switching to text (showing password) use eyeSlash image
+            }
+        });
+    })();
+</script>
 </body>
 </html>

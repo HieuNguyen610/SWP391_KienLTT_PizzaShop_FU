@@ -14,49 +14,9 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
-@Service
-@RequiredArgsConstructor
-public class UserService {
+public interface UserService {
 
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private RoleRepository roleRepository;
-
-    public User registerUser(RegisterForm registerForm) {
-        if (userRepository.findByEmail(registerForm.getEmail()) != null) {
-            throw new IllegalArgumentException("Email is already registered");
-        }
-
-        String hashedPassword = passwordEncoder.encode(registerForm.getPassword());
-
-        User user = new User();
-        user.setFirstname(registerForm.getFirstname());
-        user.setLastname(registerForm.getLastname());
-        user.setEmail(registerForm.getEmail());
-        user.setPassword(hashedPassword);
-        user.setPhone(registerForm.getPhone());
-        user.setStatus("ACTIVE");
-        user.setProvider(null);
-        user.setProviderId(null);
-        user.setVerificationToken(null);
-        user.setVerificationExpiresAt(null);
-        user.setCreatedAt(LocalDateTime.now());
-        user.setUpdatedAt(LocalDateTime.now());
-        Role customerRole = roleRepository.findByName("Customer");
-        if (customerRole != null) {
-            Set<Role> roles = new HashSet<>();
-            roles.add(customerRole);
-            user.setRoles(roles);
-
-        }
-        User savedUser = userRepository.save(user);
-
-
-        return savedUser;
-    }
+    User findByEmail(String email);
+    User registerUser(RegisterForm registerForm);
+    User updateUser(User user);
 }

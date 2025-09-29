@@ -30,10 +30,19 @@ public class CustomUserDetailsService implements UserDetailsService {
         List<GrantedAuthority> authorities = user.getRoles().stream()
                 .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getName()))
                 .collect(Collectors.toList());
-        return new org.springframework.security.core.userdetails.User(
-                user.getEmail(),
-                user.getPassword(),
-                authorities
-        );
+
+        boolean enabled = user.getStatus() != null && "ACTIVE".equalsIgnoreCase(user.getStatus());
+        if (!enabled || Boolean.TRUE.equals(user.getIsDeleted())) {
+            throw new UsernameNotFoundException("User is inactive or deleted: " + email);
+        }
+        return org.springframework.security.core.userdetails.User.builder()
+                .username(user.getEmail())
+                .password(user.getPassword())
+                .authorities(authorities)
+                .disabled(!enabled)
+                .accountLocked(false)
+                .accountExpired(false)
+                .credentialsExpired(false)
+                .build();
     }
 }
