@@ -26,6 +26,7 @@ public class UserService {
 
     @Autowired
     private RoleRepository roleRepository;
+
     public User registerUser(RegisterForm registerForm) {
         if (userRepository.findByEmail(registerForm.getEmail()) != null) {
             throw new IllegalArgumentException("Email is already registered");
@@ -46,7 +47,7 @@ public class UserService {
         user.setVerificationExpiresAt(null);
         user.setCreatedAt(LocalDateTime.now());
         user.setUpdatedAt(LocalDateTime.now());
-        Role customerRole = roleRepository.findByName("CUSTOMER");
+        Role customerRole = roleRepository.findByName("Customer");
         if (customerRole != null) {
             Set<Role> roles = new HashSet<>();
             roles.add(customerRole);

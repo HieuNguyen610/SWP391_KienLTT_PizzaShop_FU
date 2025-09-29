@@ -14,8 +14,7 @@ public class HomeController {
 
     @GetMapping("/")
     public String home(Model model) {
-        // Lấy toàn bộ sản phẩm từ database và đưa vào model để view có thể sử dụng
         model.addAttribute("pizzas", foodRepository.findAll());
-        return "index"; // Trả về file templates/index.html
+        return "index";
     }
 }

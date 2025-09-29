@@ -4,39 +4,45 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 
 @Configuration
+@EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/login", "/register", "/do-register", "/verify", "/do-login",
                                 "/css/**", "/js/**", "/images/**", "/webfonts/**", "/favicon.ico",
-                                "/fonts/**"
+                                "/fonts/**", "/edit-profile"
                         ).permitAll()
-
+                        .requestMatchers("/admin/**").hasRole("Admin")
+                        .requestMatchers("/user/**").hasRole("Customer")
+                        .requestMatchers("/chef/**").hasRole("Chef")
+                        .requestMatchers("/manager/**").hasRole("Manager")
                         .anyRequest().authenticated()
                 )
-            // Disable Spring Security's built-in form login to let our controller handle POST /do-login
-            .formLogin(form -> form.disable())
-            .logout(logout -> logout
-                .logoutUrl("/logout")
-                .logoutSuccessUrl("/login?logout")
-                .invalidateHttpSession(true) // Invalidate HTTP session
-                .clearAuthentication(true)    // Clear authentication
-                .deleteCookies("JSESSIONID")  // Delete JSESSIONID cookie
-                .permitAll()
-            )
-            .csrf(csrf -> csrf
-                // Allow API requests and custom login/register endpoints without CSRF token
-                .ignoringRequestMatchers("/api/**", "/do-login", "/register", "/do-register")
-            );
+
+                .formLogin(form -> form.disable())
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/login?logout")
+                        .invalidateHttpSession(true)
+                        .clearAuthentication(true)
+                        .deleteCookies("JSESSIONID")
+                        .permitAll()
+                )
+                .csrf(csrf -> csrf
+                        .ignoringRequestMatchers("/api/**", "/do-login", "/register", "/do-register")
+                );
 
         return http.build();
     }

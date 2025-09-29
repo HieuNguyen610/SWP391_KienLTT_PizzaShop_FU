@@ -30,10 +30,6 @@ public class Role extends BaseEntity {
     @Column(name = "name", nullable = false, length = 50)
     private String name;
 
-
-    @ManyToMany
-    @JoinTable(name = "user_roles",
-            joinColumns = @JoinColumn(name = "role_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id"))
+    @ManyToMany(mappedBy = "roles")
     private Set<User> users = new LinkedHashSet<>();
 }

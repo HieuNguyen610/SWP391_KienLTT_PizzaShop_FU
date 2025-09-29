@@ -27,7 +27,6 @@ public class AuthenticationController {
 
     private final AuthenticationManager authenticationManager;
 
-
     @Autowired
     private UserService userService;
 
