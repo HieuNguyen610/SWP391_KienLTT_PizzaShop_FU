@@ -1,13 +1,16 @@
 package com.swp.pizzashop.controller;
 
+import com.swp.pizzashop.form.EditProfileForm;
 import com.swp.pizzashop.model.User;
 import com.swp.pizzashop.service.impl.UserServiceImpl;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -37,22 +40,39 @@ public class ProfileController {
 
     @GetMapping("/profile/edit")
     public String editProfile(@ModelAttribute("currentUser") User currentUser, Model model) {
-        log.debug("GET /profile/edit for user={}", currentUser != null ? currentUser.getEmail() : null);
+        if (currentUser == null) {
+            return "redirect:/login";
+        }
 
-        model.addAttribute("user", currentUser);
+        EditProfileForm form = new EditProfileForm();
+        form.setFirstName(currentUser.getFirstname());
+        form.setLastName(currentUser.getLastname());
+        form.setPhone(currentUser.getPhone());
+        form.setEmail(currentUser.getEmail());
+
+        model.addAttribute("editProfileForm", form);
         return "dashboard_info_edit";
     }
 
     @PostMapping("/profile/edit")
-    public String updateProfile(@ModelAttribute("user") User userForm, Principal principal) {
+    public String updateProfile(@Valid @ModelAttribute("editProfileForm") EditProfileForm form,
+                                BindingResult result,
+                                Principal principal,
+                                Model model) {
+        if (result.hasErrors()) {
+            log.warn("Validation errors: {}", result.getAllErrors());
+            return "dashboard_info_edit";
+        }
+
         String email = principal.getName();
         User user = userServiceImpl.findByEmail(email);
 
-        user.setFirstname(userForm.getFirstname());
-        user.setLastname(userForm.getLastname());
-        user.setPhone(userForm.getPhone());
+        user.setFirstname(form.getFirstName());
+        user.setLastname(form.getLastName());
+        user.setPhone(form.getPhone());
 
         userServiceImpl.updateUser(user);
+
         return "redirect:/profile?success";
     }
 }
