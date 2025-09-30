@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.NoHandlerFoundException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.Instant;
@@ -54,6 +55,23 @@ public class GlobalExceptionHandler {
                 "errorMessage", "The page you are looking for does not exist.",
                 "timestamp", Instant.now().toString(),
                 "path", request != null ? request.getRequestURI() : null
+            );
+        }
+        ModelAndView mav = new ModelAndView("error/404");
+        mav.setStatus(HttpStatus.NOT_FOUND);
+        mav.addObject("message", "The page you are looking for does not exist.");
+        return mav;
+    }
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    public Object resourceNotFound(NoResourceFoundException ex, HttpServletRequest request) {
+        if (isApiRequest(request)) {
+            return Map.of(
+                    "errorTitle", "404 Not Found",
+                    "errorCode", 404,
+                    "errorMessage", "The page you are looking for does not exist.",
+                    "timestamp", Instant.now().toString(),
+                    "path", request != null ? request.getRequestURI() : null
             );
         }
         ModelAndView mav = new ModelAndView("error/404");
