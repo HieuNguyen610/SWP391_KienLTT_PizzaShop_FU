@@ -70,12 +70,6 @@ public class User extends BaseEntity {
     @Column(name = "verification_expires_at")
     private LocalDateTime verificationExpiresAt;
 
-    @Column(name = "reset_password_token")
-    private String resetPasswordToken;
-
-    @Column(name = "reset_password_expires_at")
-    private LocalDateTime resetPasswordExpiresAt;
-
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_roles",
