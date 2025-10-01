@@ -45,6 +45,7 @@ input[type="email"] {
   padding: 10px 12px;
   border: 1px solid #ccc;
   border-radius: 4px;
+  box-sizing: border-box; /* ensure padding does not increase total width */
 }
 
 .password-field {
@@ -61,6 +62,12 @@ input[type="email"] {
   cursor: pointer;
   color: #666;
   padding: 4px;
+}
+
+/* Ensure room for the eye toggle so text doesn't go under the button */
+.password-field input[type="password"],
+.password-field input[type="text"] {
+  padding-right: 36px; /* reduced from 44px to avoid perceived extra length */
 }
 
 .form-row {
