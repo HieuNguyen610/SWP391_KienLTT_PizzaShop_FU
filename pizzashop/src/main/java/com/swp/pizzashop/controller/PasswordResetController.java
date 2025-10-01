@@ -47,15 +47,19 @@ public class PasswordResetController {
             return "forgot-password";
         }
         String email = form.getEmail();
-        userService.initiatePasswordReset(email).ifPresent(token -> {
-            String link = buildAbsoluteLink(request, "/reset-password?token=" + token);
-            log.debug("Generated password reset link for {} -> {}", email, link);
-            // We only send email if user existed; if not present we still display success message
-            var user = userService.findByEmail(email);
-            if (user != null) {
-                emailService.sendPasswordResetEmail(user, link);
-            }
-        });
+        var tokenOpt = userService.initiatePasswordReset(email);
+        if (tokenOpt.isEmpty()) {
+            // Email not found: show explicit error per new requirement (MSG17)
+            model.addAttribute("error", messageService.get(SystemMessageCode.MSG17, email));
+            return "forgot-password";
+        }
+        String token = tokenOpt.get();
+        String link = buildAbsoluteLink(request, "/reset-password?token=" + token);
+        log.debug("Generated password reset link for {} -> {}", email, link);
+        var user = userService.findByEmail(email);
+        if (user != null) {
+            emailService.sendPasswordResetEmail(user, link);
+        }
         model.addAttribute("success", messageService.get(SystemMessageCode.MSG11, email));
         model.addAttribute("passwordResetRequestForm", new PasswordResetRequestForm());
         return "forgot-password";

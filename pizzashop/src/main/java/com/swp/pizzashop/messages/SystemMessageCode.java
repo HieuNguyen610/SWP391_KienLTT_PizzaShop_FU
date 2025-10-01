@@ -19,7 +19,8 @@ public enum SystemMessageCode {
     MSG13, // Reset link invalid/expired
     MSG14, // Logged out successfully
     MSG15, // Account inactive or deleted
-    MSG16; // Passwords do not match
+    MSG16, // Passwords do not match
+    MSG17; // Email not found for password reset
 
     public String code() { return name(); }
 }
