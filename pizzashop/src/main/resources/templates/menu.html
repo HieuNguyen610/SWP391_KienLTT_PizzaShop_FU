@@ -19,20 +19,15 @@
 <main>
     <h2>Menu Pizza</h2>
     <div class="menu-list">
-        <div class="pizza">
-            <h3>Pizza Margherita</h3>
-            <p>Giá: 100.000 VND</p>
-            <a class="btn" href="/cart">Thêm vào giỏ</a>
-        </div>
-        <div class="pizza">
-            <h3>Pizza Pepperoni</h3>
-            <p>Giá: 120.000 VND</p>
-            <a class="btn" href="/cart">Thêm vào giỏ</a>
-        </div>
-        <div class="pizza">
-            <h3>Pizza Hải Sản</h3>
-            <p>Giá: 150.000 VND</p>
-            <a class="btn" href="/cart">Thêm vào giỏ</a>
+        <!-- Lặp qua danh sách pizza từ DB -->
+        <div class="pizza" th:each="pizza : ${pizzas}">
+            <h3 th:text="${pizza.name}">Tên pizza</h3>
+            <p th:text="'Giá: ' + ${pizza.basePrice} + ' VND'">Giá pizza</p>
+
+            <!-- Form thêm pizza vào giỏ -->
+            <form th:action="@{/cart/add/{id}(id=${pizza.id})}" method="post">
+                <button type="submit" class="btn">Thêm vào giỏ</button>
+            </form>
         </div>
     </div>
 </main>

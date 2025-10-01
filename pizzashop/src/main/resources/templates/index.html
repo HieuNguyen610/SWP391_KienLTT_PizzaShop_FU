@@ -8,43 +8,42 @@
 </head>
 <body>
 
+<!-- Header -->
 <div th:replace="~{fragments/header :: page_header}"></div>
-
 
 <main>
     <section class="pizza-menu">
-        <nav class="sub-category-nav">
-            <ul>
-                <li><a href="#" class="active">premium seafood</a></li>
-                <li><a href="#">special formula</a></li>
-                <li><a href="#">premium food</a></li>
-                <li><a href="#">traditional</a></li>
-                <li><a href="#">vegetarian pizza</a></li>
-            </ul>
-        </nav>
+        <h2>Danh sách Pizza</h2>
 
-        <div class="product-grid">
+        <!-- Nếu có pizza -->
+        <div class="product-grid" th:if="${!#lists.isEmpty(pizzas)}">
             <div class="product-card" th:each="pizza : ${pizzas}">
                 <img class="product-image"
-                     th:src="${pizza.imageUrl == null ? '/images/product_img_1.jpg' : ((#strings.startsWith(pizza.imageUrl,'http') or #strings.startsWith(pizza.imageUrl,'/images/') or #strings.startsWith(pizza.imageUrl,'images/')) ? pizza.imageUrl : '/images/' + pizza.imageUrl)}"
-                     alt="Pizza Image" />
-                <h3 class="product-name" th:text="${pizza.name}">Seafood Pizza Cocktail</h3>
-                <p class="product-description" th:text="${pizza.description}">Shrimp, crab, ham and Thousand Island dressing.</p>
-                <p class="product-price">Price from only</p>
-                <p class="product-price-value" th:text="${#numbers.formatDecimal(pizza.basePrice, 0, 'COMMA', 0, 'POINT')} + 'đ'">154,000đ</p>
-                <button class="buy-now-btn">mua ngay -></button>
-            </div>
+                     th:src="${pizza.imageUrl == null ? '/images/product_img_1.jpg' : pizza.imageUrl}"
+                     alt="Pizza Image"/>
 
-            <div th:if="${pizzas.isEmpty()}">
-                <p>Hiện chưa có pizza nào trong menu. Vui lòng quay lại sau.</p>
+                <h3 class="product-name" th:text="${pizza.name}">Pizza Name</h3>
+                <p class="product-description" th:text="${pizza.description}">Mô tả pizza</p>
+                <p class="product-price">Giá:
+                    <span th:text="${#numbers.formatDecimal(pizza.basePrice, 0, 'COMMA', 0, 'POINT')}"></span> đ
+                </p>
+
+                <!-- Form thêm vào giỏ -->
+                <form th:action="@{/cart/add/{id}(id=${pizza.id})}" method="post">
+                    <button type="submit" class="buy-now-btn">🛒 Mua ngay</button>
+                </form>
             </div>
+        </div>
+
+        <!-- Nếu chưa có pizza -->
+        <div th:if="${#lists.isEmpty(pizzas)}">
+            <p>Hiện chưa có pizza nào trong menu. Vui lòng quay lại sau.</p>
         </div>
     </section>
 </main>
 
-
+<!-- Footer -->
 <div th:replace="~{fragments/header :: page_footer}"></div>
-
 
 </body>
 </html>
