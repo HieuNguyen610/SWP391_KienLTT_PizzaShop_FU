@@ -9,8 +9,10 @@ import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.Optional;
+import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,6 +52,17 @@ public class UserServiceImpl implements UserService {
         return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
     }
 
+    private String generateUniqueToken() {
+        for (int attempts = 0; attempts < 5; attempts++) {
+            String token = generateToken();
+            if (!passwordResetTokenRepository.existsByToken(token)) {
+                return token;
+            }
+            log.warn("Password reset token collision detected (attempt {})", attempts + 1);
+        }
+        throw new IllegalStateException("Unable to generate unique password reset token after 5 attempts");
+    }
+
     @Override
     @Transactional
     public Optional<String> initiatePasswordReset(String email) {
@@ -59,16 +72,20 @@ public class UserServiceImpl implements UserService {
             return Optional.empty();
         }
         // Invalidate existing tokens for this user (optional cleanup policy)
-        passwordResetTokenRepository.deleteByUserId(user.getId());
+        try {
+            passwordResetTokenRepository.deleteByUserId(user.getId());
+        } catch (Exception e) {
+            log.warn("Failed to delete existing password reset tokens for user {}: {}", user.getEmail(), e.getMessage());
+        }
 
-        String rawToken = generateToken();
+        String rawToken = generateUniqueToken();
         PasswordResetToken tokenEntity = PasswordResetToken.builder()
                 .user(user)
                 .token(rawToken)
                 .expiresAt(LocalDateTime.now().plusMinutes(EXPIRY_MINUTES))
                 .used(false)
                 .build();
-        passwordResetTokenRepository.save(tokenEntity);
+        passwordResetTokenRepository.saveAndFlush(tokenEntity);
         log.info("Generated password reset token id={} for {} expiring at {}", tokenEntity.getId(), email, tokenEntity.getExpiresAt());
         return Optional.of(rawToken);
     }
@@ -87,11 +104,24 @@ public class UserServiceImpl implements UserService {
             return false;
         }
         User user = prt.getUser();
-        user.setPassword(passwordEncoder.encode(newPassword));
-        userRepository.save(user);
-        prt.setUsed(true);
-        passwordResetTokenRepository.save(prt);
-        // Optionally delete other tokens for user
-        return true;
+        try {
+            user.setPassword(passwordEncoder.encode(newPassword));
+            userRepository.save(user);
+            prt.setUsed(true);
+            passwordResetTokenRepository.save(prt);
+            log.info("Password reset successful for user {} (token id={})", user.getEmail(), prt.getId());
+            return true;
+        } catch (DataIntegrityViolationException e) {
+            log.error("Data integrity violation while resetting password for user {} token id={}: {}", user.getEmail(), prt.getId(), e.getMessage(), e);
+            return false;
+        } catch (ConstraintViolationException e) {
+            e.getConstraintViolations().forEach(v ->
+                    log.error("Constraint violation resetting password: {} {} -> {}", v.getPropertyPath(), v.getInvalidValue(), v.getMessage())
+            );
+            return false;
+        } catch (Exception e) {
+            log.error("Unexpected error during password reset for user {} token id={}", user.getEmail(), prt.getId(), e);
+            throw e;
+        }
     }
 }
