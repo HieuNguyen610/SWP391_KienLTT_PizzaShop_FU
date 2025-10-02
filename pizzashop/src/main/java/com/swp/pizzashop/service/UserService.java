@@ -12,4 +12,6 @@ public interface UserService {
     Optional<String> initiatePasswordReset(String email);
     // Resets password if token valid; marks token used.
     boolean resetPassword(String token, String newPassword);
+    // Change password for an authenticated user; validates old password, strength, and difference.
+    ChangePasswordResult changePassword(User user, String oldPassword, String newPassword);
 }
