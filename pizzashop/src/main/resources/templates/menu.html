@@ -1,39 +1,17 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Menu - Pizza Shop</title>
-    <link rel="stylesheet" href="/css/style.css">
+    <title th:text="${title}">Pizza Shop - Menu</title>
 </head>
 <body>
-<header>
-    <h1>🍕 Pizza Shop</h1>
-    <nav>
-        <a href="/">Trang chủ</a>
-        <a href="/menu">Menu</a>
-        <a href="/cart">Giỏ hàng</a>
-        <a href="/contact">Liên hệ</a>
-    </nav>
-</header>
+<div th:replace="fragments/layout :: page_header"></div>
 
-<main>
-    <h2>Menu Pizza</h2>
-    <div class="menu-list">
-        <!-- Lặp qua danh sách pizza từ DB -->
-        <div class="pizza" th:each="pizza : ${pizzas}">
-            <h3 th:text="${pizza.name}">Tên pizza</h3>
-            <p th:text="'Giá: ' + ${pizza.basePrice} + ' VND'">Giá pizza</p>
-
-            <!-- Form thêm pizza vào giỏ -->
-            <form th:action="@{/cart/add/{id}(id=${pizza.id})}" method="post">
-                <button type="submit" class="btn">Thêm vào giỏ</button>
-            </form>
-        </div>
-    </div>
+<main style="padding:20px;">
+    <h2>Pizza Menu</h2>
+    <p>Danh sách pizza sẽ hiển thị ở đây.</p>
 </main>
 
-<footer>
-    <p>© 2025 Pizza Shop. All rights reserved.</p>
-</footer>
+<div th:replace="fragments/layout :: page_footer"></div>
 </body>
 </html>

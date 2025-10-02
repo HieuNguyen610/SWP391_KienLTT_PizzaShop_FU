@@ -1,74 +1,16 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Giỏ hàng - Pizza Shop</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Cart - Pizza Shop</title>
+    <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
+<div th:replace="fragments/header :: *"></div>
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <div class="container">
-        <a class="navbar-brand" href="/">🍕 Pizza Shop</a>
-        <div class="collapse navbar-collapse">
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li>
-                <li class="nav-item"><a class="nav-link active" href="/cart/view">Giỏ hàng</a></li>
-            </ul>
-        </div>
-    </div>
-</nav>
+<h2>Your Cart</h2>
+<p>Cart feature coming soon...</p>
 
-<div class="container my-5">
-    <h2 class="mb-4 text-center">Giỏ hàng của bạn</h2>
-
-    <div th:if="${#lists.isEmpty(cartItems)}">
-        <p class="text-center">Giỏ hàng đang trống.</p>
-    </div>
-
-    <div th:if="${!#lists.isEmpty(cartItems)}">
-        <table class="table table-striped align-middle">
-            <thead>
-            <tr>
-                <th>Hình ảnh</th>
-                <th>Tên</th>
-                <th>Số lượng</th>
-                <th>Giá</th>
-                <th>Thành tiền</th>
-                <th>Hành động</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="item : ${cartItems}">
-                <td><img th:src="${item.food.imageUrl == null ? '/images/default_pizza.jpg' : item.food.imageUrl}"
-                         class="img-thumbnail" style="width:80px;"></td>
-                <td th:text="${item.food.name}">Tên Pizza</td>
-                <td th:text="${item.quantity}">1</td>
-                <td th:text="${#numbers.formatDecimal(item.food.price, 0, 'COMMA', 0, 'POINT')} + ' VND'">100,000 VND</td>
-                <td th:text="${#numbers.formatDecimal(item.totalPrice, 0, 'COMMA', 0, 'POINT')} + ' VND'">100,000 VND</td>
-                <td>
-                    <form th:action="@{/cart/remove}" method="post">
-                        <input type="hidden" name="foodId" th:value="${item.food.id}" />
-                        <button class="btn btn-danger btn-sm">Xóa</button>
-                    </form>
-                </td>
-            </tr>
-            </tbody>
-        </table>
-
-        <div class="d-flex justify-content-between align-items-center mt-4">
-            <h4>Tổng: <span th:text="${#numbers.formatDecimal(totalPrice, 0, 'COMMA', 0, 'POINT')} + ' VND'">0 VND</span></h4>
-            <div>
-                <form th:action="@{/cart/clear}" method="post" class="d-inline">
-                    <button class="btn btn-warning">Xóa tất cả</button>
-                </form>
-                <a href="/checkout" class="btn btn-success ms-2">Thanh toán</a>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<div th:replace="fragments/footer :: *"></div>
 </body>
 </html>
