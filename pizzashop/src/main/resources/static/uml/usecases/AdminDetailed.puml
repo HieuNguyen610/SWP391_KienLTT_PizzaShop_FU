@@ -1,0 +1,130 @@
+@startuml
+' Detailed Admin Use Case Diagram for Pizza Shop System
+' Contains optional / extended behaviors and external service actors.
+' Simplified version in Admin.puml
+
+left to right direction
+skinparam actorStyle awesome
+skinparam usecase {
+  BackgroundColor #F8F8F8
+  BorderColor #6A6A6A
+  ArrowColor #444444
+  FontSize 12
+}
+
+actor Admin as A
+actor "Payment Gateway" as PG
+actor "Analytics Service" as AN
+actor "Supplier System" as SUP
+actor "Email/SMS Service" as ES
+
+rectangle "Pizza Shop System" {
+  ' High-level admin capabilities
+  usecase "Manage Menu" as UC_Menu
+  usecase "Manage Orders" as UC_Orders
+  usecase "Manage Users" as UC_Users
+  usecase "Manage Coupons / Promotions" as UC_Coupons
+  usecase "Manage Inventory" as UC_Inventory
+  usecase "View Reports & Dashboards" as UC_Reports
+  usecase "Moderate Reviews" as UC_Reviews
+  usecase "Configure System Settings" as UC_Settings
+  usecase "Manage Site Content / Banners" as UC_Content
+  usecase "Audit & Logs" as UC_Audit
+  usecase "Security / Role Assignment" as UC_Roles
+  usecase "Issue Refund" as UC_Refund
+  usecase "Send Announcement" as UC_Announce
+  usecase "Export Data" as UC_Export
+  usecase "Logout" as UC_Logout
+
+  ' Decomposed / internal supporting use cases
+  usecase "Create / Update Pizza Item" as UC_PizzaItem
+  usecase "Manage Categories" as UC_Categories
+  usecase "Manage Toppings" as UC_Toppings
+  usecase "Update Order Status" as UC_OrderStatus
+  usecase "Disable / Lock Account" as UC_DisableAccount
+  usecase "Assign Roles" as UC_AssignRoles
+  usecase "Adjust Stock Levels" as UC_AdjustStock
+  usecase "Record Stock Replenishment" as UC_Replenish
+  usecase "Generate Sales Report" as UC_SalesRpt
+  usecase "Generate Inventory Report" as UC_InvRpt
+  usecase "Generate User Activity Report" as UC_UserRpt
+  usecase "Archive Logs" as UC_ArchiveLogs
+  usecase "Configure Email Templates" as UC_EmailTpl
+}
+
+' Direct high-level interactions
+A --> UC_Menu
+A --> UC_Orders
+A --> UC_Users
+A --> UC_Coupons
+A --> UC_Inventory
+A --> UC_Reports
+A --> UC_Reviews
+A --> UC_Settings
+A --> UC_Content
+A --> UC_Audit
+A --> UC_Roles
+A --> UC_Refund
+A --> UC_Announce
+A --> UC_Export
+A --> UC_Logout
+
+' Menu management decomposition
+UC_Menu .> UC_PizzaItem : <<include>>
+UC_Menu .> UC_Categories : <<include>>
+UC_Menu .> UC_Toppings : <<include>>
+
+' Orders management decomposition
+UC_Orders .> UC_OrderStatus : <<include>>
+UC_Orders .> UC_Refund : <<extend>>\n(if payment reversal)
+
+' Users management decomposition
+UC_Users .> UC_DisableAccount : <<include>>
+UC_Users .> UC_AssignRoles : <<include>>
+UC_Roles .> UC_AssignRoles : <<include>>
+
+' Inventory management decomposition
+UC_Inventory .> UC_AdjustStock : <<include>>
+UC_Inventory .> UC_Replenish : <<include>>
+UC_Replenish .> SUP : <<include>>\n(update delivery)
+
+' Reporting decomposition
+UC_Reports .> UC_SalesRpt : <<include>>
+UC_Reports .> UC_InvRpt : <<include>>
+UC_Reports .> UC_UserRpt : <<include>>
+UC_Reports .> AN : <<include>>\n(fetch metrics)
+
+' Audit & logs
+UC_Audit .> UC_ArchiveLogs : <<extend>>\n(scheduled)
+
+' Settings
+UC_Settings .> UC_EmailTpl : <<extend>>
+UC_Announce .> ES : <<include>>\n(send broadcast)
+UC_Refund .> PG : <<include>>\n(process refund)
+UC_EmailTpl .> ES : <<include>>
+
+' Data export may use reports internally
+UC_Export .> UC_Reports : <<include>>
+
+' Review moderation
+UC_Reviews .> UC_DisableAccount : <<extend>>\n(abusive user)
+
+' Notes summarizing rationale
+note right of UC_Reports
+Reports aggregate sales, inventory, and user activity.
+Analytics service supplies time-series KPIs.
+end note
+
+note bottom of UC_Refund
+Refund only possible after payment capture.
+Triggers gateway reversal + stock adjustment (if needed).
+end note
+
+note as Legend
+LEGEND:
+<<include>> Mandatory sub-flow
+<<extend>>  Conditional / optional flow
+end note
+Legend -[dotted]-> UC_Menu
+
+@enduml

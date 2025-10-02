@@ -1,27 +1,51 @@
 @startuml
-'https://plantuml.com/class-diagram
+' Simplified Customer Use Case Diagram (Core Flows)
+' Detailed version retained in CustomerDetailed.puml
 
-abstract class AbstractList
-abstract AbstractCollection
-interface List
-interface Collection
-
-List <|-- AbstractList
-Collection <|-- AbstractCollection
-
-Collection <|- List
-AbstractCollection <|- AbstractList
-AbstractList <|-- ArrayList
-
-class ArrayList {
-Object[] elementData
-size()
+left to right direction
+skinparam actorStyle stickman
+skinparam usecase {
+  BackgroundColor #FFFFFF
+  BorderColor #888888
+  ArrowColor #555555
+  FontSize 12
 }
 
-enum TimeUnit {
-DAYS
-HOURS
-MINUTES
+actor Customer as C
+
+rectangle "Pizza Shop System" {
+  usecase "Register" as UC_Register
+  usecase "Login" as UC_Login
+  usecase "Browse / Search Menu" as UC_Browse
+  usecase "Add to Cart" as UC_AddCart
+  usecase "View / Update Cart" as UC_ViewCart
+  usecase "Checkout" as UC_Checkout
+  usecase "Track Order" as UC_Track
+  usecase "Order History" as UC_History
+  usecase "Profile Management" as UC_Profile
+  usecase "Password Reset" as UC_Reset
+  usecase "Review Order" as UC_Review
+  usecase "Logout" as UC_Logout
 }
+
+' Direct interactions only
+C --> UC_Register
+C --> UC_Login
+C --> UC_Browse
+C --> UC_AddCart
+C --> UC_ViewCart
+C --> UC_Checkout
+C --> UC_Track
+C --> UC_History
+C --> UC_Profile
+C --> UC_Reset
+C --> UC_Review
+C --> UC_Logout
+
+' Minimal key relationships (optional flows removed)
+UC_Checkout .> UC_Login : <<include>>
+UC_AddCart .> UC_ViewCart : <<include>>
+UC_Review .> UC_History : <<include>>
+
 
 @enduml

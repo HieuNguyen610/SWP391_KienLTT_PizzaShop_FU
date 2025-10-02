@@ -1,0 +1,50 @@
+@startuml
+' Simplified Admin Use Case Diagram (Core Admin Functions)
+' Detailed version with decomposed + external services: AdminDetailed.puml
+
+left to right direction
+skinparam actorStyle stickman
+skinparam usecase {
+  BackgroundColor #FFFFFF
+  BorderColor #888888
+  ArrowColor #555555
+  FontSize 12
+}
+
+actor Admin as A
+
+rectangle "Pizza Shop System" {
+  usecase "Manage Menu" as UC_Menu
+  usecase "Manage Orders" as UC_Orders
+  usecase "Manage Users" as UC_Users
+  usecase "Manage Inventory" as UC_Inventory
+  usecase "Manage Coupons" as UC_Coupons
+  usecase "View Reports" as UC_Reports
+  usecase "Moderate Reviews" as UC_Reviews
+  usecase "System Settings" as UC_Settings
+  usecase "Audit Logs" as UC_Audit
+  usecase "Send Announcement" as UC_Announce
+  usecase "Logout" as UC_Logout
+}
+
+A --> UC_Menu
+A --> UC_Orders
+A --> UC_Users
+A --> UC_Inventory
+A --> UC_Coupons
+A --> UC_Reports
+A --> UC_Reviews
+A --> UC_Settings
+A --> UC_Audit
+A --> UC_Announce
+A --> UC_Logout
+
+' Minimal essential relationships
+UC_Orders .> UC_Reports : <<include>>
+UC_Menu .> UC_Reports : <<include>>
+UC_Inventory .> UC_Reports : <<include>>
+UC_Users .> UC_Audit : <<include>>
+UC_Settings .> UC_Audit : <<include>>
+UC_Announce .> UC_Users : <<include>>
+
+@enduml

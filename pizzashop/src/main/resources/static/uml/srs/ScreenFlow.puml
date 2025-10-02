@@ -1,0 +1,97 @@
+@startuml
+' Screen Flow Diagram (Customer Journey)
+' Assumptions: Some template pages (cart, checkout, order tracking, register) exist or will be added.
+' Adjust state names to match actual controllers/templates if they differ.
+
+skinparam shadowing false
+skinparam state {
+  BackgroundColor #FFFFFF
+  BorderColor #888888
+  FontSize 12
+  ArrowColor #555555
+}
+skinparam ArrowThickness 1
+hide empty description
+
+[*] --> Home : Enter site /
+state Home {
+  [*] --> Landing
+  Landing : index.html
+}
+
+Home --> Login : Click "Login"
+Login : login.html
+Login --> ForgotPassword : "Forgot password?"
+ForgotPassword : forgot-password.html
+ForgotPassword --> ForgotPassword : Validation error
+ForgotPassword --> ResetLinkSent : Email found
+ForgotPassword --> ForgotPassword : Unknown email (error message)
+ResetLinkSent : (Confirmation message shown on same forgot-password page)
+ResetLinkSent --> EmailInbox : Out-of-band
+EmailInbox --> ResetPassword : Click token link
+ResetPassword : reset-password.html
+ResetPassword --> ResetPassword : Validation error / weak password
+ResetPassword --> Login : Success (redirect with ?reset)
+ResetPassword --> InvalidReset : Token invalid/expired
+InvalidReset : reset-password-invalid.html
+InvalidReset --> ForgotPassword : Request new token
+
+Login --> Login : Validation / auth error
+Login --> Home : Success (ROLE_USER)
+Login --> AdminDashboard : Success (ROLE_ADMIN)
+Login --> Register : "Create account"
+Register : register.html (assumed)
+Register --> Register : Validation error
+Register --> Login : Success
+
+Home --> BrowseMenu : View menu /category
+BrowseMenu : menu list (assumed menu.html)
+BrowseMenu --> ProductDetail : Select item
+ProductDetail : product detail (assumed product.html)
+ProductDetail --> ProductDetail : Customize (size/toppings)
+ProductDetail --> Cart : Add to cart
+
+state Cart {
+  [*] --> CartView
+  CartView : cart.html
+}
+Cart --> BrowseMenu : Continue shopping
+Cart --> Checkout : Proceed to checkout (if authenticated)
+Cart --> Login : Proceed to checkout (if guest) <<include>>
+
+Checkout : checkout.html
+Checkout --> Checkout : Validation error (address / payment)
+Checkout --> OrderConfirmation : Success
+OrderConfirmation : confirmation page
+OrderConfirmation --> OrderTracking : "Track order"
+OrderTracking : order-tracking.html (polling / push updates)
+OrderTracking --> Home : Finished
+
+Home --> Profile : View profile (authenticated)
+Profile : profile.html
+Profile --> Profile : Update validation error
+Profile --> Home : Back
+
+Home --> Reviews : View aggregated reviews (assumed)
+Reviews --> Home : Back
+
+' Global navigations
+Profile --> Logout : Click logout
+Logout : (Spring Security logout)
+Logout --> Login : Redirect
+Home --> Logout : Quick logout
+
+' Error pages (generic transitions)
+state "Error Pages" as ErrorPages {
+  400 : 400.html (Bad Request)
+  404 : 404.html (Not Found)
+  500 : 500.html (Server Error)
+}
+[*] --> ErrorPages : Unhandled route / error (fallback) #line:dotted
+
+' Alternate flows
+Checkout --> Cart : Modify cart
+OrderTracking --> OrderTracking : Auto refresh / status push
+ForgotPassword --> Home : User cancels
+
+@enduml
