@@ -1,0 +1,52 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+actor User
+participant "AuthenticationController" as AC
+participant "AuthenticationManager" as AM
+participant "UserDetailsService" as UDS
+participant "UserService" as US
+database "UserRepository" as UR
+participant "PasswordEncoder" as PE
+collections "SecurityContextHolder" as SCH
+participant "HttpSessionSecurityContextRepository" as HSSCR
+participant "ProfileController" as PC
+
+User -> AC: GET /login
+AC --> User: 200 login page (form)
+
+User -> AC: POST /do-login (email, password)
+AC -> AC: Validate LoginForm
+alt Validation errors
+  AC --> User: 200 login (show field errors)
+else Valid form
+  AC -> AM: authenticate(token)
+  AM -> UDS: loadUserByUsername(email)
+  UDS -> US: findByEmail(email)
+  US -> UR: findByEmail(email)
+  UR --> US: User
+  US --> UDS: User
+  UDS -> AM: UserDetails (roles, enabled flag)
+  AM -> PE: matches(raw, encoded)
+  PE --> AM: result
+  alt User disabled
+    AM --> AC: DisabledException
+    AC --> User: 200 login?error=disabled
+  else Bad credentials / not found
+    AM --> AC: AuthenticationException
+    AC --> User: 200 login?error
+  else Success
+    AM --> AC: Authentication (principal, authorities)
+    AC -> SCH: setContext(auth)
+    AC -> HSSCR: saveContext(context, req, resp)
+    AC --> User: 302 Redirect /profile
+    User -> PC: GET /profile
+    PC -> SCH: getAuthentication()
+    SCH --> PC: Authentication
+    PC --> User: 200 profile page
+  end
+end
+
+@enduml
