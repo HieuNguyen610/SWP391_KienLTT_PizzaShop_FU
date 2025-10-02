@@ -1,0 +1,275 @@
+@startuml
+' Database ER Diagram - PizzaShop (derived from 00-create-pizza-shop.sql)
+' Focus: tables, primary keys, foreign key relationships (crow's foot)
+
+hide circle
+skinparam linetype ortho
+skinparam packageStyle rectangle
+skinparam defaultTextAlignment left
+
+' ============ AUTH & USER DOMAIN ============
+entity users {
+  * id : BIGINT <<PK>>
+  --
+  email : VARCHAR(100) <<UQ>>
+  password : VARCHAR(255)
+  firstname : VARCHAR(50)
+  lastname  : VARCHAR(50)
+  status : VARCHAR(20)
+  provider / provider_id
+  verification_token
+  verification_expires_at
+  created_at / updated_at
+  is_deleted : BOOLEAN
+}
+
+entity roles {
+  * id : BIGINT <<PK>>
+  --
+  name : VARCHAR(50) <<UQ>>
+  is_deleted : BOOLEAN
+}
+
+entity user_roles {
+  * user_id : BIGINT <<PK,FK>>
+  * role_id : BIGINT <<PK,FK>>
+}
+
+entity addresses {
+  * id : BIGINT <<PK>>
+  --
+  user_id : BIGINT <<FK>>
+  address_line
+  city / district
+  phone
+  is_default : BOOLEAN
+  is_deleted : BOOLEAN
+}
+
+entity password_reset_tokens {
+  * id : BIGINT <<PK>>
+  --
+  user_id : BIGINT <<FK>>
+  token : VARCHAR(255)
+  expires_at : TIMESTAMP
+  used : BOOLEAN
+  created_at : TIMESTAMP
+}
+
+' ============ CATALOG / MENU ============
+entity food_categories {
+  * id : BIGINT <<PK>>
+  --
+  name : VARCHAR(50) <<UQ>>
+  description
+  is_deleted : BOOLEAN
+}
+
+entity foods {
+  * id : BIGINT <<PK>>
+  --
+  category_id : BIGINT <<FK>>
+  name : VARCHAR(100)
+  base_price : DECIMAL(10,2)
+  image_url
+  is_active : BOOLEAN
+  is_deleted : BOOLEAN
+}
+
+entity food_sizes {
+  * id : BIGINT <<PK>>
+  --
+  food_id : BIGINT <<FK>>
+  size : VARCHAR(10)
+  price : DECIMAL(10,2)
+  is_deleted : BOOLEAN
+}
+
+entity toppings {
+  * id : BIGINT <<PK>>
+  --
+  name : VARCHAR(100)
+  price : DECIMAL(10,2)
+  is_active : BOOLEAN
+  is_deleted : BOOLEAN
+}
+
+entity food_toppings_map {
+  * food_id : BIGINT <<PK,FK>>
+  * topping_id : BIGINT <<PK,FK>>
+}
+
+entity ingredients {
+  * id : BIGINT <<PK>>
+  --
+  name : VARCHAR(100)
+  unit : VARCHAR(20)
+  quantity_in_stock : DECIMAL(10,2)
+  min_stock : DECIMAL(10,2)
+  is_deleted : BOOLEAN
+}
+
+entity food_ingredients {
+  * food_id : BIGINT <<PK,FK>>
+  * ingredient_id : BIGINT <<PK,FK>>
+  amount : DECIMAL(10,2)
+}
+
+' ============ CART ============
+entity carts {
+  * id : BIGINT <<PK>>
+  --
+  user_id : BIGINT <<FK>>
+  is_deleted : BOOLEAN
+}
+
+entity cart_items {
+  * id : BIGINT <<PK>>
+  --
+  cart_id : BIGINT <<FK>>
+  food_id : BIGINT <<FK>>
+  size_id : BIGINT <<FK>>
+  quantity : INT
+  price : DECIMAL(10,2)
+  is_deleted : BOOLEAN
+}
+
+entity cart_item_toppings {
+  * cart_item_id : BIGINT <<PK,FK>>
+  * topping_id : BIGINT <<PK,FK>>
+  price : DECIMAL(10,2)
+}
+
+' ============ ORDERS & FULFILLMENT ============
+entity discounts {
+  * id : BIGINT <<PK>>
+  --
+  code : VARCHAR(50) <<UQ>>
+  discount_type : VARCHAR(20)
+  value : DECIMAL(10,2)
+  valid_from / valid_to
+  quantity : INT
+  is_active : BOOLEAN
+  is_deleted : BOOLEAN
+}
+
+entity orders {
+  * id : BIGINT <<PK>>
+  --
+  user_id : BIGINT <<FK>>
+  delivery_address_id : BIGINT <<FK>>
+  discount_id : BIGINT <<FK>>
+  status : VARCHAR(30)
+  total_price : DECIMAL(10,2)
+  payment_method : VARCHAR(30)
+  is_deleted : BOOLEAN
+}
+
+entity order_items {
+  * id : BIGINT <<PK>>
+  --
+  order_id : BIGINT <<FK>>
+  food_id : BIGINT <<FK>>
+  size_id : BIGINT <<FK>>
+  quantity : INT
+  price : DECIMAL(10,2)
+  is_deleted : BOOLEAN
+}
+
+entity order_item_toppings {
+  * order_item_id : BIGINT <<PK,FK>>
+  * topping_id : BIGINT <<PK,FK>>
+  price : DECIMAL(10,2)
+}
+
+entity order_status_history {
+  * id : BIGINT <<PK>>
+  --
+  order_id : BIGINT <<FK>>
+  status : VARCHAR(30)
+  note : VARCHAR(255)
+  is_deleted : BOOLEAN
+}
+
+entity payments {
+  * id : BIGINT <<PK>>
+  --
+  order_id : BIGINT <<FK>>
+  amount : DECIMAL(10,2)
+  payment_type : VARCHAR(30)
+  status : VARCHAR(30)
+  transaction_id : VARCHAR(100)
+  paid_at : TIMESTAMP
+  is_deleted : BOOLEAN
+}
+
+entity invoices {
+  * id : BIGINT <<PK>>
+  --
+  order_id : BIGINT <<FK>>
+  total : DECIMAL(10,2)
+  status : VARCHAR(30)
+  file_url : VARCHAR(255)
+  issued_at : TIMESTAMP
+  is_deleted : BOOLEAN
+}
+
+entity reviews {
+  * id : BIGINT <<PK>>
+  --
+  user_id : BIGINT <<FK>>
+  order_id : BIGINT <<FK>>
+  food_id : BIGINT <<FK>>
+  rating : INT
+  comment : VARCHAR(255)
+  is_deleted : BOOLEAN
+}
+
+' ============ RELATIONSHIPS ============
+' Auth
+users ||--o{ addresses : owns
+users ||--o{ user_roles : maps
+roles ||--o{ user_roles : maps
+users ||--o{ password_reset_tokens : tokens
+
+' Catalog
+food_categories ||--o{ foods : categorizes
+foods ||--o{ food_sizes : sizes
+foods ||--o{ food_toppings_map : default
+foods ||--o{ food_ingredients : recipe
+food_ingredients }o--|| ingredients : uses
+food_toppings_map }o--|| toppings : includes
+
+' Cart
+users ||--o{ carts : has
+carts ||--o{ cart_items : contains
+foods ||--o{ cart_items : item
+food_sizes ||--o{ cart_items : size
+cart_items ||--o{ cart_item_toppings : extra
+cart_item_toppings }o--|| toppings : topping
+
+' Orders
+users ||--o{ orders : places
+addresses ||--o{ orders : delivery
+discounts ||--o{ orders : applied
+orders ||--o{ order_items : lines
+foods ||--o{ order_items : product
+food_sizes ||--o{ order_items : size
+order_items ||--o{ order_item_toppings : extra
+order_item_toppings }o--|| toppings : topping
+orders ||--o{ order_status_history : status log
+orders ||--o{ payments : payments
+orders ||--o{ invoices : invoice
+users ||--o{ reviews : writes
+foods ||--o{ reviews : reviewed
+orders ||--o{ reviews : context
+
+legend left
+== Notation ==
+* PK   | FK indicates foreign key
+|| one | o{ many (crow's foot)
+Mapping tables shown with composite PKs
+Dashed attributes grouped where abbreviated
+endlegend
+
+@enduml
