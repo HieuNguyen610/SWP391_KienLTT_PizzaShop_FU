@@ -1,6 +1,7 @@
 package com.swp.pizzashop.config;
 
 import com.swp.pizzashop.service.UserService;
+import com.swp.pizzashop.messages.SystemMessageCode;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -15,14 +16,35 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.AuthenticationException;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @Configuration
 public class SecurityConfig {
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, UserDetailsService userDetailsService) throws Exception {
+    public AuthenticationFailureHandler authenticationFailureHandler() {
+        return (HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) -> {
+            String code;
+            if (exception instanceof DisabledException) {
+                code = SystemMessageCode.MSG15.name();
+            } else if (exception instanceof BadCredentialsException || exception instanceof UsernameNotFoundException) {
+                code = SystemMessageCode.MSG08.name();
+            } else {
+                code = SystemMessageCode.MSG08.name();
+            }
+            response.sendRedirect(request.getContextPath() + "/login?errorCode=" + code);
+        };
+    }
+
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, UserDetailsService userDetailsService, AuthenticationFailureHandler authenticationFailureHandler) throws Exception {
         http
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/", "/login", "/register", "/verify", "/do-login",
@@ -36,7 +58,7 @@ public class SecurityConfig {
                 .usernameParameter("email")
                 .passwordParameter("password")
                 .defaultSuccessUrl("/profile", true)
-                .failureUrl("/login?error")
+                .failureHandler(authenticationFailureHandler) // use custom handler
                 .permitAll()
             )
             .logout(logout -> logout
