@@ -5,6 +5,7 @@ import com.swp.pizzashop.model.User;
 import com.swp.pizzashop.repository.PasswordResetTokenRepository;
 import com.swp.pizzashop.repository.UserRepository;
 import com.swp.pizzashop.service.UserService;
+import com.swp.pizzashop.service.ChangePasswordResult;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Base64;
@@ -122,6 +123,33 @@ public class UserServiceImpl implements UserService {
         } catch (Exception e) {
             log.error("Unexpected error during password reset for user {} token id={}", user.getEmail(), prt.getId(), e);
             throw e;
+        }
+    }
+
+    @Override
+    @Transactional
+    public ChangePasswordResult changePassword(User user, String oldPassword, String newPassword) {
+        try {
+            if (user == null) return ChangePasswordResult.ERROR;
+            if (oldPassword == null || newPassword == null) return ChangePasswordResult.ERROR;
+            newPassword = newPassword.trim();
+            if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+                return ChangePasswordResult.OLD_PASSWORD_INVALID;
+            }
+            // If new password equals old (matches current hash)
+            if (passwordEncoder.matches(newPassword, user.getPassword())) {
+                return ChangePasswordResult.NEW_PASSWORD_SAME_AS_OLD;
+            }
+            if (newPassword.length() < 8) {
+                return ChangePasswordResult.WEAK_NEW_PASSWORD;
+            }
+            user.setPassword(passwordEncoder.encode(newPassword));
+            userRepository.save(user);
+            log.info("Changed password for user {}", user.getEmail());
+            return ChangePasswordResult.SUCCESS;
+        } catch (Exception e) {
+            log.error("Failed to change password for user {}: {}", user != null ? user.getEmail() : null, e.getMessage(), e);
+            return ChangePasswordResult.ERROR;
         }
     }
 }
