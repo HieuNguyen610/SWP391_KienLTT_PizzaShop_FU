@@ -24,7 +24,7 @@ public class ChangePasswordTest {
 
     // IMPORTANT: Adjust to a stable test account present in seed data
     private static final String TEST_EMAIL = "harrynguyen610@gmail.com";
-    private static final String ORIGINAL_PASSWORD = "123a123@A"; // current password before tests
+    private static final String ORIGINAL_PASSWORD = ""; // current password before tests
 
     // New passwords used during tests (ensure they meet policy)
     private static final String STRONG_NEW_PASSWORD = "NewPassw0rd!"; // >=8 chars
