@@ -21,4 +21,7 @@ public interface AddressRepository extends JpaRepository<Address, Long> {
     @Modifying
     @Query("update Address a set a.defaultAddress = false where a.user = :user and a.defaultAddress = true")
     int clearDefaultByUser(@Param("user") User user);
+
+    // Count active (non-deleted) addresses for a user
+    long countByUserAndIsDeletedFalse(User user);
 }

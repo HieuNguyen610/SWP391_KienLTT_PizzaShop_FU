@@ -23,7 +23,7 @@
             <div class="card">
                 <ul class="menu">
                     <li><a th:href="@{/profile}" href="/profile">Customer information</a></li>
-                    <li><a class="active" th:href="@{/profile/address}" href="/profile/address">Delivery Address Book</a></li>
+                    <li><a class="active" th:href="@{/address}" href="/address">Delivery Address Book</a></li>
                     <li><a th:href="@{/orders}" href="/orders">Order</a></li>
                     <li><a th:href="@{/vouchers}" href="/vouchers">My voucher</a></li>
                 </ul>
@@ -33,45 +33,54 @@
         <!-- Content: Delivery Address Book -->
         <section>
             <div class="card section">
-                <div class="card-header">
-                    <h2 class="section-title">Delivery Address Book</h2>
+                <div class="card-header" style="align-items:center;">
+                    <h2 class="section-title" style="display:flex; align-items:center; gap:10px;">
+                        Delivery Address Book
+                        <span th:if="${addrMax != null}" style="display:inline-block; font-size:12px; color:#374151; background:#f3f4f6; border:1px solid #e5e7eb; padding:2px 8px; border-radius:999px;">
+                            <span th:text="${addrUsed}">0</span>/<span th:text="${addrMax}">10</span> used
+                        </span>
+                    </h2>
                 </div>
                 <div class="card-body">
                     <div th:if="${addrError}" class="alert alert-error" th:text="${addrError}"></div>
                     <div th:if="${addrSuccess}" class="alert alert-success" th:text="${addrSuccess}"></div>
 
                     <!-- Add/Edit Form -->
-                    <form class="form-grid address-form" th:action="@{/profile/create-address}" method="post">
+                    <form class="form-grid address-form" th:action="@{/create-address}" method="post">
                         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
 
                         <label class="required" for="fullName">Full name</label>
-                        <input id="fullName" name="fullName" type="text" th:value="${user != null ? user.firstname + ' ' + user.lastname : ''}" required readonly style="background:#f3f4f6; color:#6b7280;" />
+                        <input id="fullName" type="text" th:value="${user != null ? user.firstname + ' ' + user.lastname : ''}" readonly style="background:#f3f4f6; color:#6b7280;" />
 
                         <label class="required" for="province">Province/City</label>
-                        <input id="province" name="province" type="text" placeholder="Province/City" required />
+                        <input id="province" name="province" type="text" placeholder="Province/City" required th:disabled="${addrUsed >= addrMax}" />
 
                         <label class="required" for="district">District</label>
-                        <input id="district" name="district" type="text" placeholder="District" required />
+                        <input id="district" name="district" type="text" placeholder="District" required th:disabled="${addrUsed >= addrMax}" />
 
                         <label class="required" for="street">Street Name</label>
-                        <input id="street" name="street" type="text" placeholder="Street Name" required />
-                        <div class="hint" style="grid-column: 1 / -1;">Please enter a street name. Street names are preferred from suggestions.</div>
+                        <input id="street" name="street" type="text" placeholder="Street Name" required th:disabled="${addrUsed >= addrMax}" />
+                        <div class="hint" style="grid-column: 1 / -1;" th:if="${addrUsed < addrMax}">Please enter a street name. Street names are preferred from suggestions.</div>
 
                         <label for="number">Number</label>
-                        <input id="number" name="number" type="text" placeholder="House number" />
-                        <div class="hint" style="grid-column: 1 / -1;">If the house does not have a number, please enter: 1</div>
+                        <input id="number" name="number" type="text" placeholder="House number" th:disabled="${addrUsed >= addrMax}" />
+                        <div class="hint" style="grid-column: 1 / -1;" th:if="${addrUsed < addrMax}">If the house does not have a number, please enter: 1</div>
 
                         <label for="phone">Phone Number</label>
-                        <input id="phone" name="phone" type="tel" th:value="${user != null ? user.phone : ''}" />
+                        <input id="phone" name="phone" type="tel" th:value="${user != null ? user.phone : ''}" th:disabled="${addrUsed >= addrMax}" />
 
                         <label></label>
                         <label class="checkbox-inline">
-                            <input type="checkbox" name="setDefault" />
+                            <input type="checkbox" name="setDefault" th:disabled="${addrUsed >= addrMax}" />
                             <span>Set as default address</span>
                         </label>
 
+                        <div th:if="${addrUsed >= addrMax}" class="alert alert-error" style="grid-column: 1 / -1;">
+                            <span th:text="${'You\'ve reached the maximum number of saved addresses (' + addrMax + '). Please remove one before adding another.'}">Limit reached.</span>
+                        </div>
+
                         <div class="form-actions">
-                            <button type="submit" class="btn-primary">Add</button>
+                            <button type="submit" class="btn-primary" th:disabled="${addrUsed >= addrMax}">Add</button>
                         </div>
                     </form>
 
@@ -87,7 +96,7 @@
                                     <div class="address-top">
                                         <strong th:text="${user != null ? user.firstname + ' ' + user.lastname : '—'}">Name</strong>
                                         <span class="default-badge" th:if="${addr.defaultAddress}">Default address</span>
-                                        <a class="edit-link" th:href="@{'/profile/address/' + ${addr.id} + '/edit'}">Edit</a>
+                                        <a class="edit-link" th:href="@{'/address/' + ${addr.id} + '/edit'}">Edit</a>
                                     </div>
                                     <div class="address-body">
                                         <div>

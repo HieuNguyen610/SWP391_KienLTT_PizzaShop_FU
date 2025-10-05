@@ -18,4 +18,9 @@ public interface AddressService {
 
     // Use only the form-based overload for updates
     Address updateAddress(User user, Long id, AddressForm form);
+
+    // Additional helpers for caps/UX
+    long countActiveByUser(User user);
+
+    int getMaxAddressesPerUser();
 }
