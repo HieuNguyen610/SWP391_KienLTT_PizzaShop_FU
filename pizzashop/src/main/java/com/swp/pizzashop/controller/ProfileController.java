@@ -3,18 +3,13 @@ package com.swp.pizzashop.controller;
 import com.swp.pizzashop.model.User;
 import com.swp.pizzashop.service.UserService;
 import com.swp.pizzashop.service.ChangePasswordResult;
-import com.swp.pizzashop.service.AddressService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequiredArgsConstructor
@@ -22,7 +17,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class ProfileController {
 
     private final UserService userService;
-    private final AddressService addressService;
 
     @GetMapping("/profile")
     public String profile(@ModelAttribute("currentUser") User currentUser, Model model) {
@@ -61,42 +55,5 @@ public class ProfileController {
             default -> model.addAttribute("pwdError", "Unable to change password. Please try again.");
         }
         return "profile";
-    }
-
-    // Delivery Address Book page
-    @GetMapping({"/profile/address", "/profile/address-book"})
-    public String addressBook(@ModelAttribute("currentUser") User currentUser, Model model) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null) {
-            log.debug("GET /profile/address with auth principal={}, authenticated={}, authorities={}",
-                    auth.getName(), auth.isAuthenticated(), auth.getAuthorities());
-        }
-        model.addAttribute("user", currentUser);
-        model.addAttribute("addresses", addressService.findByUser(currentUser));
-        return "profile-address";
-    }
-
-    // Create new delivery address
-    @PostMapping("/profile/create-address")
-    public String createAddress(@ModelAttribute("currentUser") User currentUser,
-                                @RequestParam String fullName,
-                                @RequestParam String province,
-                                @RequestParam String district,
-                                @RequestParam String street,
-                                @RequestParam(required = false) String number,
-                                @RequestParam(required = false) String phone,
-                                @RequestParam(name = "setDefault", defaultValue = "false") boolean setDefault,
-                                RedirectAttributes ra) {
-        if (currentUser == null) {
-            return "redirect:/login";
-        }
-        try {
-            addressService.createAddress(currentUser, fullName, province, district, street, number, phone, setDefault);
-            ra.addFlashAttribute("addrSuccess", "Address added successfully.");
-        } catch (Exception ex) {
-            log.warn("Failed to create address for user {}: {}", currentUser.getEmail(), ex.getMessage());
-            ra.addFlashAttribute("addrError", "Unable to add address. Please check inputs and try again.");
-        }
-        return "redirect:/profile/address";
     }
 }

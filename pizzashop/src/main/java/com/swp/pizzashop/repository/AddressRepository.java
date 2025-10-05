@@ -8,12 +8,15 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface AddressRepository extends JpaRepository<Address, Long> {
 
     List<Address> findByUserOrderByDefaultAddressDescIdDesc(User user);
 
     Address findFirstByUserAndDefaultAddressTrue(User user);
+
+    Optional<Address> findByIdAndUser(Long id, User user);
 
     @Modifying
     @Query("update Address a set a.defaultAddress = false where a.user = :user and a.defaultAddress = true")
