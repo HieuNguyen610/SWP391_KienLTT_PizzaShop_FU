@@ -6,6 +6,7 @@ import com.swp.pizzashop.repository.AddressRepository;
 import com.swp.pizzashop.service.AddressService;
 import com.swp.pizzashop.dto.AddressForm;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +19,9 @@ public class AddressServiceImpl implements AddressService {
 
     private final AddressRepository addressRepository;
 
+    @Value("${pizzashop.address.max-per-user:5}")
+    private int maxAddressesPerUser;
+
     @Override
     @Transactional(readOnly = true)
     public List<Address> findByUser(User user) {
@@ -28,6 +32,14 @@ public class AddressServiceImpl implements AddressService {
     @Override
     @Transactional
     public Address createAddress(User user, AddressForm form) {
+        if (user == null) {
+            throw new IllegalArgumentException("User is required.");
+        }
+        long count = addressRepository.countByUserAndIsDeletedFalse(user);
+        if (count >= maxAddressesPerUser) {
+            throw new IllegalArgumentException("You've reached the maximum number of saved addresses (" + maxAddressesPerUser + "). Please remove one before adding another.");
+        }
+
         Address a = new Address();
         a.setUser(user);
 
@@ -80,7 +92,7 @@ public class AddressServiceImpl implements AddressService {
             a.setDefaultAddress(true);
         } else {
             // If this is the user's first address, make it default automatically
-            boolean hasAny = !addressRepository.findByUserOrderByDefaultAddressDescIdDesc(user).isEmpty();
+            boolean hasAny = count > 0; // we already counted active addresses
             a.setDefaultAddress(!hasAny);
         }
 
@@ -149,5 +161,17 @@ public class AddressServiceImpl implements AddressService {
         }
 
         return addressRepository.save(existing);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public long countActiveByUser(User user) {
+        if (user == null) return 0;
+        return addressRepository.countByUserAndIsDeletedFalse(user);
+    }
+
+    @Override
+    public int getMaxAddressesPerUser() {
+        return maxAddressesPerUser;
     }
 }
