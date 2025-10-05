@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Delivery Address Book</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="/css/style.css" />
+    <link rel="stylesheet" th:href="@{/css/profile.css}" href="/css/profile.css" />
+     <link rel="stylesheet" th:href="@{/css/profile-address.css}" href="/css/profile-address.css" />
+</head>
+<body>
+<div th:replace="~{fragments/header :: page_header}"></div>
+
+<main class="profile-page">
+    <div class="profile-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="card account-box">
+                <div class="account-caption">Account of</div>
+                <div class="account-name" th:text="${user != null ? user.firstname + ' ' + user.lastname : 'Your Name'}">Your Name</div>
+            </div>
+
+            <div class="card">
+                <ul class="menu">
+                    <li><a th:href="@{/profile}" href="/profile">Customer information</a></li>
+                    <li><a class="active" th:href="@{/profile/address}" href="/profile/address">Delivery Address Book</a></li>
+                    <li><a th:href="@{/orders}" href="/orders">Order</a></li>
+                    <li><a th:href="@{/vouchers}" href="/vouchers">My voucher</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- Content: Delivery Address Book -->
+        <section>
+            <div class="card section">
+                <div class="card-header">
+                    <h2 class="section-title">Delivery Address Book</h2>
+                </div>
+                <div class="card-body">
+                    <div th:if="${addrError}" class="alert alert-error" th:text="${addrError}"></div>
+                    <div th:if="${addrSuccess}" class="alert alert-success" th:text="${addrSuccess}"></div>
+
+                    <!-- Add/Edit Form -->
+                    <form class="form-grid address-form" th:action="@{/profile/create-address}" method="post">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+                        <label class="required" for="fullName">Full name</label>
+                        <input id="fullName" name="fullName" type="text" th:value="${user != null ? user.firstname + ' ' + user.lastname : ''}" required />
+
+                        <label class="required" for="province">Province/City</label>
+                        <input id="province" name="province" type="text" placeholder="Province/City" required />
+
+                        <label class="required" for="district">District</label>
+                        <input id="district" name="district" type="text" placeholder="District" required />
+
+                        <label class="required" for="street">Street Name</label>
+                        <input id="street" name="street" type="text" placeholder="Street Name" required />
+                        <div class="hint" style="grid-column: 1 / -1;">Please enter a street name. Street names are preferred from suggestions.</div>
+
+                        <label for="number">Number</label>
+                        <input id="number" name="number" type="text" placeholder="House number" />
+                        <div class="hint" style="grid-column: 1 / -1;">If the house does not have a number, please enter: 1</div>
+
+                        <label for="phone">Phone Number</label>
+                        <input id="phone" name="phone" type="tel" th:value="${user != null ? user.phone : ''}" />
+
+                        <label></label>
+                        <label class="checkbox-inline">
+                            <input type="checkbox" name="setDefault" />
+                            <span>Set as default address</span>
+                        </label>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn-primary">Add</button>
+                        </div>
+                    </form>
+
+                    <!-- Address list -->
+                    <div class="card section" style="margin-top: 24px;">
+                        <div class="card-header">
+                            <h3 class="card-title">Saved addresses</h3>
+                        </div>
+                        <div class="card-body">
+                            <div th:if="${#lists.isEmpty(addresses)}" style="color:#6b7280;">No saved addresses yet.</div>
+                            <div class="address-list" th:if="${!#lists.isEmpty(addresses)}">
+                                <div class="address-item" th:each="addr : ${addresses}">
+                                    <div class="address-top">
+                                        <strong th:text="${user != null ? user.firstname + ' ' + user.lastname : '—'}">Name</strong>
+                                        <span class="default-badge" th:if="${addr.defaultAddress}">Default address</span>
+                                        <a class="edit-link" href="#">Edit</a>
+                                    </div>
+                                    <div class="address-body">
+                                        <div>
+                                            <span class="label">Address:</span>
+                                            <span class="value" th:text="${addr.fullAddress}">123, Ward, District, City</span>
+                                        </div>
+                                        <div>
+                                            <span class="label">Phone number:</span>
+                                            <span class="value" th:text="${addr.phone}">0123456789</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+    </div>
+</main>
+
+<div th:replace="~{fragments/header :: page_footer}"></div>
+</body>
+</html>
