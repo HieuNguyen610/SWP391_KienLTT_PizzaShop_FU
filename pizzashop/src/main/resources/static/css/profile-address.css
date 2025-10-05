@@ -1,0 +1,61 @@
+/* Delivery Address Book styles */
+.profile-page .address-form input[type="text"],
+.profile-page .address-form input[type="tel"] {
+  width: 100%;
+  max-width: 520px; /* make inputs shorter on desktop */
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  outline: none;
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+@media (max-width: 700px) {
+  .profile-page .address-form input[type="text"],
+  .profile-page .address-form input[type="tel"] {
+    max-width: 100%; /* allow full-width on small screens */
+  }
+}
+.profile-page .address-form input:focus {
+  border-color: #60a5fa;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+.profile-page .address-form .hint {
+  font-size: 12px;
+  color: #6b7280;
+}
+.profile-page .address-form .checkbox-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #374151;
+}
+.profile-page .address-form input[type="checkbox"] {
+  width: 18px; height: 18px;
+  accent-color: #2563eb;
+}
+/* Right-align the Add button similar to mock */
+.profile-page .address-form .form-actions { grid-column: 2 / 3; display:flex; justify-content:flex-end; }
+@media (max-width: 700px) { .profile-page .address-form .form-actions { grid-column: 1 / -1; } }
+.profile-page .address-form .btn-primary { min-width: 120px; height: 40px; font-weight: 600; }
+
+/* Address list styling */
+.profile-page .address-list { display: grid; gap: 12px; }
+.profile-page .address-item { border: 1px solid #e5e7eb; border-radius: 10px; padding: 16px; background: #fff; }
+.profile-page .address-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.profile-page .address-top strong { color: #111827; font-size: 16px; }
+.profile-page .default-badge { display:inline-flex; align-items:center; gap:8px; color:#16a34a; font-weight:600; }
+.profile-page .default-badge::before {
+  content: '✓';
+  display: inline-grid;
+  place-items: center;
+  width: 18px; height: 18px;
+  border: 2px solid #16a34a;
+  border-radius: 4px;
+  color: #16a34a;
+  font-size: 12px;
+}
+.profile-page .address-body .label { display:inline-block; width: 110px; color:#6b7280; }
+.profile-page .address-body .value { color:#111827; }
+.profile-page .address-top .edit-link { color:#2563eb; }
+.profile-page .address-top .edit-link::before { content:'✎'; margin-right:6px; }
+
