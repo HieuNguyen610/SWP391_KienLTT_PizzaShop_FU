@@ -19,6 +19,9 @@ public interface AddressService {
     // Use only the form-based overload for updates
     Address updateAddress(User user, Long id, AddressForm form);
 
+    // Delete (soft delete) an address owned by the user
+    void deleteAddress(User user, Long id);
+
     // Additional helpers for caps/UX
     long countActiveByUser(User user);
 

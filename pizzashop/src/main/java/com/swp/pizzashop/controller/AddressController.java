@@ -29,6 +29,11 @@ public class AddressController {
             log.debug("GET /address with auth principal={}, authenticated={}, authorities={}",
                     auth.getName(), auth.isAuthenticated(), auth.getAuthorities());
         }
+        if (currentUser != null) {
+            log.debug("Address book: currentUser id={}, email={}", currentUser.getId(), currentUser.getEmail());
+        } else {
+            log.debug("Address book: currentUser is null");
+        }
         model.addAttribute("user", currentUser);
         model.addAttribute("addresses", addressService.findByUser(currentUser));
         // Add usage counters for UX
@@ -48,6 +53,7 @@ public class AddressController {
         if (currentUser == null) {
             return "redirect:/login";
         }
+        log.debug("Create address: user id={}, email={}", currentUser.getId(), currentUser.getEmail());
         if (binding.hasErrors()) {
             String msg = binding.getFieldErrors().stream().findFirst()
                     .map(e -> e.getDefaultMessage()).orElse("Invalid address data.");
@@ -67,13 +73,14 @@ public class AddressController {
     }
 
     // Edit address form
-    @GetMapping("/address/{id}/edit")
+    @GetMapping("/address/{addressId}/edit")
     public String editAddressForm(@ModelAttribute("currentUser") User currentUser,
-                                  @PathVariable Long id,
+                                  @PathVariable("addressId") Long addressId,
                                   Model model,
                                   RedirectAttributes ra) {
         if (currentUser == null) return "redirect:/login";
-        var opt = addressService.findByIdForUser(id, currentUser);
+        log.debug("Edit address form: user id={}, email={}, addressId={}", currentUser.getId(), currentUser.getEmail(), addressId);
+        var opt = addressService.findByIdForUser(addressId, currentUser);
         if (opt.isEmpty()) {
             ra.addFlashAttribute("addrError", "Address not found or access denied.");
             return "redirect:/address";
@@ -95,31 +102,51 @@ public class AddressController {
     }
 
     // Update address
-    @PostMapping("/address/{id}/edit")
+    @PostMapping("/address/{addressId}/edit")
     public String updateAddress(@ModelAttribute("currentUser") User currentUser,
-                                @PathVariable Long id,
+                                @PathVariable("addressId") Long addressId,
                                 @Valid @ModelAttribute AddressForm form,
                                 BindingResult binding,
                                 RedirectAttributes ra) {
         if (currentUser == null) return "redirect:/login";
+        log.debug("Update address: user id={}, email={}, addressId={}", currentUser.getId(), currentUser.getEmail(), addressId);
         if (binding.hasErrors()) {
             String msg = binding.getFieldErrors().stream().findFirst()
                     .map(e -> e.getDefaultMessage()).orElse("Invalid address data.");
             ra.addFlashAttribute("addrError", msg);
-            return "redirect:/address/" + id + "/edit";
+            return "redirect:/address/" + addressId + "/edit";
         }
         try {
-            addressService.updateAddress(currentUser, id, form);
+            addressService.updateAddress(currentUser, addressId, form);
             ra.addFlashAttribute("addrSuccess", "Address updated successfully.");
             return "redirect:/address";
         } catch (IllegalArgumentException ex) {
             // Show specific validation or not-found message
             ra.addFlashAttribute("addrError", ex.getMessage());
-            return "redirect:/address/" + id + "/edit";
+            return "redirect:/address/" + addressId + "/edit";
         } catch (Exception ex) {
-            log.warn("Failed to update address {} for user {}: {}", id, currentUser.getEmail(), ex.getMessage());
+            log.warn("Failed to update address {} for user {}: {}", addressId, currentUser.getEmail(), ex.getMessage());
             ra.addFlashAttribute("addrError", "Unable to update address. Please try again.");
-            return "redirect:/address/" + id + "/edit";
+            return "redirect:/address/" + addressId + "/edit";
         }
+    }
+
+    // Delete address (soft delete)
+    @PostMapping("/address/{addressId}/delete")
+    public String deleteAddress(@ModelAttribute("currentUser") User currentUser,
+                                @PathVariable("addressId") Long addressId,
+                                RedirectAttributes ra) {
+        if (currentUser == null) return "redirect:/login";
+        log.debug("Delete address: user id={}, email={}, addressId={}", currentUser.getId(), currentUser.getEmail(), addressId);
+        try {
+            addressService.deleteAddress(currentUser, addressId);
+            ra.addFlashAttribute("addrSuccess", "Address deleted.");
+        } catch (IllegalArgumentException ex) {
+            ra.addFlashAttribute("addrError", ex.getMessage());
+        } catch (Exception ex) {
+            log.warn("Failed to delete address {} for user {}: {}", addressId, currentUser != null ? currentUser.getEmail() : "<null>", ex.getMessage());
+            ra.addFlashAttribute("addrError", "Unable to delete address. Please try again.");
+        }
+        return "redirect:/address";
     }
 }

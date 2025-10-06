@@ -14,9 +14,15 @@ public interface AddressRepository extends JpaRepository<Address, Long> {
 
     List<Address> findByUserOrderByDefaultAddressDescIdDesc(User user);
 
+    // Non-deleted addresses list
+    List<Address> findByUserAndIsDeletedFalseOrderByDefaultAddressDescIdDesc(User user);
+
     Address findFirstByUserAndDefaultAddressTrue(User user);
 
     Optional<Address> findByIdAndUser(Long id, User user);
+
+    // Non-deleted by id & user (for safe delete)
+    Optional<Address> findByIdAndUserAndIsDeletedFalse(Long id, User user);
 
     @Modifying
     @Query("update Address a set a.defaultAddress = false where a.user = :user and a.defaultAddress = true")
@@ -24,4 +30,7 @@ public interface AddressRepository extends JpaRepository<Address, Long> {
 
     // Count active (non-deleted) addresses for a user
     long countByUserAndIsDeletedFalse(User user);
+
+    // Latest non-deleted address for a user
+    Optional<Address> findFirstByUserAndIsDeletedFalseOrderByIdDesc(User user);
 }

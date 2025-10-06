@@ -68,9 +68,15 @@
                             <span>Set as default address</span>
                         </label>
 
-                        <div class="form-actions">
+                        <div class="form-actions" style="display:flex; gap:12px; align-items:center;">
                             <button type="submit" class="btn-primary">Save</button>
                         </div>
+                    </form>
+
+                    <!-- Separate delete form (cannot nest forms) -->
+                    <form th:action="@{'/address/' + ${addr.id} + '/delete'}" method="post" onsubmit="return confirm('Delete this address?');" style="margin-top:10px;">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                        <button type="submit" style="background:none; border:1px solid #b91c1c; color:#b91c1c; border-radius:6px; padding:8px 12px; cursor:pointer;">Delete</button>
                     </form>
                 </div>
             </div>
