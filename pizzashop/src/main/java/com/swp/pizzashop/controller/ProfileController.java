@@ -27,7 +27,11 @@ public class ProfileController {
         } else {
             log.debug("GET /profile with no authentication in context");
         }
-        log.debug("Loaded current user (from @ModelAttribute): {}", currentUser != null ? currentUser.getEmail() : null);
+        if (currentUser != null) {
+            log.debug("Loaded current user (from @ModelAttribute): id={}, email={}", currentUser.getId(), currentUser.getEmail());
+        } else {
+            log.debug("Loaded current user (from @ModelAttribute): null");
+        }
         model.addAttribute("user", currentUser); // keep existing template variable name
         return "profile";
     }
