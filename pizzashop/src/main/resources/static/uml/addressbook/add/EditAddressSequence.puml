@@ -1,0 +1,62 @@
+@startuml
+skinparam style strictuml
+hide footbox
+
+actor Customer as C
+participant Browser as B
+participant "AddressController" as AC
+control "CurrentUserAdvice" as CUA
+database "UserRepository" as UR
+control "AddressService" as AS
+database "AddressRepository" as AR
+boundary "Thymeleaf (profile-address-edit.html)" as TL
+
+== Open Edit Address ==
+C -> B : Click "Edit" (GET /address/{id}/edit)
+B -> AC : GET /address/{id}/edit
+activate AC
+AC -> CUA : @ModelAttribute("currentUser")
+activate CUA
+CUA -> UR : findByEmail(auth.name)
+UR --> CUA : User
+deactivate CUA
+AC <-- CUA : currentUser
+AC -> AS : findByIdForUser(addressId, currentUser)
+activate AS
+AS -> AR : findByIdAndUser(addressId, currentUser)
+AR --> AS : Optional<Address>
+AS --> AC : Address or empty
+deactivate AS
+alt Address found
+  AC -> TL : return view "profile-address-edit" with model (user, addr, prefill_number, prefill_street)
+  TL --> B : Render HTML
+else Not found / access denied
+  AC -> B : redirect:/address with flash addrError
+end
+deactivate AC
+
+== Update Address ==
+C -> B : Submit edit form (POST /address/{id}/edit)
+B -> AC : POST /address/{id}/edit (AddressForm)
+activate AC
+alt BindingResult has errors
+  AC -> B : redirect:/address/{id}/edit with flash addrError
+else Valid form
+  AC -> AS : updateAddress(currentUser, id, form)
+  activate AS
+  AS -> AR : findByIdAndUser(id, currentUser)
+  AR --> AS : Address or empty
+  alt Address exists
+    AS -> AR : save(updatedAddress)
+    AR --> AS : Address
+    AS --> AC : Address
+    AC -> B : redirect:/address with flash addrSuccess
+  else Not found
+    AS --> AC : IllegalArgumentException("Address not found")
+    AC -> B : redirect:/address/{id}/edit with flash addrError
+  end
+  deactivate AS
+end
+
+deactivate AC
+@enduml

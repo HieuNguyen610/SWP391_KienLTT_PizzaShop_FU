@@ -1,0 +1,46 @@
+@startuml
+skinparam style strictuml
+hide footbox
+
+actor Customer as C
+participant Browser as B
+participant "AddressController" as AC
+control "CurrentUserAdvice" as CUA
+database "UserRepository" as UR
+control "AddressService" as AS
+database "AddressRepository" as AR
+boundary "Thymeleaf (profile-address.html)" as TL
+
+== Open Address Book ==
+C -> B : Click "Delivery Address Book" (GET /address)
+B -> AC : GET /address
+
+activate AC
+AC -> CUA : @ModelAttribute("currentUser")
+activate CUA
+CUA -> UR : findByEmail(auth.name)
+UR --> CUA : User
+deactivate CUA
+AC <-- CUA : currentUser(User)
+
+AC -> AS : findByUser(currentUser)
+activate AS
+AS -> AR : findByUserAndIsDeletedFalseOrderByDefaultAddressDescIdDesc(user)
+AR --> AS : List<Address>
+AS --> AC : addresses
+ deactivate AS
+
+AC -> TL : return view "profile-address" with model
+TL --> B : Rendered HTML (address list, counters, actions)
+B --> C : Display Address Book
+
+deactivate AC
+
+== Alternative: Not Authenticated ==
+alt Unauthenticated
+  B -> AC : GET /address
+  note right of AC : Spring Security intercepts
+    AC --> B : Redirect to /login
+end
+
+@enduml
