@@ -1,6 +1,6 @@
 package com.swp.pizzashop.controller;
 
-import com.swp.pizzashop.dto.AddressForm;
+import com.swp.pizzashop.form.AddressForm;
 import com.swp.pizzashop.model.User;
 import com.swp.pizzashop.service.AddressService;
 import jakarta.validation.Valid;
