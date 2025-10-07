@@ -2,7 +2,7 @@ package com.swp.pizzashop.service;
 
 import com.swp.pizzashop.model.Address;
 import com.swp.pizzashop.model.User;
-import com.swp.pizzashop.dto.AddressForm;
+import com.swp.pizzashop.form.AddressForm;
 
 import java.util.List;
 import java.util.Optional;

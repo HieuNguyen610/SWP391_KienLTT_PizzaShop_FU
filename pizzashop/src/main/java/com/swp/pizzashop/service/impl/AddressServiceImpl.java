@@ -1,10 +1,10 @@
 package com.swp.pizzashop.service.impl;
 
+import com.swp.pizzashop.form.AddressForm;
 import com.swp.pizzashop.model.Address;
 import com.swp.pizzashop.model.User;
 import com.swp.pizzashop.repository.AddressRepository;
 import com.swp.pizzashop.service.AddressService;
-import com.swp.pizzashop.dto.AddressForm;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -83,7 +83,12 @@ public class AddressServiceImpl implements AddressService {
             }
             if (!phoneTrim.matches("^[0-9+()\\s-]+$")) {
                 log.warn("Validation failed: phone contains invalid characters for user={}", safeUser(user));
-                throw new IllegalArgumentException("Phone number contains invalid characters.");
+                throw new IllegalArgumentException("Phone number may only contain digits, spaces, plus (+), parentheses and hyphens.");
+            }
+            int digitCount = phoneTrim.replaceAll("\\D", "").length();
+            if (digitCount < 8 || digitCount > 15) {
+                log.warn("Validation failed: phone digit count {} outside [8,15] for user={}", digitCount, safeUser(user));
+                throw new IllegalArgumentException("Phone number must contain between 8 and 15 digits.");
             }
         } else {
             phoneTrim = null; // store as null if empty
@@ -166,7 +171,12 @@ public class AddressServiceImpl implements AddressService {
             }
             if (!phoneTrim.matches("^[0-9+()\\s-]+$")) {
                 log.warn("Validation failed (update): phone contains invalid characters for user={}, id={}", safeUser(user), id);
-                throw new IllegalArgumentException("Phone number contains invalid characters.");
+                throw new IllegalArgumentException("Phone number may only contain digits, spaces, plus (+), parentheses and hyphens.");
+            }
+            int digitCount = phoneTrim.replaceAll("\\D", "").length();
+            if (digitCount < 8 || digitCount > 15) {
+                log.warn("Validation failed (update): phone digit count {} outside [8,15] for user={}, id={}", digitCount, safeUser(user), id);
+                throw new IllegalArgumentException("Phone number must contain between 8 and 15 digits.");
             }
         } else {
             phoneTrim = null; // store as null if empty

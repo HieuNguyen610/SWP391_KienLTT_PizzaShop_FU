@@ -60,7 +60,11 @@
                         <input id="number" name="number" type="text" th:value="${prefill_number}" />
 
                         <label for="phone">Phone Number</label>
-                        <input id="phone" name="phone" type="tel" th:value="${addr.phone}" />
+                        <input id="phone" name="phone" type="tel" th:value="${addr.phone}"
+                               maxlength="20"
+                               pattern="^[0-9+()\-\s]*$"
+                               inputmode="tel"
+                               title="Up to 20 characters. Allowed: digits, spaces, +, parentheses, hyphens. 8–15 digits required." />
 
                         <label></label>
                         <label class="checkbox-inline">

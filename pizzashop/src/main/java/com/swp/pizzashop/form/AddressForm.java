@@ -1,4 +1,4 @@
-package com.swp.pizzashop.dto;
+package com.swp.pizzashop.form;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -36,9 +36,8 @@ public class AddressForm {
     private String number;
 
     @Size(max = 20, message = "Phone number must be at most 20 characters.")
-    @Pattern(regexp = "^$|[0-9+()\\-\\s]+", message = "Phone number contains invalid characters.")
+    @Pattern(regexp = "^[0-9+()\\-\\s]*$", message = "Phone number may only contain digits, spaces, plus (+), parentheses and hyphens.")
     private String phone;
 
     private boolean setDefault;
 }
-

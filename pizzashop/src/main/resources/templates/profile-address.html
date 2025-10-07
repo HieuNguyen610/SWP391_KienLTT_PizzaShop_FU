@@ -67,7 +67,13 @@
                         <div class="hint" style="grid-column: 1 / -1;" th:if="${addrUsed < addrMax}">If the house does not have a number, please enter: 1</div>
 
                         <label for="phone">Phone Number</label>
-                        <input id="phone" name="phone" type="tel" th:value="${user != null ? user.phone : ''}" th:disabled="${addrUsed >= addrMax}" />
+                        <input id="phone" name="phone" type="tel"
+                               th:value="${user != null ? user.phone : ''}"
+                               th:disabled="${addrUsed >= addrMax}"
+                               maxlength="20"
+                               pattern="^[0-9+()\-\s]*$"
+                               inputmode="tel"
+                               title="Up to 20 characters. Allowed: digits, spaces, +, parentheses, hyphens. 8–15 digits required." />
 
                         <label></label>
                         <label class="checkbox-inline">
