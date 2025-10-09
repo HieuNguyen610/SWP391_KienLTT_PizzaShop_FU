@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Payment Success</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" />
+</head>
+<body class="container py-4">
+<h1>Payment Successful</h1>
+<p th:if="${order != null}">Order <strong th:text="${order.id}"></strong> paid successfully.</p>
+<p th:if="${order == null}">Session <strong th:text="${sessionId}"></strong> completed.</p>
+<a href="/" class="btn btn-primary">Back to Home</a>
+</body>
+</html>
+

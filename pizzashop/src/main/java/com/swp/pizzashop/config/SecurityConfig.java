@@ -49,7 +49,11 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/", "/login", "/register", "/verify", "/do-login",
                                  "/forgot-password", "/reset-password", "/reset-password/**",
-                                 "/css/**", "/js/**", "/images/**", "/static/**", "/favicon.ico").permitAll()
+                                 "/css/**", "/js/**", "/images/**", "/static/**", "/favicon.ico",
+                                 // Stripe webhook must be publicly accessible
+                                 "/api/stripe/webhook").permitAll()
+                // checkout endpoint requires authenticated user
+                .requestMatchers("/api/orders/checkout").authenticated()
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form
