@@ -51,7 +51,8 @@ public class SecurityConfig {
                                  "/forgot-password", "/reset-password", "/reset-password/**",
                                  "/css/**", "/js/**", "/images/**", "/static/**", "/favicon.ico",
                                  "/uploads/**").permitAll()
-                .requestMatchers("/food/**").hasAnyRole("ADMIN", "MANAGER")
+                .requestMatchers("/admin/**").hasRole("ADMIN")
+                .requestMatchers("/food/**").hasAnyRole("ADMIN", "MANAGER", "CUSTOMER")
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form

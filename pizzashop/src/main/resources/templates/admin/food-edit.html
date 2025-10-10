@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Edit Food</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="/css/style.css" />
+    <style>
+        .container { max-width: 860px; margin: 24px auto; padding: 0 16px; }
+        .card { background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 16px; }
+        .card h1 { margin: 0 0 12px; font-size: 22px; }
+        .field { margin-bottom: 10px; }
+        label { display: block; font-weight: 600; margin-bottom: 6px; }
+        input[type=text], input[type=number], input[type=file], textarea, select { width: 100%; padding: 9px 10px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; }
+        textarea { min-height: 90px; }
+        .row { display: flex; gap: 12px; }
+        .half { flex: 1; }
+        .btn { background: #2563eb; color: #fff; border: none; border-radius: 6px; padding: 8px 14px; cursor: pointer; }
+        .btn.secondary { background: #6b7280; }
+        .alert-error { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; padding: 10px 12px; border-radius: 6px; margin-bottom: 12px; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="card">
+        <h1>Edit food</h1>
+        <form th:action="@{'/admin/foods/' + ${foodId} + '/edit'}" th:object="${foodForm}" method="post" enctype="multipart/form-data">
+            <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+            <div class="field">
+                <label for="categoryId">Category</label>
+                <select id="categoryId" th:field="*{categoryId}" required>
+                    <option value="" disabled>-- Select category --</option>
+                    <option th:each="c : ${categories}" th:value="${c.id}" th:text="${c.name}"></option>
+                </select>
+                <div th:if="${#fields.hasErrors('categoryId')}" class="alert-error" th:errors="*{categoryId}"></div>
+            </div>
+
+            <div class="field">
+                <label for="name">Name</label>
+                <input id="name" type="text" th:field="*{name}" maxlength="100" required />
+                <div th:if="${#fields.hasErrors('name')}" class="alert-error" th:errors="*{name}"></div>
+            </div>
+
+            <div class="field">
+                <label for="description">Description</label>
+                <textarea id="description" th:field="*{description}"></textarea>
+                <div th:if="${#fields.hasErrors('description')}" class="alert-error" th:errors="*{description}"></div>
+            </div>
+
+            <div class="row">
+                <div class="field half">
+                    <label for="basePrice">Base price</label>
+                    <input id="basePrice" type="number" th:field="*{basePrice}" step="0.01" min="0.01" required />
+                    <div th:if="${#fields.hasErrors('basePrice')}" class="alert-error" th:errors="*{basePrice}"></div>
+                </div>
+                <div class="field half">
+                    <label for="active">Status</label>
+                    <select id="active" th:field="*{active}">
+                        <option th:value="true">Active</option>
+                        <option th:value="false">Inactive</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="field half">
+                    <label for="imageUrl">Image URL</label>
+                    <input id="imageUrl" type="text" th:field="*{imageUrl}" placeholder="https://..." />
+                    <div th:if="${#fields.hasErrors('imageUrl')}" class="alert-error" th:errors="*{imageUrl}"></div>
+                </div>
+                <div class="field half">
+                    <label for="imageFile">Replace image (optional)</label>
+                    <input id="imageFile" type="file" th:field="*{imageFile}" accept="image/*" />
+                    <div th:if="${#fields.hasErrors('imageFile')}" class="alert-error" th:errors="*{imageFile}"></div>
+                </div>
+            </div>
+
+            <div style="display:flex; justify-content:flex-end; gap: 8px;">
+                <a class="btn secondary" th:href="@{/admin}">Cancel</a>
+                <button type="submit" class="btn">Save</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    (function(){
+        const url = document.getElementById('imageUrl');
+        const file = document.getElementById('imageFile');
+        function sync() {
+            if (!url || !file) return;
+            file.disabled = !!(url.value && url.value.trim().length > 0);
+            url.disabled = !!(file.files && file.files.length > 0);
+        }
+        if (url) url.addEventListener('input', sync);
+        if (file) file.addEventListener('change', sync);
+        sync();
+    })();
+</script>
+</body>
+</html>
+

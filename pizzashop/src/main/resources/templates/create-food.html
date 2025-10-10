@@ -19,6 +19,7 @@
         .btn { background: #2563eb; border: none; color: white; padding: 10px 16px; border-radius: 6px; cursor: pointer; }
         .btn.secondary { background: #6b7280; }
         .alert-success { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; padding: 10px 12px; border-radius: 6px; margin-bottom: 12px; }
+        .alert-error { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; padding: 10px 12px; border-radius: 6px; margin-bottom: 12px; }
     </style>
 </head>
 <body>
@@ -26,9 +27,10 @@
     <h1 class="admin-title">Add product</h1>
 
     <div th:if="${success}" class="alert-success" th:text="${success}"></div>
+    <div th:if="${loadCategoriesError}" class="alert-error" th:text="${loadCategoriesError}"></div>
 
     <form th:action="@{/food/create}" th:object="${foodForm}" method="post" enctype="multipart/form-data">
-        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+        <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
         <div class="form-group">
             <label for="categoryId">Type of product<span style="color:#ef4444"> *</span></label>
             <select id="categoryId" th:field="*{categoryId}" required>
@@ -118,4 +120,3 @@
 </script>
 </body>
 </html>
-
