@@ -27,7 +27,6 @@ public class CategoryController {
 
     @GetMapping
     public String listCategories(@RequestParam(value = "page", defaultValue = "0") int page,
-                                 @RequestParam(value = "size", defaultValue = "10") int size,
                                  @RequestParam(value = "q", required = false) String q,
                                  @RequestParam(value = "msg", required = false) String msg,
                                  @RequestParam(value = "err", required = false) String err,
@@ -42,7 +41,6 @@ public class CategoryController {
         model.addAttribute("q", q);
         model.addAttribute("pageData", pageData);
         model.addAttribute("categories", pageData.getContent());
-        model.addAttribute("categoryForm", new CategoryForm());
         return "admin/categories";
     }
 
@@ -89,17 +87,27 @@ public class CategoryController {
         return "redirect:/admin/categories";
     }
 
-    @PostMapping
-    public String createCategory(@Valid @ModelAttribute("categoryForm") CategoryForm form,
-                                 BindingResult result,
-                                 RedirectAttributes ra) {
+    @GetMapping("/create")
+    public String showCreateForm(Model model,
+                                 @RequestParam(value = "err", required = false) String err) {
+        model.addAttribute("activeSection", "categories");
+        model.addAttribute("categoryForm", new CategoryForm());
+        if (err != null) model.addAttribute("error", err);
+        return "admin/category-create";
+    }
+
+    @PostMapping("/create")
+    public String handleCreate(@Valid @ModelAttribute("categoryForm") CategoryForm form,
+                               BindingResult result,
+                               Model model,
+                               RedirectAttributes ra) {
         FoodCategory existing = categoryService.findByName(form.getName());
         if (existing != null) {
             result.rejectValue("name", "duplicate", "Category already exists");
         }
         if (result.hasErrors()) {
-            ra.addAttribute("err", "Invalid category: " + (result.getFieldError() != null ? result.getFieldError().getDefaultMessage() : ""));
-            return "redirect:/admin/categories";
+            model.addAttribute("activeSection", "categories");
+            return "admin/category-create";
         }
         FoodCategory cat = new FoodCategory();
         cat.setName(form.getName().trim());

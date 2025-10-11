@@ -17,21 +17,8 @@
             <div th:if="${success}" class="card alert-success" th:text="${success}"></div>
             <div th:if="${error}" class="card alert-error" th:text="${error}"></div>
 
-            <div class="card mb-12">
-                <form th:action="@{/admin/categories}" th:object="${categoryForm}" method="post" class="add-form">
-                    <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-                    <div class="field">
-                        <label for="name">Name</label>
-                        <input id="name" type="text" th:field="*{name}" maxlength="100" placeholder="Category name" required />
-                    </div>
-                    <div class="field wide flex-1">
-                        <label for="description">Description</label>
-                        <input id="description" type="text" th:field="*{description}" maxlength="255" placeholder="Optional description" />
-                    </div>
-                    <div class="actions">
-                        <button type="submit" class="btn">Add</button>
-                    </div>
-                </form>
+            <div class="mb-12 text-right">
+                <a class="btn" th:href="@{/admin/categories/create}">Add</a>
             </div>
 
             <div class="card">
