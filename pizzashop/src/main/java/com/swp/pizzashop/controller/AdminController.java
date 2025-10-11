@@ -1,9 +1,7 @@
 package com.swp.pizzashop.controller;
 
-import com.swp.pizzashop.form.CategoryForm;
 import com.swp.pizzashop.form.FoodForm;
 import com.swp.pizzashop.model.Food;
-import com.swp.pizzashop.model.FoodCategory;
 import com.swp.pizzashop.service.FoodService;
 import com.swp.pizzashop.service.FoodCategoryService;
 import com.swp.pizzashop.service.UserService;
@@ -19,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
-import java.util.Optional;
 
 @Controller
 @RequestMapping("/admin")
@@ -58,14 +55,6 @@ public class AdminController {
         return "admin/dashboard";
     }
 
-    @GetMapping("/categories")
-    public String categoriesPage(Model model) {
-        model.addAttribute("activeSection", "categories");
-        model.addAttribute("categoryForm", new CategoryForm());
-        model.addAttribute("categories", categoryService.findAll());
-        return "admin/categories";
-    }
-
     @GetMapping("/foods")
     public String foodsPage(Model model) {
         model.addAttribute("activeSection", "foods");
@@ -73,54 +62,6 @@ public class AdminController {
         model.addAttribute("categories", categoryService.findAll());
         model.addAttribute("foods", foodService.findAll());
         return "admin/foods";
-    }
-
-    @PostMapping("/categories")
-    public String addCategory(@Valid @ModelAttribute("categoryForm") CategoryForm form,
-                              BindingResult result,
-                              Model model,
-                              RedirectAttributes ra) {
-        if (categoryService.findByName(form.getName()) != null) {
-            result.rejectValue("name", "duplicate", "Category already exists");
-        }
-        if (result.hasErrors()) {
-            model.addAttribute("activeSection", "categories");
-            model.addAttribute("categories", categoryService.findAll());
-            return "admin/categories";
-        }
-        FoodCategory cat = new FoodCategory();
-        cat.setName(form.getName().trim());
-        categoryService.save(cat);
-        ra.addAttribute("msg", "Category created");
-        return "redirect:/admin/categories";
-    }
-
-    @PostMapping("/categories/{id}")
-    public String renameCategory(@PathVariable Long id,
-                                 @Valid @ModelAttribute("categoryForm") CategoryForm form,
-                                 BindingResult result,
-                                 RedirectAttributes ra,
-                                 Model model) {
-        Optional<FoodCategory> opt = categoryService.findById(id);
-        if (opt.isEmpty()) {
-            ra.addAttribute("err", "Category not found");
-            return "redirect:/admin/categories";
-        }
-        FoodCategory existingByName = categoryService.findByName(form.getName());
-        if (existingByName != null && !existingByName.getId().equals(id)) {
-            result.rejectValue("name", "duplicate", "Category name already in use");
-        }
-        if (result.hasErrors()) {
-            model.addAttribute("activeSection", "categories");
-            model.addAttribute("categories", categoryService.findAll());
-            model.addAttribute("renameCategoryId", id);
-            return "admin/categories";
-        }
-        FoodCategory cat = opt.get();
-        cat.setName(form.getName().trim());
-        categoryService.save(cat);
-        ra.addAttribute("msg", "Category renamed");
-        return "redirect:/admin/categories";
     }
 
     @PostMapping("/foods")

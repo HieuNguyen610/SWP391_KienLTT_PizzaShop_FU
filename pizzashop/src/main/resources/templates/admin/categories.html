@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Admin - Categories</title>
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}" href="/css/dashboard.css" />
+    <link rel="stylesheet" th:href="@{/css/modal.css}" href="/css/modal.css" />
+    <link rel="stylesheet" th:href="@{/css/categories.css}" href="/css/categories.css" />
+</head>
+<body>
+<div class="layout">
+    <aside th:replace="fragments/admin-sidebar :: sidebar"></aside>
+    <main>
+        <div class="container">
+            <h1 class="page-title">Categories</h1>
+
+            <div th:if="${success}" class="card alert-success" th:text="${success}"></div>
+            <div th:if="${error}" class="card alert-error" th:text="${error}"></div>
+
+            <div class="card mb-12">
+                <form th:action="@{/admin/categories}" th:object="${categoryForm}" method="post" class="add-form">
+                    <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                    <div class="field">
+                        <label for="name">Name</label>
+                        <input id="name" type="text" th:field="*{name}" maxlength="100" placeholder="Category name" required />
+                    </div>
+                    <div class="field wide flex-1">
+                        <label for="description">Description</label>
+                        <input id="description" type="text" th:field="*{description}" maxlength="255" placeholder="Optional description" />
+                    </div>
+                    <div class="actions">
+                        <button type="submit" class="btn">Add</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="card">
+                <div class="toolbar">
+                    <div class="left">
+                        <form th:action="@{/admin/categories}" method="get" class="inline-form">
+                            <input type="text" name="q" th:value="${q}" placeholder="Search by name..." />
+                            <button type="submit" class="btn secondary">Search</button>
+                        </form>
+                    </div>
+                    <div class="right">
+                        <span>Total: </span><strong th:text="${pageData != null ? pageData.totalElements : 0}">0</strong>
+                        <span class="muted ml-8">(10 per page)</span>
+                    </div>
+                </div>
+
+                <div th:if="${#lists.isEmpty(categories)}" class="muted">No categories found.</div>
+                <table th:if="${!#lists.isEmpty(categories)}">
+                    <thead>
+                    <tr>
+                        <th style="width:80px;">ID</th>
+                        <th style="width:220px;">Name</th>
+                        <th>Description</th>
+                        <th style="width:140px;">Status</th>
+                        <th style="width:160px;"></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="c : ${categories}">
+                        <td th:text="${c.id}"></td>
+                        <td th:text="${c.name}"></td>
+                        <td th:text="${c.description}"></td>
+                        <td>
+                            <span th:classappend="${c.isDeleted} ? ' status-deleted' : ' status-active'" class="status-pill" th:text="${c.isDeleted} ? 'Deleted' : 'Active'"></span>
+                        </td>
+                        <td class="text-right">
+                            <a class="btn" th:href="@{'/admin/categories/' + ${c.id} + '/edit'}">Edit</a>
+                            <form th:if="${!c.isDeleted}" th:action="@{'/admin/categories/' + ${c.id} + '/delete'}" method="post" class="inline-block ml-6" data-confirm="Delete this category?" data-confirm-title="Confirm delete" data-confirm-ok="Delete" data-confirm-cancel="Cancel">
+                                <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                                <button type="submit" class="btn danger">Delete</button>
+                            </form>
+                            <button th:if="${c.isDeleted}" class="btn danger ml-6" disabled>Delete</button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <div class="pagination" th:if="${pageData != null && pageData.totalPages > 1}">
+                    <a th:if="${!pageData.first}" th:href="@{/admin/categories(page=${pageData.number - 1}, q=${q})}">Prev</a>
+                    <span th:each="i : ${#numbers.sequence(0, pageData.totalPages - 1)}" th:classappend="${i} == ${pageData.number} ? 'active'">
+                        <a th:if="${i} != ${pageData.number}" th:href="@{/admin/categories(page=${i}, q=${q})}" th:text="${i + 1}"></a>
+                        <span th:if="${i} == ${pageData.number}" th:text="${i + 1}"></span>
+                    </span>
+                    <a th:if="${!pageData.last}" th:href="@{/admin/categories(page=${pageData.number + 1}, q=${q})}">Next</a>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- Reusable modal fragment -->
+<div th:replace="fragments/modal :: modal"></div>
+<script th:src="@{/js/modal.js}" src="/js/modal.js"></script>
+</body>
+</html>

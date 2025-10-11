@@ -1,19 +1,21 @@
 package com.swp.pizzashop.model;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
+@Getter
+@Setter
 @Table(name = "food_categories")
-public class FoodCategory {
+public class FoodCategory extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(length = 50, nullable = false)
     private String name;
-    // Constructors, Getters and Setters...
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
 
-
+    @Column(length = 255)
+    private String description;
 }

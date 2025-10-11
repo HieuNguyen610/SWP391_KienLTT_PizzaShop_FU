@@ -4,24 +4,7 @@
     <meta charset="UTF-8" />
     <title>Admin Dashboard</title>
     <link rel="stylesheet" th:href="@{/css/style.css}" href="/css/style.css" />
-    <style>
-        .layout { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
-        .admin-sidebar { position: sticky; top: 0; height: 100vh; padding: 16px; background: #0f172a; color: #e5e7eb; }
-        .admin-sidebar .brand { font-weight: 700; margin-bottom: 16px; }
-        .admin-sidebar .menu { list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; }
-        .admin-sidebar a { display: block; color: #e5e7eb; text-decoration: none; padding: 8px 10px; border-radius: 6px; }
-        .admin-sidebar a:hover { background: #1f2937; }
-        .admin-sidebar a.active { background: #2563eb; color: white; }
-        .container { max-width: 1100px; margin: 24px auto; padding: 0 16px; }
-        .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-        .card { background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 16px; }
-        .card h2 { margin: 0 0 12px; font-size: 18px; }
-        .kpi { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
-        .muted { color: #6b7280; }
-        .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; margin-top: 24px; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { padding: 8px 10px; border-bottom: 1px solid #e5e7eb; text-align: left; }
-    </style>
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}" href="/css/dashboard.css" />
 </head>
 <body>
 <div class="layout">
@@ -29,10 +12,10 @@
 
     <main>
         <div class="container">
-            <h1 style="margin: 0 0 16px">Admin dashboard</h1>
+            <h1 class="page-title">Admin dashboard</h1>
 
-            <div th:if="${success}" class="card" style="border-color:#a7f3d0; background:#ecfdf5; color:#065f46;" th:text="${success}"></div>
-            <div th:if="${error}" class="card" style="border-color:#fecaca; background:#fef2f2; color:#991b1b;" th:text="${error}"></div>
+            <div th:if="${success}" class="card alert-success" th:text="${success}"></div>
+            <div th:if="${error}" class="card alert-error" th:text="${error}"></div>
 
             <div class="cards">
                 <div class="card">
@@ -72,10 +55,6 @@
                         </tr>
                         </tbody>
                     </table>
-                </div>
-                <div class="card">
-                    <h2>Notes</h2>
-                    <p class="muted">Use the sidebar to manage categories and foods. Toppings, orders, and users pages can be added next.</p>
                 </div>
             </div>
         </div>

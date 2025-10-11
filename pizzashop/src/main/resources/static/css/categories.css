@@ -1,0 +1,51 @@
+/* Categories page specific styles */
+.layout { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
+.container { max-width: 1000px; margin: 24px auto; padding: 0 16px; }
+.card { background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 16px; }
+
+/* Table */
+table { width: 100%; border-collapse: collapse; }
+th, td { padding: 8px 10px; border-bottom: 1px solid #e5e7eb; text-align: left; }
+
+/* Text helpers */
+.muted { color:#6b7280; }
+label { font-weight: 600; }
+
+/* Toolbar */
+.toolbar { display:flex; gap:8px; align-items:center; margin-bottom: 12px; justify-content: space-between; }
+.toolbar .left { display:flex; gap:8px; align-items:center; }
+.toolbar .right { color:#6b7280; font-size: 14px; }
+.toolbar input[type=text] { padding:9px 10px; border:1px solid #d1d5db; border-radius:6px; width: 260px; }
+
+/* Buttons */
+.btn { background:#2563eb; color:#fff; border:none; border-radius:6px; padding:6px 12px; cursor:pointer; text-decoration:none; display:inline-block; }
+.btn.secondary { background:#6b7280; }
+.btn.danger { background:#dc2626; }
+.btn[disabled], .btn.disabled { background:#9ca3af; cursor:not-allowed; opacity:0.6; }
+
+/* Pagination */
+.pagination { display:flex; gap:6px; align-items:center; justify-content:flex-end; margin-top: 12px; }
+.pagination a, .pagination span { padding:6px 10px; border:1px solid #e5e7eb; border-radius:6px; text-decoration:none; color:#111827; }
+.pagination .active { background:#2563eb; color:#fff; border-color:#2563eb; }
+
+/* Status pills */
+.status-pill { display:inline-block; padding:2px 8px; border-radius:9999px; font-size:12px; }
+.status-active { background:#ecfdf5; color:#065f46; border:1px solid #a7f3d0; }
+.status-deleted { background:#fef2f2; color:#991b1b; border:1px solid #fecaca; }
+
+/* Add form tidy styles */
+.add-form { display:flex; gap:12px; align-items:flex-end; flex-wrap:wrap; }
+.add-form .field { display:flex; flex-direction:column; gap:6px; }
+.add-form .field input[type=text] { width: 260px; padding:9px 10px; border:1px solid #d1d5db; border-radius:6px; }
+.add-form .field.wide input[type=text] { min-width: 320px; width: 100%; }
+.add-form .actions { margin-left:auto; }
+
+/* Utilities */
+.page-title { margin: 0 0 16px; }
+.mb-12 { margin-bottom: 12px; }
+.ml-6 { margin-left: 6px; }
+.ml-8 { margin-left: 8px; }
+.flex-1 { flex: 1; }
+.inline-form { display:flex; gap:8px; align-items:center; }
+.inline-block { display: inline-block; }
+.text-right { text-align: right; }
