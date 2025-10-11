@@ -14,4 +14,8 @@ public interface UserService {
     boolean resetPassword(String token, String newPassword);
     // Change password for an authenticated user; validates old password, strength, and difference.
     ChangePasswordResult changePassword(User user, String oldPassword, String newPassword);
+
+    long countByIsDeletedFalse();
+
+    long countByStatusAndIsDeletedFalse(String active);
 }

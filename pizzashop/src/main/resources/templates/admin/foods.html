@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Admin - Foods</title>
+    <style>
+        .layout { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
+        .container { max-width: 1100px; margin: 24px auto; padding: 0 16px; }
+        .card { background:#fff; border:1px solid #e5e7eb; border-radius:8px; padding:16px; }
+        label { display:block; font-weight:600; margin-bottom:6px; }
+        input[type=text], input[type=number], input[type=file], textarea, select { width:100%; padding:9px 10px; border:1px solid #d1d5db; border-radius:6px; }
+        textarea { min-height:80px; }
+        .row { display:flex; gap:12px; }
+        .half { flex:1; }
+        .btn { background:#2563eb; color:#fff; border:none; border-radius:6px; padding:8px 14px; cursor:pointer; }
+        .btn.small { padding:6px 10px; font-size:13px; }
+        .img-thumb { width:50px; height:50px; object-fit:cover; border-radius:4px; border:1px solid #e5e7eb; }
+        table { width:100%; border-collapse:collapse; }
+        th,td{ padding:8px 10px; border-bottom:1px solid #e5e7eb; text-align:left; }
+        .muted { color:#6b7280; }
+    </style>
+</head>
+<body>
+<div class="layout">
+    <aside th:replace="fragments/admin-sidebar :: sidebar"></aside>
+    <main>
+        <div class="container">
+            <h1 style="margin:0 0 16px">Foods</h1>
+
+            <div class="card" style="margin-bottom: 16px;">
+                <h2 style="margin:0 0 12px; font-size:18px;">Add food</h2>
+                <form th:action="@{/admin/foods}" th:object="${foodForm}" method="post" enctype="multipart/form-data">
+                    <div class="row">
+                        <div class="half">
+                            <label for="categoryId">Category</label>
+                            <select id="categoryId" th:field="*{categoryId}" required>
+                                <option value="" disabled selected>-- Select category --</option>
+                                <option th:each="cat : ${categories}" th:value="${cat.id}" th:text="${cat.name}"></option>
+                            </select>
+                            <div th:if="${#fields.hasErrors('categoryId')}" style="color:#991b1b;" th:errors="*{categoryId}"></div>
+                        </div>
+                        <div class="half">
+                            <label for="name">Name</label>
+                            <input id="name" type="text" th:field="*{name}" placeholder="Food name" maxlength="100" required />
+                            <div th:if="${#fields.hasErrors('name')}" style="color:#991b1b;" th:errors="*{name}"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="description">Description</label>
+                        <textarea id="description" th:field="*{description}" placeholder="Optional description"></textarea>
+                        <div th:if="${#fields.hasErrors('description')}" style="color:#991b1b;" th:errors="*{description}"></div>
+                    </div>
+                    <div class="row">
+                        <div class="half">
+                            <label for="basePrice">Base price</label>
+                            <input id="basePrice" type="number" th:field="*{basePrice}" step="0.01" min="0.01" placeholder="0.00" required />
+                            <div th:if="${#fields.hasErrors('basePrice')}" style="color:#991b1b;" th:errors="*{basePrice}"></div>
+                        </div>
+                        <div class="half">
+                            <label for="active">Status</label>
+                            <select id="active" th:field="*{active}">
+                                <option th:value="true">Active</option>
+                                <option th:value="false">Inactive</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="half">
+                            <label for="imageUrl">Image URL</label>
+                            <input id="imageUrl" type="text" th:field="*{imageUrl}" placeholder="https://..." />
+                            <div th:if="${#fields.hasErrors('imageUrl')}" style="color:#991b1b;" th:errors="*{imageUrl}"></div>
+                        </div>
+                        <div class="half">
+                            <label for="imageFile">Image file</label>
+                            <input id="imageFile" type="file" th:field="*{imageFile}" accept="image/*" />
+                            <div th:if="${#fields.hasErrors('imageFile')}" style="color:#991b1b;" th:errors="*{imageFile}"></div>
+                        </div>
+                    </div>
+                    <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:12px;">
+                        <button type="reset" class="btn" style="background:#6b7280;">Reset</button>
+                        <button type="submit" class="btn">Create</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="card">
+                <h2 style="margin:0 0 12px; font-size:18px;">Foods list</h2>
+                <div th:if="${#lists.isEmpty(foods)}" class="muted">No foods yet.</div>
+                <table th:if="${!#lists.isEmpty(foods)}">
+                    <thead>
+                    <tr>
+                        <th>Image</th>
+                        <th>Name</th>
+                        <th>Category</th>
+                        <th>Price</th>
+                        <th>Status</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="f : ${foods}">
+                        <td>
+                            <img th:if="${!#strings.isEmpty(f.imageUrl)}" th:src="${f.imageUrl}" alt="thumb" class="img-thumb" />
+                            <span th:if="${#strings.isEmpty(f.imageUrl)}" class="muted">n/a</span>
+                        </td>
+                        <td th:text="${f.name}"></td>
+                        <td th:text="${f.category != null ? f.category.name : 'n/a'}"></td>
+                        <td th:text="${#numbers.formatDecimal(f.basePrice, 1, 'COMMA', 2, 'POINT')}"></td>
+                        <td><span th:text="${f.active} ? 'Active' : 'Inactive'"></span></td>
+                        <td><a class="btn small" th:href="@{'/admin/foods/' + ${f.id} + '/edit'}">Edit</a></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
+</body>
+</html>
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Admin - Categories</title>
+    <style>
+        .layout { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
+        .container { max-width: 1000px; margin: 24px auto; padding: 0 16px; }
+        .card { background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 16px; }
+        .inline-form { display:flex; gap:8px; align-items:center; }
+        .inline-input { width: 260px; }
+        .muted { color:#6b7280; }
+        label { display:block; font-weight:600; margin-bottom:6px; }
+        input[type=text] { width:100%; padding:9px 10px; border:1px solid #d1d5db; border-radius:6px; }
+        .btn { background:#2563eb; color:#fff; border:none; border-radius:6px; padding:8px 14px; cursor:pointer; }
+        .btn.small { padding:6px 10px; font-size:13px; }
+    </style>
+</head>
+<body>
+<div class="layout">
+    <aside th:replace="fragments/admin-sidebar :: sidebar"></aside>
+    <main>
+        <div class="container">
+            <h1 style="margin:0 0 16px">Categories</h1>
+
+            <div class="card" style="margin-bottom:16px;">
+                <form th:action="@{/admin/categories}" th:object="${categoryForm}" method="post">
+                    <label for="name">Add new category</label>
+                    <div style="display:flex; gap:8px;">
+                        <input id="name" type="text" th:field="*{name}" placeholder="Category name" />
+                        <button type="submit" class="btn">Add</button>
+                    </div>
+                    <div th:if="${#fields.hasErrors('name')}" style="color:#991b1b; margin-top:8px;" th:errors="*{name}"></div>
+                </form>
+            </div>
+
+            <div class="card">
+                <h2 style="margin:0 0 12px; font-size:18px;">Existing categories</h2>
+                <div th:if="${#lists.isEmpty(categories)}" class="muted">No categories yet.</div>
+                <ul th:if="${!#lists.isEmpty(categories)}" style="list-style:none; padding:0; margin:0;">
+                    <li th:each="c : ${categories}" style="padding:8px 0; border-bottom:1px solid #f3f4f6;">
+                        <form class="inline-form" th:action="@{'/admin/categories/' + ${c.id}}" method="post">
+                            <input class="inline-input" type="text" name="name" th:value="${c.name}" />
+                            <button type="submit" class="btn small">Rename</button>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </main>
+</div>
+</body>
+</html>
+

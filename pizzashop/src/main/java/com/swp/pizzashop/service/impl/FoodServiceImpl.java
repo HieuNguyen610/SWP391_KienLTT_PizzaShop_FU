@@ -41,7 +41,6 @@ public class FoodServiceImpl implements FoodService {
                 .basePrice(form.getBasePrice())
                 .imageUrl(imageUrl)
                 .isActive(form.isActive())
-                .isDeleted(false)
                 .category(category)
                 .build();
         Food saved = foodRepository.save(food);
@@ -80,6 +79,6 @@ public class FoodServiceImpl implements FoodService {
     @Override
     @Transactional(readOnly = true)
     public List<Food> findAll() {
-        return foodRepository.findByDeletedFalseOrderByIdDesc();
+        return foodRepository.findByIsDeletedFalseOrderByIdDesc();
     }
 }
