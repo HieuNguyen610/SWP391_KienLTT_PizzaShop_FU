@@ -13,7 +13,7 @@
         .admin-sidebar a:hover { background: #1f2937; }
         .admin-sidebar a.active { background: #2563eb; color: white; }
         .container { max-width: 1100px; margin: 24px auto; padding: 0 16px; }
-        .cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+        .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
         .card { background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 16px; }
         .card h2 { margin: 0 0 12px; font-size: 18px; }
         .kpi { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
@@ -50,25 +50,25 @@
                     <div class="kpi" th:text="${totalOrders}">0</div>
                     <div class="muted">Total orders</div>
                 </div>
-                <div class="card">
-                    <h2>Distinct statuses</h2>
-                    <div class="kpi" th:text="${orderStatusCount != null ? orderStatusCount.size() : 0}">0</div>
-                    <div class="muted">Order status types</div>
-                </div>
             </div>
 
             <div class="grid2">
                 <div class="card">
-                    <h2>Orders by status</h2>
-                    <div th:if="${#lists.isEmpty(orderStatusCount)}" class="muted">No orders yet.</div>
-                    <table th:if="${!#lists.isEmpty(orderStatusCount)}">
+                    <h2>Categories overview</h2>
+                    <div th:if="${#lists.isEmpty(categorySummaries)}" class="muted">No categories yet.</div>
+                    <table th:if="${!#lists.isEmpty(categorySummaries)}">
                         <thead>
-                        <tr><th>Status</th><th>Count</th></tr>
+                        <tr>
+                            <th>Category</th>
+                            <th style="text-align:right;">Foods</th>
+                            <th style="text-align:right;">Active foods</th>
+                        </tr>
                         </thead>
                         <tbody>
-                        <tr th:each="osc : ${orderStatusCount}">
-                            <td th:text="${osc.status}"></td>
-                            <td th:text="${osc.count}"></td>
+                        <tr th:each="cs : ${categorySummaries}">
+                            <td th:text="${cs.categoryName}"></td>
+                            <td style="text-align:right;" th:text="${cs.totalFoods}"></td>
+                            <td style="text-align:right;" th:text="${cs.activeFoods}"></td>
                         </tr>
                         </tbody>
                     </table>

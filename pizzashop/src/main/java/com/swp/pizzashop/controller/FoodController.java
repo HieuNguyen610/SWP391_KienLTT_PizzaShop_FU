@@ -1,7 +1,7 @@
 package com.swp.pizzashop.controller;
 
 import com.swp.pizzashop.form.FoodForm;
-import com.swp.pizzashop.repository.FoodCategoryRepository;
+import com.swp.pizzashop.service.FoodCategoryService;
 import com.swp.pizzashop.service.FoodService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -21,13 +21,13 @@ import java.util.Collections;
 public class FoodController {
 
     private final FoodService foodService;
-    private final FoodCategoryRepository foodCategoryRepository;
+    private final FoodCategoryService foodCategoryService;
 
     @GetMapping("/food/create")
     public String showCreateFoodForm(Model model) {
         model.addAttribute("foodForm", new FoodForm());
         try {
-            model.addAttribute("categories", foodCategoryRepository.findAll());
+            model.addAttribute("categories", foodCategoryService.findAll());
         } catch (Exception ex) {
             log.error("Failed to load categories for create food form", ex);
             model.addAttribute("categories", Collections.emptyList());
@@ -44,7 +44,7 @@ public class FoodController {
     ) {
         // Always reload categories for the form
         try {
-            model.addAttribute("categories", foodCategoryRepository.findAll());
+            model.addAttribute("categories", foodCategoryService.findAll());
         } catch (Exception ex) {
             log.error("Failed to load categories for create food POST", ex);
             model.addAttribute("categories", Collections.emptyList());

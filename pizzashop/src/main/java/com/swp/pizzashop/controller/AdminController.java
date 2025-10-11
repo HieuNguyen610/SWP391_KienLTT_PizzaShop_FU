@@ -7,6 +7,8 @@ import com.swp.pizzashop.model.FoodCategory;
 import com.swp.pizzashop.service.FoodService;
 import com.swp.pizzashop.service.FoodCategoryService;
 import com.swp.pizzashop.service.UserService;
+import com.swp.pizzashop.service.OrderService;
+import com.swp.pizzashop.dto.CategorySummary;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +18,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,6 +30,7 @@ public class AdminController {
     private final FoodService foodService;
     private final FoodCategoryService categoryService;
     private final UserService userService;
+    private final OrderService orderService;
 
     @GetMapping
     public String dashboard(Model model,
@@ -38,13 +40,20 @@ public class AdminController {
         if (err != null) model.addAttribute("error", err);
         model.addAttribute("activeSection", "dashboard");
 
-        // KPIs
         long totalUsers = userService.countByIsDeletedFalse();
         long activeUsers = userService.countByStatusAndIsDeletedFalse("ACTIVE");
         long totalOrders = 0L;
+        try {
+            totalOrders = orderService.countAll();
+        } catch (Exception ex) {
+            log.warn("Order count unavailable: {}", ex.getMessage());
+        }
         model.addAttribute("totalUsers", totalUsers);
         model.addAttribute("activeUsers", activeUsers);
         model.addAttribute("totalOrders", totalOrders);
+
+        List<CategorySummary> catSums = categoryService.getCategorySummaries();
+        model.addAttribute("categorySummaries", catSums);
 
         return "admin/dashboard";
     }
