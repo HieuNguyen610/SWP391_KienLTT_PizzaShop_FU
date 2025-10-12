@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -28,6 +29,8 @@ public class CategoryController {
     @GetMapping
     public String listCategories(@RequestParam(value = "page", defaultValue = "0") int page,
                                  @RequestParam(value = "q", required = false) String q,
+                                 @RequestParam(value = "sort", defaultValue = "id") String sort,
+                                 @RequestParam(value = "dir", defaultValue = "asc") String dir,
                                  @RequestParam(value = "msg", required = false) String msg,
                                  @RequestParam(value = "err", required = false) String err,
                                  Model model) {
@@ -36,9 +39,26 @@ public class CategoryController {
         if (err != null) model.addAttribute("error", err);
 
         int pageIndex = Math.max(page, 0);
-        Pageable pageable = PageRequest.of(pageIndex, 10);
+
+        // sanitize sort field and direction
+        String sortField;
+        switch (sort) {
+            case "id":
+            case "name":
+            case "description":
+                sortField = sort;
+                break;
+            default:
+                sortField = "id";
+        }
+        String safeDir = (dir != null && dir.equalsIgnoreCase("desc")) ? "desc" : "asc";
+        Sort.Direction direction = safeDir.equals("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
+
+        Pageable pageable = PageRequest.of(pageIndex, 10, Sort.by(direction, sortField));
         Page<FoodCategory> pageData = categoryService.findPage(q, pageable);
         model.addAttribute("q", q);
+        model.addAttribute("sort", sortField);
+        model.addAttribute("dir", safeDir);
         model.addAttribute("pageData", pageData);
         model.addAttribute("categories", pageData.getContent());
         return "admin/categories";

@@ -25,7 +25,11 @@
                 <div class="toolbar">
                     <div class="left">
                         <form th:action="@{/admin/categories}" method="get" class="inline-form">
-                            <input type="text" name="q" th:value="${q}" placeholder="Search by name..." />
+                            <label for="q" class="visually-hidden">Search by name</label>
+                            <input id="q" type="text" name="q" th:value="${q}" placeholder="Search by name..." />
+                            <!-- preserve sort/dir when searching -->
+                            <input type="hidden" name="sort" th:value="${sort}" />
+                            <input type="hidden" name="dir" th:value="${dir}" />
                             <button type="submit" class="btn secondary">Search</button>
                         </form>
                     </div>
@@ -39,9 +43,21 @@
                 <table class="table-fixed" th:if="${!#lists.isEmpty(categories)}">
                     <thead>
                     <tr>
-                        <th style="width:80px;">ID</th>
-                        <th style="width:220px;">Name</th>
-                        <th>Description</th>
+                        <th style="width:80px;">
+                            <span>ID</span>
+                            <a class="ml-4" th:href="@{/admin/categories(page=0, q=${q}, sort='id', dir='asc')}" th:classappend="${(sort=='id' and dir=='asc')} ? ' active' : ''">▲</a>
+                            <a class="ml-2" th:href="@{/admin/categories(page=0, q=${q}, sort='id', dir='desc')}" th:classappend="${(sort=='id' and dir=='desc')} ? ' active' : ''">▼</a>
+                        </th>
+                        <th style="width:220px;">
+                            <span>Name</span>
+                            <a class="ml-4" th:href="@{/admin/categories(page=0, q=${q}, sort='name', dir='asc')}" th:classappend="${sort=='name' and dir=='asc'} ? ' active'">▲</a>
+                            <a class="ml-2" th:href="@{/admin/categories(page=0, q=${q}, sort='name', dir='desc')}" th:classappend="${sort=='name' and dir=='desc'} ? ' active'">▼</a>
+                        </th>
+                        <th>
+                            <span>Description</span>
+                            <a class="ml-4" th:href="@{/admin/categories(page=0, q=${q}, sort='description', dir='asc')}" th:classappend="${sort=='description' and dir=='asc'} ? ' active'">▲</a>
+                            <a class="ml-2" th:href="@{/admin/categories(page=0, q=${q}, sort='description', dir='desc')}" th:classappend="${sort=='description' and dir=='desc'} ? ' active'">▼</a>
+                        </th>
                         <th style="width:140px;">Status</th>
                         <th style="width:160px;"></th>
                     </tr>
@@ -50,33 +66,34 @@
                     <tr th:each="c : ${categories}">
                         <td class="cell-id" th:text="${c.id}"></td>
                         <td>
-                            <span class="table-text-ellipsis" th:text="${c.name}" th:attr="title=${c.name}"></span>
+                            <span class="table-text-ellipsis" th:text="${c.name}" th:title="${c.name}"></span>
                         </td>
                         <td>
-                            <span class="table-text-ellipsis" th:text="${#strings.isEmpty(c.description) ? '-' : c.description}" th:attr="title=${c.description}"></span>
+                            <span class="table-text-ellipsis" th:if="${c.description == null or #strings.isEmpty(c.description)}">-</span>
+                            <span class="table-text-ellipsis" th:if="${c.description != null and not #strings.isEmpty(c.description)}" th:text="${c.description}" th:title="${c.description}"></span>
                         </td>
                         <td class="cell-status">
                             <span th:classappend="${c.isDeleted} ? ' status-deleted' : ' status-active'" class="status-pill" th:text="${c.isDeleted} ? 'Deleted' : 'Active'"></span>
                         </td>
                         <td class="actions-cell text-right">
-                            <a class="btn" th:href="@{'/admin/categories/' + ${c.id} + '/edit'}">Edit</a>
-                            <form th:if="${!c.isDeleted}" th:action="@{'/admin/categories/' + ${c.id} + '/delete'}" method="post" class="inline-block ml-6" data-confirm="Delete this category?" data-confirm-title="Confirm delete" data-confirm-ok="Delete" data-confirm-cancel="Cancel">
+                            <a class="btn" th:href="@{/admin/categories/{id}/edit(id=${c.id})}">Edit</a>
+                            <form th:if="${c.isDeleted == null or c.isDeleted == false}" th:action="@{/admin/categories/{id}/delete(id=${c.id})}" method="post" class="inline-block ml-6" data-confirm="Delete this category?" data-confirm-title="Confirm delete" data-confirm-ok="Delete" data-confirm-cancel="Cancel">
                                 <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                                 <button type="submit" class="btn danger">Delete</button>
                             </form>
-                            <button th:if="${c.isDeleted}" class="btn danger ml-6" disabled>Delete</button>
+                            <button th:if="${c.isDeleted != null and c.isDeleted}" class="btn danger ml-6" disabled>Delete</button>
                         </td>
                     </tr>
                     </tbody>
                 </table>
 
                 <div class="pagination" th:if="${pageData != null && pageData.totalPages > 1}">
-                    <a th:if="${!pageData.first}" th:href="@{/admin/categories(page=${pageData.number - 1}, q=${q})}">Prev</a>
+                    <a th:if="${!pageData.first}" th:href="@{/admin/categories(page=${pageData.number - 1}, q=${q}, sort=${sort}, dir=${dir})}">Prev</a>
                     <span th:each="i : ${#numbers.sequence(0, pageData.totalPages - 1)}" th:classappend="${i} == ${pageData.number} ? 'active'">
-                        <a th:if="${i} != ${pageData.number}" th:href="@{/admin/categories(page=${i}, q=${q})}" th:text="${i + 1}"></a>
+                        <a th:if="${i} != ${pageData.number}" th:href="@{/admin/categories(page=${i}, q=${q}, sort=${sort}, dir=${dir})}" th:text="${i + 1}"></a>
                         <span th:if="${i} == ${pageData.number}" th:text="${i + 1}"></span>
                     </span>
-                    <a th:if="${!pageData.last}" th:href="@{/admin/categories(page=${pageData.number + 1}, q=${q})}">Next</a>
+                    <a th:if="${!pageData.last}" th:href="@{/admin/categories(page=${pageData.number + 1}, q=${q}, sort=${sort}, dir=${dir})}">Next</a>
                 </div>
             </div>
         </div>
