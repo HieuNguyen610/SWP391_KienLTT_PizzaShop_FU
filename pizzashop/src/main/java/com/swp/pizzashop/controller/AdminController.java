@@ -16,6 +16,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Controller
@@ -40,14 +41,17 @@ public class AdminController {
         long totalUsers = userService.countByIsDeletedFalse();
         long activeUsers = userService.countByStatusAndIsDeletedFalse("ACTIVE");
         long totalOrders = 0L;
+        BigDecimal totalRevenue = BigDecimal.ZERO;
         try {
             totalOrders = orderService.countAll();
+            totalRevenue = orderService.totalRevenue();
         } catch (Exception ex) {
-            log.warn("Order count unavailable: {}", ex.getMessage());
+            log.warn("Order stats unavailable: {}", ex.getMessage());
         }
         model.addAttribute("totalUsers", totalUsers);
         model.addAttribute("activeUsers", activeUsers);
         model.addAttribute("totalOrders", totalOrders);
+        model.addAttribute("totalRevenue", totalRevenue);
 
         List<CategorySummary> catSums = categoryService.getCategorySummaries();
         model.addAttribute("categorySummaries", catSums);

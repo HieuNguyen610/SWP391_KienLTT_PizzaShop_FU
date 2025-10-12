@@ -17,7 +17,8 @@
             <div th:if="${success}" class="card alert-success" th:text="${success}"></div>
             <div th:if="${error}" class="card alert-error" th:text="${error}"></div>
 
-            <div class="cards">
+            <!-- Row 1: Users KPIs -->
+            <div class="cards-2">
                 <div class="card">
                     <h2>Users</h2>
                     <div class="kpi" th:text="${totalUsers}">0</div>
@@ -28,10 +29,19 @@
                     <div class="kpi" th:text="${activeUsers}">0</div>
                     <div class="muted">Status = ACTIVE</div>
                 </div>
+            </div>
+
+            <!-- Row 2: Orders and Total revenue KPIs -->
+            <div class="cards-2" style="margin-top:16px;">
                 <div class="card">
                     <h2>Orders</h2>
                     <div class="kpi" th:text="${totalOrders}">0</div>
                     <div class="muted">Total orders</div>
+                </div>
+                <div class="card">
+                    <h2>Total revenue</h2>
+                    <div class="kpi" th:text="${'$' + #numbers.formatDecimal((totalRevenue != null ? totalRevenue : 0), 1, 'COMMA', 2, 'POINT')}">0.00</div>
+                    <div class="muted">Sum of order total price</div>
                 </div>
             </div>
 

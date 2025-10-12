@@ -8,6 +8,11 @@
 .admin-sidebar a.active { background: #2563eb; color: white; }
 .container { max-width: 1100px; margin: 24px auto; padding: 0 16px; }
 .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.cards-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+/* Optional: responsive collapse to 1 column on narrow screens */
+@media (max-width: 640px) {
+  .cards-2 { grid-template-columns: 1fr; }
+}
 .card { background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 16px; }
 .card h2 { margin: 0 0 12px; font-size: 18px; }
 .kpi { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
