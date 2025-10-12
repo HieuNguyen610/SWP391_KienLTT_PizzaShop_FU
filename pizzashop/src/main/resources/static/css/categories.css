@@ -77,3 +77,13 @@ label { font-weight: 600; }
 
 /* Keep compact single-line rows for fixed-width cells */
 .cell-id, .cell-status, .actions-cell { white-space: nowrap; }
+
+/* Elegant sort icons */
+.sort-icons { margin-left: 6px; display: inline-flex; gap: 6px; vertical-align: middle; }
+.sort-icons a { color:#9ca3af; font-size: 14px; line-height: 1; padding: 2px 4px; border-radius: 4px; transition: color .15s ease, background-color .15s ease; }
+.sort-icons a:hover { color:#111827; background:#f3f4f6; }
+.sort-icons a.active { color:#2563eb; background:#e5effe; }
+.sort-icons i { pointer-events: none; }
+
+/* Accessibility helper */
+.visually-hidden { position:absolute !important; height:1px; width:1px; overflow:hidden; clip:rect(1px, 1px, 1px, 1px); white-space:nowrap; }
