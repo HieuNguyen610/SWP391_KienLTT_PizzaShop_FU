@@ -47,9 +47,10 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http, UserDetailsService userDetailsService, AuthenticationFailureHandler authenticationFailureHandler) throws Exception {
         http
             .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/css/**", "/js/**", "/images/**", "/webfonts/**", "/favicon.ico").permitAll()
                 .requestMatchers("/", "/login", "/register", "/verify", "/do-login",
                                  "/forgot-password", "/reset-password", "/reset-password/**",
-                                 "/css/**", "/js/**", "/images/**", "/static/**", "/favicon.ico").permitAll()
+                                 "/menu_03", "/menu_03.html").permitAll()
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form

@@ -20,7 +20,7 @@ INSERT INTO user_roles (user_id, role_id) VALUES
 
 -- Addresses
 INSERT INTO addresses (user_id, address_line, city, district, phone, is_default) VALUES
-(1, '123 Pizza St', 'PizzaCity', 'Central', '0123456789', TRUE);
+(1, '123 Pizza St', 'PizzaCity', 'Central', '0123456789', 1);
 
 -- Food Categories
 INSERT INTO food_categories (name, description) VALUES
@@ -78,8 +78,8 @@ INSERT INTO food_ingredients (food_id, ingredient_id, amount) VALUES
 
 -- Discounts
 INSERT INTO discounts (code, description, discount_type, value, valid_from, valid_to, is_active) VALUES
-('WELCOME10', '10% off for new customers', 'PERCENT', 10, '2025-01-01', '2025-12-31', TRUE),
-('FREESHIP', 'Free shipping', 'AMOUNT', 2, '2025-01-01', '2025-12-31', TRUE);
+('WELCOME10', '10% off for new customers', 'PERCENT', 10, '2025-01-01', '2025-12-31', 1),
+('FREESHIP', 'Free shipping', 'AMOUNT', 2, '2025-01-01', '2025-12-31', 1);
 
 -- Orders
 INSERT INTO orders (user_id, order_time, status, total_price, payment_method, delivery_address_id, discount_id) VALUES
