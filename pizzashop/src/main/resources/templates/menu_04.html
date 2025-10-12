@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Menu</title>
+    <!-- Only core libs + our page CSS (no style.css) -->
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" href="/css/bootstrap.min.css" />
+    <link rel="stylesheet" th:href="@{/css/all.min.css}" href="/css/all.min.css" />
+    <link rel="stylesheet" th:href="@{/css/menu_04.css}" href="/css/menu_04.css" />
+</head>
+<body>
+<div th:replace="~{fragments/header :: page_header}"></div>
+
+<section class="menu04-breadcrumb" th:style="|background-image:url(@{/images/breadcrumb_bg.jpg});|">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="crumb-text">
+                    <h1>Menu</h1>
+                    <ul class="crumb-list">
+                        <li><a th:href="@{/}">Home</a></li>
+                        <li>Menu</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="menu04 mt-4 mb-5">
+    <div class="container">
+        <div class="row g-4">
+            <!-- Sidebar -->
+            <aside class="col-xl-3 col-lg-4 order-2 order-lg-1">
+                <div class="menu04-sidebar sticky-top">
+                    <!-- Search -->
+                    <div class="side-card">
+                        <h2 class="side-title">Search</h2>
+                        <form class="d-flex gap-2" role="search">
+                            <input class="form-control" type="search" placeholder="Search here..." aria-label="Search" />
+                            <button class="btn btn-accent" type="submit" aria-label="Search">
+                                <i class="far fa-search"></i>
+                            </button>
+                        </form>
+                    </div>
+                    <!-- Price Filter (UI only) -->
+                    <div class="side-card">
+                        <h2 class="side-title">Pricing Filter</h2>
+                        <div class="range-ui">
+                            <input type="range" class="form-range" min="0" max="1000" value="500" aria-label="Price range" />
+                            <div class="d-flex justify-content-between small text-muted"><span>0 $</span><span>1000 $</span></div>
+                        </div>
+                    </div>
+                    <!-- Categories -->
+                    <div class="side-card">
+                        <h2 class="side-title">Categories</h2>
+                        <ul class="category-list">
+                            <li th:each="c : ${categories}">
+                                <a href="#">
+                                    <span class="label"><i class="far fa-caret-right me-2"></i><span th:text="${c.name}">Category</span></span>
+                                    <span class="count" th:text="${counts[c.id] != null ? '(' + counts[c.id] + ')' : '(0)'}">(0)</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    <!-- Tags (static examples) -->
+                    <div class="side-card">
+                        <h2 class="side-title">Categories</h2>
+                        <div class="tags">
+                            <a href="#" class="tag">Food</a>
+                            <a href="#" class="tag">Drinks</a>
+                            <a href="#" class="tag">Burger</a>
+                            <a href="#" class="tag">Chicken</a>
+                            <a href="#" class="tag">Pizza</a>
+                            <a href="#" class="tag">Combo</a>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Grid -->
+            <div class="col-xl-9 col-lg-8 order-1 order-lg-2">
+                <div class="row g-4">
+                    <div class="col-xl-4 col-md-6" th:each="f : ${foods}">
+                        <div class="product-card h-100">
+                            <div class="thumb">
+                                <img class="w-100" alt="food image"
+                                     th:src="${#strings.isEmpty(f.imageUrl) ? '/images/menu_img_1.jpg' : f.imageUrl}"
+                                     src="/images/menu_img_1.jpg" />
+                                <span class="badge-cat" th:text="${f.category != null ? f.category.name : 'N/A'}">Pizza</span>
+                            </div>
+                            <div class="body">
+                                <div class="rating mb-2" aria-label="5 stars">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                </div>
+                                <a class="title" href="#" th:text="${f.name}">Food name</a>
+                                <p class="desc" th:text="${#strings.defaultString(f.description,'Homemade pizza crust, pizza sauce')}">Description</p>
+                                <div class="d-flex justify-content-between align-items-center mt-3">
+                                    <a href="#" class="btn btn-sm btn-outline-dark">Add to cart</a>
+                                    <h3 class="price">
+                                        <span th:text="${#numbers.formatDecimal(f.basePrice, 1, 'COMMA', 2, 'POINT')}">$40</span>
+                                        <del th:text="${#numbers.formatDecimal(oldPrices[f.id], 1, 'COMMA', 2, 'POINT')}">$50</del>
+                                    </h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div th:if="${foods == null or #lists.isEmpty(foods)}" class="col-12">
+                        <div class="empty card p-4 text-center text-muted">No foods found.</div>
+                    </div>
+                </div>
+
+                <!-- Simple pagination placeholder -->
+                <nav class="menu04-pagination" aria-label="Pagination">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item disabled"><a class="page-link" href="#" aria-label="Previous"><i class="far fa-arrow-left"></i></a></li>
+                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                        <li class="page-item"><a class="page-link" href="#" aria-label="Next"><i class="far fa-arrow-right"></i></a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Minimal JS -->
+<script th:src="@{/js/bootstrap.bundle.min.js}" src="/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
