@@ -1,0 +1,90 @@
+@startuml
+skinparam style strictuml
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Domain" {
+  class BaseEntity {
+    - createdAt: LocalDateTime
+    - updatedAt: LocalDateTime
+    - isDeleted: Boolean
+  }
+
+  class User {
+    + id: Long
+    + firstname: String
+    + lastname: String
+    + email: String
+    + phone: String
+    + status: String
+    + roles: Set<Role>
+  }
+
+  class Address {
+    + id: Long
+    + addressLine: String
+    + city: String
+    + district: String
+    + phone: String
+    + defaultAddress: boolean
+    ..derived..
+    + getFullAddress(): String
+  }
+
+  BaseEntity <|-- User
+  BaseEntity <|-- Address
+  User "1" o-- "*" Address : owns >
+}
+
+package "Repository" {
+  interface AddressRepository {
+    + findByUserAndIsDeletedFalseOrderByDefaultAddressDescIdDesc(user: User): List<Address>
+    + countByUserAndIsDeletedFalse(user: User): long
+    + findByIdAndUser(id: Long, user: User): Optional<Address>
+    + findByIdAndUserAndIsDeletedFalse(id: Long, user: User): Optional<Address>
+    + findFirstByUserAndIsDeletedFalseOrderByIdDesc(user: User): Optional<Address>
+    + clearDefaultByUser(user: User): void
+  }
+
+  interface UserRepository {
+    + findByEmail(email: String): User
+  }
+}
+
+package "Service" {
+  interface AddressService {
+    + findByUser(user: User): List<Address>
+    + createAddress(user: User, form: AddressForm): Address
+    + findByIdForUser(id: Long, user: User): Optional<Address>
+    + updateAddress(user: User, id: Long, form: AddressForm): Address
+    + deleteAddress(user: User, id: Long): void
+    + countActiveByUser(user: User): long
+    + getMaxAddressesPerUser(): int
+  }
+
+  class AddressServiceImpl {
+    - addressRepository: AddressRepository
+    - maxAddressesPerUser: int
+  }
+
+  AddressService <|.. AddressServiceImpl
+  AddressServiceImpl ..> AddressRepository : uses
+}
+
+package "Web" {
+  class AddressController {
+    + addressBook(currentUser: User, model): String
+    + createAddress(currentUser: User, form: AddressForm, binding, ra): String
+    + editAddressForm(currentUser: User, addressId: Long, model, ra): String
+    + updateAddress(currentUser: User, addressId: Long, form: AddressForm, binding, ra): String
+    + deleteAddress(currentUser: User, addressId: Long, ra): String
+  }
+
+  class CurrentUserAdvice {
+    + currentUser(authentication): User
+  }
+}
+
+AddressController ..> AddressService : calls
+CurrentUserAdvice ..> UserRepository : resolves email
+@enduml

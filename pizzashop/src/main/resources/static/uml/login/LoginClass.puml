@@ -1,0 +1,72 @@
+@startuml
+title Login - Core Authentication Classes
+
+skinparam classAttributeIconSize 0
+
+package "Web" {
+  class AuthenticationController {
+    + showLoginForm(): String
+    + doLogin(): String
+  }
+  class LoginForm {
+    - email: String
+    - password: String
+  }
+}
+
+package "Security" {
+  class SecurityConfig {
+    + securityFilterChain(): SecurityFilterChain
+    + userDetailsService(): UserDetailsService
+    + passwordEncoder(): PasswordEncoder
+    + authenticationManager(): AuthenticationManager
+  }
+  interface AuthenticationManager
+  interface UserDetailsService
+  interface PasswordEncoder {
+    + encode(raw: String): String
+    + matches(raw: String, encoded: String): boolean
+  }
+}
+
+package "Service" {
+  interface UserService {
+    + findByEmail(email: String): User
+    + save(user: User): User
+  }
+}
+
+package "Persistence" {
+  interface UserRepository {
+    + findByEmail(email: String): User
+  }
+}
+
+package "Domain" {
+  class User {
+    - id: Long
+    + email: String
+    + password: String
+    + status: String
+    + roles: Set<Role>
+  }
+  class Role {
+    - id: Long
+    + name: String
+  }
+}
+
+AuthenticationController --> LoginForm
+AuthenticationController --> AuthenticationManager
+AuthenticationController --> UserService
+
+SecurityConfig --> UserService
+SecurityConfig --> PasswordEncoder
+SecurityConfig --> AuthenticationManager
+SecurityConfig --> UserDetailsService
+
+UserService --> UserRepository
+UserRepository --> User
+User "0..*" -- "0..*" Role
+
+@enduml

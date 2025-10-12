@@ -25,8 +25,9 @@
             <label for="password">Password</label>
             <div class="password-field">
                 <input type="password" th:field="*{password}" id="password" placeholder="Enter your password" required autocomplete="current-password" />
-                <button type="button" class="toggle-password" aria-label="Show password">
-                    <i class="far fa-eye"></i>
+                <button type="button" class="toggle-password" aria-label="Show password"
+                        data-eye="/images/eye.png" data-eye-slash="/images/eye_2.png">
+                    <img th:src="@{/images/eye.png}" src="/images/eye.png" alt="Show password" style="width:18px;height:18px;object-fit:contain;" />
                 </button>
             </div>
             <div th:if="${#fields.hasErrors('password')}" class="field-error" th:errors="*{password}"></div>
@@ -34,7 +35,7 @@
 
         <div class="form-row">
             <label class="checkbox">
-                <input type="checkbox" name="remember-me" />
+                <input type="checkbox" name="remember-me" id="remember-me" />
                 <span>Remember me</span>
             </label>
             <a href="/forgot-password" class="forgot">Forgot password</a>
@@ -45,12 +46,8 @@
         <div class="divider"><span>Or sign in with</span></div>
 
         <div class="social-buttons">
-            <a class="btn-social facebook" href="/oauth2/authorization/facebook">
-                <i class="fab fa-facebook-f"></i>
-                <span>Facebook</span>
-            </a>
             <a class="btn-social google" href="/oauth2/authorization/google">
-                <i class="fab fa-google"></i>
+                <img th:src="@{/images/google_icon.svg}" src="/images/google_icon.svg" alt="Google" class="icon" />
                 <span>Google</span>
             </a>
         </div>
@@ -61,18 +58,20 @@
 
 <script>
     (function() {
-        var toggle = document.querySelector('.toggle-password');
+        const toggle = document.querySelector('.toggle-password');
         if (!toggle) return;
+        const input = document.getElementById('password');
+        const img = toggle.querySelector('img');
+        const eye = toggle.getAttribute('data-eye');
+        const eyeSlash = toggle.getAttribute('data-eye-slash'); // second variant (eye_2.png) if desired
+
         toggle.addEventListener('click', function() {
-            var input = document.getElementById('password');
-            var icon = toggle.querySelector('i');
-            var isPwd = input.getAttribute('type') === 'password';
-            input.setAttribute('type', isPwd ? 'text' : 'password');
-            if (icon) {
-                icon.classList.toggle('fa-eye');
-                icon.classList.toggle('fa-eye-slash');
+            const showing = input.getAttribute('type') === 'text';
+            input.setAttribute('type', showing ? 'password' : 'text');
+            toggle.setAttribute('aria-label', showing ? 'Show password' : 'Hide password');
+            if (eyeSlash && img) {
+                img.src = showing ? eye : eyeSlash; // when switching to text (showing password) use eyeSlash image
             }
-            toggle.setAttribute('aria-label', isPwd ? 'Hide password' : 'Show password');
         });
     })();
 </script>

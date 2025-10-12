@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourcePerFileMappings">
+    <file url="file://$PROJECT_DIR$/00-create-pizza-shop.sql" value="80a6d2a7-1a36-40e2-8457-2108fe7fa4ed" />
+    <file url="file://$PROJECT_DIR$/01-test-data-pizza-shop.sql" value="80a6d2a7-1a36-40e2-8457-2108fe7fa4ed" />
+  </component>
+</project>
