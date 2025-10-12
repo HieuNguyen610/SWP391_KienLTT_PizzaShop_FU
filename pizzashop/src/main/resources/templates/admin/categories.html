@@ -36,7 +36,7 @@
                 </div>
 
                 <div th:if="${#lists.isEmpty(categories)}" class="muted">No categories found.</div>
-                <table th:if="${!#lists.isEmpty(categories)}">
+                <table class="table-fixed" th:if="${!#lists.isEmpty(categories)}">
                     <thead>
                     <tr>
                         <th style="width:80px;">ID</th>
@@ -48,13 +48,17 @@
                     </thead>
                     <tbody>
                     <tr th:each="c : ${categories}">
-                        <td th:text="${c.id}"></td>
-                        <td th:text="${c.name}"></td>
-                        <td th:text="${c.description}"></td>
+                        <td class="cell-id" th:text="${c.id}"></td>
                         <td>
+                            <span class="table-text-ellipsis" th:text="${c.name}" th:attr="title=${c.name}"></span>
+                        </td>
+                        <td>
+                            <span class="table-text-ellipsis" th:text="${#strings.isEmpty(c.description) ? '-' : c.description}" th:attr="title=${c.description}"></span>
+                        </td>
+                        <td class="cell-status">
                             <span th:classappend="${c.isDeleted} ? ' status-deleted' : ' status-active'" class="status-pill" th:text="${c.isDeleted} ? 'Deleted' : 'Active'"></span>
                         </td>
-                        <td class="text-right">
+                        <td class="actions-cell text-right">
                             <a class="btn" th:href="@{'/admin/categories/' + ${c.id} + '/edit'}">Edit</a>
                             <form th:if="${!c.isDeleted}" th:action="@{'/admin/categories/' + ${c.id} + '/delete'}" method="post" class="inline-block ml-6" data-confirm="Delete this category?" data-confirm-title="Confirm delete" data-confirm-ok="Delete" data-confirm-cancel="Cancel">
                                 <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />

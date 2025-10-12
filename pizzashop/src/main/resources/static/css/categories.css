@@ -68,3 +68,12 @@ label { font-weight: 600; }
 .inline-form { display:flex; gap:8px; align-items:center; }
 .inline-block { display: inline-block; }
 .text-right { text-align: right; }
+
+/* Fixed table layout so width constraints are honored */
+.table-fixed { table-layout: fixed; }
+
+/* Ensure ellipsis spans fill cell width */
+.table-text-ellipsis { display: block; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* Keep compact single-line rows for fixed-width cells */
+.cell-id, .cell-status, .actions-cell { white-space: nowrap; }
