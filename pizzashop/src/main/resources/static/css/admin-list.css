@@ -1,11 +1,11 @@
-/* Categories page specific styles */
+/* Reusable styles for admin list pages (categories, foods, etc.) */
 .layout { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
 .container { max-width: 1000px; margin: 24px auto; padding: 0 16px; }
 .card { background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 16px; }
 
 /* Table */
 table { width: 100%; border-collapse: collapse; }
-th, td { padding: 8px 10px; border-bottom: 1px solid #e5e7eb; text-align: left; }
+th, td { padding: 8px 10px; border-bottom: 1px solid #e5e7eb; text-align: left; vertical-align: middle; }
 
 /* Text helpers */
 .muted { color:#6b7280; }
@@ -23,6 +23,10 @@ label { font-weight: 600; }
 .btn.danger { background:#dc2626; }
 .btn[disabled], .btn.disabled { background:#9ca3af; cursor:not-allowed; opacity:0.6; }
 
+/* Alerts styled as cards */
+.alert-success { background:#ecfdf5; color:#065f46; border:1px solid #a7f3d0; }
+.alert-error { background:#fef2f2; color:#991b1b; border:1px solid #fecaca; }
+
 /* Pagination */
 .pagination { display:flex; gap:6px; align-items:center; justify-content:flex-end; margin-top: 12px; }
 /* Remove borders on wrappers; style only inner anchor and active number */
@@ -35,29 +39,7 @@ label { font-weight: 600; }
 .status-pill { display:inline-block; padding:2px 8px; border-radius:9999px; font-size:12px; }
 .status-active { background:#ecfdf5; color:#065f46; border:1px solid #a7f3d0; }
 .status-deleted { background:#fef2f2; color:#991b1b; border:1px solid #fecaca; }
-
-/* Add form tidy styles */
-.add-form { display:flex; gap:12px; align-items:flex-end; flex-wrap:wrap; }
-.add-form .field { display:flex; flex-direction:column; gap:6px; }
-.add-form .field input[type=text] { width: 260px; padding:9px 10px; border:1px solid #d1d5db; border-radius:6px; }
-.add-form .field.wide input[type=text] { min-width: 320px; width: 100%; }
-.add-form .actions { margin-left:auto; }
-
-/* Vertical form layout for create page */
-.add-form.vertical { flex-direction: column; align-items: stretch; }
-.add-form.vertical .field input[type=text] { width: 100%; }
-
-/* Limit field width on create form to prevent overly long inputs */
-.add-form.vertical .field { max-width: 520px; }
-.add-form.vertical .field.wide { max-width: 520px; }
-
-@media (max-width: 640px) {
-  .add-form.vertical .field,
-  .add-form.vertical .field.wide { max-width: 100%; }
-}
-
-/* Full-width form action row */
-.form-actions-row { width: 100%; display: flex; justify-content: flex-start; gap: 8px; margin-top: 12px; }
+.status-inactive { background:#f3f4f6; color:#374151; border:1px solid #e5e7eb; }
 
 /* Utilities */
 .page-title { margin: 0 0 16px; }
@@ -72,13 +54,13 @@ label { font-weight: 600; }
 /* Fixed table layout so width constraints are honored */
 .table-fixed { table-layout: fixed; }
 
-/* Ensure ellipsis spans fill cell width */
+/* Ellipsis helper */
 .table-text-ellipsis { display: block; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-/* Keep compact single-line rows for fixed-width cells */
+/* Compact cells */
 .cell-id, .cell-status, .actions-cell { white-space: nowrap; }
 
-/* Elegant sort icons */
+/* Sort icons (optional) */
 .sort-icons { margin-left: 6px; display: inline-flex; gap: 6px; vertical-align: middle; }
 .sort-icons a { color:#9ca3af; font-size: 14px; line-height: 1; padding: 2px 4px; border-radius: 4px; transition: color .15s ease, background-color .15s ease; }
 .sort-icons a:hover { color:#111827; background:#f3f4f6; }
@@ -88,5 +70,5 @@ label { font-weight: 600; }
 /* Accessibility helper */
 .visually-hidden { position:absolute !important; height:1px; width:1px; overflow:hidden; clip:rect(1px, 1px, 1px, 1px); white-space:nowrap; }
 
-/* Food image thumbnail */
+/* Thumbnail */
 .img-thumb { width: 50px; height: 50px; object-fit: cover; border-radius: 4px; border: 1px solid #e5e7eb; }

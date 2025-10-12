@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Create Food</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="/css/style.css" />
+</head>
+<body>
+<div class="container" style="max-width: 860px; margin: 24px auto; padding: 0 16px;">
+    <div class="card" style="background:#fff; border:1px solid #e5e7eb; border-radius:8px; padding:16px;">
+        <h1 class="page-title" style="margin:0 0 12px; font-size:22px;">Create Food</h1>
+        <form th:action="@{/admin/foods/create}" th:object="${foodForm}" method="post" enctype="multipart/form-data">
+            <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+            <div class="field" style="margin-bottom:10px;">
+                <label for="categoryId" style="display:block; font-weight:600; margin-bottom:6px;">Category</label>
+                <select id="categoryId" th:field="*{categoryId}" required style="width:100%; padding:9px 10px; border:1px solid #d1d5db; border-radius:6px;">
+                    <option value="" disabled>-- Select category --</option>
+                    <option th:each="c : ${categories}" th:value="${c.id}" th:text="${c.name}"></option>
+                </select>
+                <div th:if="${#fields.hasErrors('categoryId')}" class="alert-error" th:errors="*{categoryId}" style="color:#991b1b;"></div>
+            </div>
+
+            <div class="field" style="margin-bottom:10px;">
+                <label for="name" style="display:block; font-weight:600; margin-bottom:6px;">Name</label>
+                <input id="name" type="text" th:field="*{name}" maxlength="100" required style="width:100%; padding:9px 10px; border:1px solid #d1d5db; border-radius:6px;" />
+                <div th:if="${#fields.hasErrors('name')}" class="alert-error" th:errors="*{name}" style="color:#991b1b;"></div>
+            </div>
+
+            <div class="field" style="margin-bottom:10px;">
+                <label for="description" style="display:block; font-weight:600; margin-bottom:6px;">Description</label>
+                <textarea id="description" th:field="*{description}" style="width:100%; padding:9px 10px; border:1px solid #d1d5db; border-radius:6px; min-height:90px;"></textarea>
+                <div th:if="${#fields.hasErrors('description')}" class="alert-error" th:errors="*{description}" style="color:#991b1b;"></div>
+            </div>
+
+            <div class="row" style="display:flex; gap:12px;">
+                <div class="field half" style="flex:1; margin-bottom:10px;">
+                    <label for="basePrice" style="display:block; font-weight:600; margin-bottom:6px;">Base price</label>
+                    <input id="basePrice" type="number" th:field="*{basePrice}" step="0.01" min="0.01" required style="width:100%; padding:9px 10px; border:1px solid #d1d5db; border-radius:6px;" />
+                    <div th:if="${#fields.hasErrors('basePrice')}" class="alert-error" th:errors="*{basePrice}" style="color:#991b1b;"></div>
+                </div>
+                <div class="field half" style="flex:1; margin-bottom:10px;">
+                    <label for="active" style="display:block; font-weight:600; margin-bottom:6px;">Status</label>
+                    <select id="active" th:field="*{active}" style="width:100%; padding:9px 10px; border:1px solid #d1d5db; border-radius:6px;">
+                        <option th:value="true">Active</option>
+                        <option th:value="false">Inactive</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row" style="display:flex; gap:12px;">
+                <div class="field half" style="flex:1; margin-bottom:10px;">
+                    <label for="imageUrl" style="display:block; font-weight:600; margin-bottom:6px;">Image URL</label>
+                    <input id="imageUrl" type="text" th:field="*{imageUrl}" placeholder="https://..." style="width:100%; padding:9px 10px; border:1px solid #d1d5db; border-radius:6px;" />
+                    <div th:if="${#fields.hasErrors('imageUrl')}" class="alert-error" th:errors="*{imageUrl}" style="color:#991b1b;"></div>
+                </div>
+                <div class="field half" style="flex:1; margin-bottom:10px;">
+                    <label for="imageFile" style="display:block; font-weight:600; margin-bottom:6px;">Image file (optional)</label>
+                    <input id="imageFile" type="file" th:field="*{imageFile}" accept="image/*" />
+                    <div th:if="${#fields.hasErrors('imageFile')}" class="alert-error" th:errors="*{imageFile}" style="color:#991b1b;"></div>
+                </div>
+            </div>
+
+            <div style="display:flex; justify-content:flex-end; gap:8px;">
+                <a class="btn secondary" th:href="@{/admin/foods}" style="background:#6b7280; text-decoration:none; padding:8px 14px; border-radius:6px; color:#fff;">Cancel</a>
+                <button type="submit" class="btn" style="background:#2563eb; color:#fff; border:none; border-radius:6px; padding:8px 14px; cursor:pointer;">Create</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    (function(){
+        const url = document.getElementById('imageUrl');
+        const file = document.getElementById('imageFile');
+        function sync() {
+            if (!url || !file) return;
+            file.disabled = !!(url.value && url.value.trim().length > 0);
+            url.disabled = !!(file.files && file.files.length > 0);
+        }
+        if (url) url.addEventListener('input', sync);
+        if (file) file.addEventListener('change', sync);
+        sync();
+    })();
+</script>
+</body>
+</html>
+

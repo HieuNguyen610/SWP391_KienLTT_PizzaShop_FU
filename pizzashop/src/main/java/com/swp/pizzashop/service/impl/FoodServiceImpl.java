@@ -6,12 +6,16 @@ import com.swp.pizzashop.model.FoodCategory;
 import com.swp.pizzashop.repository.FoodCategoryRepository;
 import com.swp.pizzashop.repository.FoodRepository;
 import com.swp.pizzashop.service.FoodService;
+import com.swp.pizzashop.service.ImageStorageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +24,7 @@ public class FoodServiceImpl implements FoodService {
 
     private final FoodRepository foodRepository;
     private final FoodCategoryRepository categoryRepository;
+    private final ImageStorageService imageStorageService;
 
     @Override
     @Transactional
@@ -29,8 +34,8 @@ public class FoodServiceImpl implements FoodService {
 
         String imageUrl = null;
         if (form.getImageFile() != null && !form.getImageFile().isEmpty()) {
-            log.info("Image upload provided for food '{}', skipping storage (TODO)", form.getName());
-            // TODO: store file and produce a URL
+            // Store uploaded file and get public URL
+            imageUrl = imageStorageService.storeFoodImage(form.getImageFile());
         } else if (form.getImageUrl() != null && !form.getImageUrl().trim().isEmpty()) {
             imageUrl = form.getImageUrl().trim();
         }
@@ -64,8 +69,13 @@ public class FoodServiceImpl implements FoodService {
         food.setCategory(category);
 
         if (form.getImageFile() != null && !form.getImageFile().isEmpty()) {
-            log.info("Image upload provided for food update id={}, skipping storage (TODO)", id);
-            // TODO: handle upload
+            String old = food.getImageUrl();
+            String stored = imageStorageService.storeFoodImage(form.getImageFile());
+            food.setImageUrl(stored);
+            // best-effort cleanup of old stored file if it was in our uploads path
+            if (old != null && old.startsWith("/uploads/")) {
+                imageStorageService.deleteByPublicPath(old);
+            }
         } else if (form.getImageUrl() != null) {
             String url = form.getImageUrl().trim();
             food.setImageUrl(url.isEmpty() ? null : url);
@@ -80,5 +90,36 @@ public class FoodServiceImpl implements FoodService {
     @Transactional(readOnly = true)
     public List<Food> findAll() {
         return foodRepository.findByIsDeletedFalseOrderByIdDesc();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<Food> findPage(String q, Pageable pageable) {
+        String query = (q == null) ? null : q.trim();
+        if (query == null || query.isEmpty()) {
+            return foodRepository.findByIsDeletedFalse(pageable);
+        }
+        return foodRepository.findByIsDeletedFalseAndNameContainingIgnoreCase(query, pageable);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<Food> findById(Long id) {
+        return foodRepository.findById(id)
+                .filter(f -> f.getIsDeleted() == null || !f.getIsDeleted());
+    }
+
+    @Override
+    @Transactional
+    public void softDelete(Long id) {
+        Food food = foodRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Food not found: id=" + id));
+        if (Boolean.TRUE.equals(food.getIsDeleted())) {
+            log.info("Food id={} already soft-deleted", id);
+            return;
+        }
+        food.setIsDeleted(true);
+        foodRepository.save(food);
+        log.info("Soft-deleted food id={}", id);
     }
 }

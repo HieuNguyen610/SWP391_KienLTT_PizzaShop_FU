@@ -4,114 +4,68 @@
     <meta charset="UTF-8" />
     <title>Admin - Foods</title>
     <link rel="stylesheet" th:href="@{/css/dashboard.css}" href="/css/dashboard.css" />
-    <style>
-        .layout { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
-        .container { max-width: 1100px; margin: 24px auto; padding: 0 16px; }
-        .card { background:#fff; border:1px solid #e5e7eb; border-radius:8px; padding:16px; }
-        label { display:block; font-weight:600; margin-bottom:6px; }
-        input[type=text], input[type=number], input[type=file], textarea, select { width:100%; padding:9px 10px; border:1px solid #d1d5db; border-radius:6px; }
-        textarea { min-height:80px; }
-        .row { display:flex; gap:12px; }
-        .half { flex:1; }
-        .btn { background:#2563eb; color:#fff; border:none; border-radius:6px; padding:8px 14px; cursor:pointer; }
-        .btn.small { padding:6px 10px; font-size:13px; }
-        .img-thumb { width:50px; height:50px; object-fit:cover; border-radius:4px; border:1px solid #e5e7eb; }
-        table { width:100%; border-collapse:collapse; }
-        th,td{ padding:8px 10px; border-bottom:1px solid #e5e7eb; text-align:left; }
-        .muted { color:#6b7280; }
-    </style>
+    <link rel="stylesheet" th:href="@{/css/admin-list.css}" href="/css/admin-list.css" />
 </head>
 <body>
 <div class="layout">
     <aside th:replace="fragments/admin-sidebar :: sidebar"></aside>
     <main>
         <div class="container">
-            <h1 style="margin:0 0 16px">Foods</h1>
+            <h1 class="page-title">Foods</h1>
 
-            <div class="card" style="margin-bottom: 16px;">
-                <h2 style="margin:0 0 12px; font-size:18px;">Add food</h2>
-                <form th:action="@{/admin/foods}" th:object="${foodForm}" method="post" enctype="multipart/form-data">
-                    <div class="row">
-                        <div class="half">
-                            <label for="categoryId">Category</label>
-                            <select id="categoryId" th:field="*{categoryId}" required>
-                                <option value="" disabled selected>-- Select category --</option>
-                                <option th:each="cat : ${categories}" th:value="${cat.id}" th:text="${cat.name}"></option>
-                            </select>
-                            <div th:if="${#fields.hasErrors('categoryId')}" style="color:#991b1b;" th:errors="*{categoryId}"></div>
-                        </div>
-                        <div class="half">
-                            <label for="name">Name</label>
-                            <input id="name" type="text" th:field="*{name}" placeholder="Food name" maxlength="100" required />
-                            <div th:if="${#fields.hasErrors('name')}" style="color:#991b1b;" th:errors="*{name}"></div>
-                        </div>
-                    </div>
-                    <div>
-                        <label for="description">Description</label>
-                        <textarea id="description" th:field="*{description}" placeholder="Optional description"></textarea>
-                        <div th:if="${#fields.hasErrors('description')}" style="color:#991b1b;" th:errors="*{description}"></div>
-                    </div>
-                    <div class="row">
-                        <div class="half">
-                            <label for="basePrice">Base price</label>
-                            <input id="basePrice" type="number" th:field="*{basePrice}" step="0.01" min="0.01" placeholder="0.00" required />
-                            <div th:if="${#fields.hasErrors('basePrice')}" style="color:#991b1b;" th:errors="*{basePrice}"></div>
-                        </div>
-                        <div class="half">
-                            <label for="active">Status</label>
-                            <select id="active" th:field="*{active}">
-                                <option th:value="true">Active</option>
-                                <option th:value="false">Inactive</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="half">
-                            <label for="imageUrl">Image URL</label>
-                            <input id="imageUrl" type="text" th:field="*{imageUrl}" placeholder="https://..." />
-                            <div th:if="${#fields.hasErrors('imageUrl')}" style="color:#991b1b;" th:errors="*{imageUrl}"></div>
-                        </div>
-                        <div class="half">
-                            <label for="imageFile">Image file</label>
-                            <input id="imageFile" type="file" th:field="*{imageFile}" accept="image/*" />
-                            <div th:if="${#fields.hasErrors('imageFile')}" style="color:#991b1b;" th:errors="*{imageFile}"></div>
-                        </div>
-                    </div>
-                    <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:12px;">
-                        <button type="reset" class="btn" style="background:#6b7280;">Reset</button>
-                        <button type="submit" class="btn">Create</button>
-                    </div>
-                </form>
+            <div th:if="${success}" class="card alert-success" th:text="${success}"></div>
+            <div th:if="${error}" class="card alert-error" th:text="${error}"></div>
+
+            <div class="mb-12 text-right">
+                <a class="btn" th:href="@{/admin/foods/create}">Add</a>
             </div>
 
             <div class="card">
-                <h2 style="margin:0 0 12px; font-size:18px;">Foods list</h2>
-                <div th:if="${#lists.isEmpty(foods)}" class="muted">No foods yet.</div>
-                <table th:if="${!#lists.isEmpty(foods)}">
+                <div th:if="${#lists.isEmpty(foods)}" class="muted">No foods found.</div>
+                <table class="table-fixed" th:if="${!#lists.isEmpty(foods)}">
                     <thead>
                     <tr>
-                        <th>Image</th>
-                        <th>Name</th>
-                        <th>Category</th>
-                        <th>Price</th>
-                        <th>Status</th>
-                        <th></th>
+                        <th style="width:80px;">ID</th>
+                        <th style="width:240px;">Name</th>
+                        <th style="width:100px;">Category</th>
+                        <th style="width:100px;">Price</th>
+                        <th style="width:110px;">Status</th>
+                        <th class="actions-cell text-right" style="width:160px;"></th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr th:each="f : ${foods}">
+                        <td class="cell-id" th:text="${f.id}"></td>
                         <td>
-                            <img th:if="${!#strings.isEmpty(f.imageUrl)}" th:src="${f.imageUrl}" alt="thumb" class="img-thumb" />
-                            <span th:if="${#strings.isEmpty(f.imageUrl)}" class="muted">n/a</span>
+                            <span class="table-text-ellipsis" th:text="${f.name}" th:title="${f.name}"></span>
                         </td>
-                        <td th:text="${f.name}"></td>
-                        <td th:text="${f.category != null ? f.category.name : 'n/a'}"></td>
+                        <td>
+                            <span class="table-text-ellipsis" th:if="${f.category == null}">n/a</span>
+                            <span class="table-text-ellipsis" th:if="${f.category != null}" th:text="${f.category.name}" th:title="${f.category.name}"></span>
+                        </td>
                         <td th:text="${#numbers.formatDecimal(f.basePrice, 1, 'COMMA', 2, 'POINT')}"></td>
-                        <td><span th:text="${f.active} ? 'Active' : 'Inactive'"></span></td>
-                        <td><a class="btn small" th:href="@{'/admin/foods/' + ${f.id} + '/edit'}">Edit</a></td>
+                        <td class="cell-status">
+                            <span class="status-pill" th:classappend="${f.active} ? ' status-active' : ' status-inactive'" th:text="${f.active} ? 'Active' : 'Inactive'"></span>
+                        </td>
+                        <td class="actions-cell text-right">
+                            <a class="btn" th:href="@{'/admin/foods/' + ${f.id} + '/edit'}">Edit</a>
+                            <form th:action="@{'/admin/foods/' + ${f.id} + '/delete'}" method="post" class="inline-block ml-6" onsubmit="return confirm('Delete this food?');">
+                                <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                                <button type="submit" class="btn danger">Delete</button>
+                            </form>
+                        </td>
                     </tr>
                     </tbody>
                 </table>
+
+                <div class="pagination" th:if="${pageData != null && pageData.totalPages > 1}">
+                    <a th:if="${!pageData.first}" th:href="@{/admin/foods(page=${pageData.number - 1}, q=${q}, sort=${sort}, dir=${dir})}">Prev</a>
+                    <span th:each="i : ${#numbers.sequence(0, pageData.totalPages - 1)}" th:classappend="${i == pageData.number} ? 'active' : ''">
+                        <a th:if="${i} != ${pageData.number}" th:href="@{/admin/foods(page=${i}, q=${q}, sort=${sort}, dir=${dir})}" th:text="${i + 1}"></a>
+                        <span th:if="${i} == ${pageData.number}" th:text="${i + 1}"></span>
+                    </span>
+                    <a th:if="${!pageData.last}" th:href="@{/admin/foods(page=${pageData.number + 1}, q=${q}, sort=${sort}, dir=${dir})}">Next</a>
+                </div>
             </div>
         </div>
     </main>
