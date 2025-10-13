@@ -69,7 +69,8 @@
                 <label>Current image</label>
                 <div th:if="${#strings.isEmpty(foodForm.imageUrl)}" class="muted">No image</div>
                 <div th:if="${!#strings.isEmpty(foodForm.imageUrl)}" class="image-preview">
-                    <img th:src="${foodForm.imageUrl}" alt="Current food image" />
+                    <img th:if="${#strings.startsWith(foodForm.imageUrl, 'http')}" th:src="${foodForm.imageUrl}" alt="Current food image" />
+                    <img th:if="${!#strings.startsWith(foodForm.imageUrl, 'http')}" th:src="@{/{p}(p=${#strings.startsWith(foodForm.imageUrl,'/') ? #strings.substring(foodForm.imageUrl,1) : foodForm.imageUrl})}" alt="Current food image" />
                 </div>
             </div>
 

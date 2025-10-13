@@ -13,12 +13,15 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        String path = uploadsRoot.replace("\\", "/");
-        if (!path.endsWith("/")) path = path + "/";
-        // Backward compatibility: serve both /uploads/** and /images/upload/** from the same physical directory
+        String pathNew = uploadsRoot.replace("\\", "/");
+        if (!pathNew.endsWith("/")) pathNew = pathNew + "/";
+        // Backward compatibility: serve both new and legacy directories
         registry.addResourceHandler("/uploads/**")
-                .addResourceLocations("file:" + path);
+                .addResourceLocations("file:" + pathNew);
         registry.addResourceHandler("/images/upload/**")
-                .addResourceLocations("file:" + path);
+                .addResourceLocations("file:" + pathNew);
+        // Some records may have stored /upload/** (singular) paths
+        registry.addResourceHandler("/upload/**")
+                .addResourceLocations("file:" + pathNew);
     }
 }

@@ -16,7 +16,14 @@
             <div th:if="${success}" class="card alert-success" th:text="${success}"></div>
             <div th:if="${error}" class="card alert-error" th:text="${error}"></div>
 
-            <div class="mb-12 text-right">
+            <div class="mb-12" style="display:flex; gap:12px; align-items:center; justify-content:space-between;">
+                <form th:action="@{/admin/foods}" method="get" style="display:flex; gap:8px; align-items:center;">
+                    <input type="text" name="q" th:value="${q}" placeholder="Search by name..." style="min-width:260px; padding:8px 10px; border:1px solid #d1d5db; border-radius:6px;" />
+                    <input type="hidden" name="sort" th:value="${sort}" />
+                    <input type="hidden" name="dir" th:value="${dir}" />
+                    <button type="submit" class="btn">Search</button>
+                    <a th:if="${q != null && !#strings.isEmpty(q)}" class="btn secondary" th:href="@{/admin/foods(sort=${sort}, dir=${dir})}">Clear</a>
+                </form>
                 <a class="btn" th:href="@{/admin/foods/create}">Add</a>
             </div>
 

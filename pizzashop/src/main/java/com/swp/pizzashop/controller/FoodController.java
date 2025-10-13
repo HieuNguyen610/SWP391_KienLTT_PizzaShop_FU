@@ -42,18 +42,12 @@ public class FoodController {
 
         int pageIndex = Math.max(page, 0);
         // map UI sort keys to entity properties
-        String sortField;
-        switch (sort) {
-            case "id":
-                sortField = "id"; break;
-            case "price":
-                sortField = "basePrice"; break;
-            case "active":
-                sortField = "isActive"; break;
-            case "name":
-            default:
-                sortField = "name"; break;
-        }
+        String sortField = switch (sort) {
+            case "id" -> "id";
+            case "price" -> "basePrice";
+            case "active" -> "isActive";
+            default -> "name";
+        };
         String safeDir = (dir != null && dir.equalsIgnoreCase("desc")) ? "desc" : "asc";
         Sort.Direction direction = safeDir.equals("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
         Pageable pageable = PageRequest.of(pageIndex, 10, Sort.by(direction, sortField));
