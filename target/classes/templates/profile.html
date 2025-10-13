@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Profile</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="/css/style.css" />
+    <link rel="stylesheet" th:href="@{/css/profile.css}" href="/css/profile.css" />
+</head>
+<body>
+
+<div th:replace="~{fragments/header :: page_header}"></div>
+
+<main class="profile-page">
+    <div class="profile-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="card account-box">
+                <div class="account-caption">Account of</div>
+                <div class="account-name" th:text="${user != null ? user.firstname + ' ' + user.lastname : 'Your Name'}">Your Name</div>
+            </div>
+
+            <div class="card">
+                <ul class="menu">
+                    <li><a class="active" th:href="@{/profile}" href="/profile">Customer information</a></li>
+                    <li><a th:href="@{/address}" href="/address">Delivery Address Book</a></li>
+                    <li><a th:href="@{/orders}" href="/orders">Order</a></li>
+                    <li><a th:href="@{/vouchers}" href="/vouchers">My voucher</a></li>
+                    <li><a th:href="@{/foods/category/Pizza}">Pizza</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- Content -->
+        <section>
+            <div class="card section">
+                <div class="card-header">
+                    <h2 class="section-title">General information</h2>
+                </div>
+                <div class="card-body">
+                    <div class="card section">
+                        <div class="card-header">
+                            <h3 class="card-title">Account information</h3>
+                            <a class="edit-link" th:href="@{/profile/edit}" href="/profile/edit">Edit</a>
+                        </div>
+                        <div class="card-body">
+                            <ul class="info-list">
+                                <li>
+                                    <span class="label">Full name:</span>
+                                    <span class="value" th:text="${user != null ? user.firstname + ' ' + user.lastname : '—'}">—</span>
+                                </li>
+                                <li>
+                                    <span class="label">Phone number:</span>
+                                    <span class="value" th:text="${user != null ? user.phone : '—'}">—</span>
+                                </li>
+                                <li>
+                                    <span class="label">Email:</span>
+                                    <span class="value" th:text="${user != null ? user.email : '—'}">—</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="card section">
+                        <div class="card-header">
+                            <h3 class="card-title" style="color:#2563eb;">Change Password</h3>
+                        </div>
+                        <div class="card-body">
+                            <div th:if="${pwdError}" class="alert alert-error" th:text="${pwdError}"></div>
+                            <div th:if="${pwdSuccess}" class="alert alert-success" th:text="${pwdSuccess}"></div>
+
+                            <form th:action="@{/profile/change-password}" method="post" class="form-grid">
+                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+                                <label for="oldPassword" class="required">Old password:</label>
+                                <input id="oldPassword" name="oldPassword" type="password" required autocomplete="current-password" />
+
+                                <label for="newPassword" class="required">New password:</label>
+                                <input id="newPassword" name="newPassword" type="password" required autocomplete="new-password" minlength="8" />
+
+                                <label for="confirmPassword" class="required">New password confirm:</label>
+                                <input id="confirmPassword" name="confirmPassword" type="password" required autocomplete="new-password" minlength="8" />
+
+                                <div></div>
+                                <button type="submit" class="btn-primary">Change Password</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</main>
+
+<div th:replace="~{fragments/header :: page_footer}"></div>
+
+</body>
+</html>

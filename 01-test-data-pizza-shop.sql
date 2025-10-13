@@ -22,11 +22,18 @@ INSERT INTO user_roles (user_id, role_id) VALUES
 INSERT INTO addresses (user_id, address_line, city, district, phone, is_default) VALUES
 (1, '123 Pizza St', 'PizzaCity', 'Central', '0123456789', 1);
 
--- Food Categories
+-- Food Categories (extended)
 INSERT INTO food_categories (name, description) VALUES
-('Pizza', 'Italian-style flatbread with various toppings'),
-('Pasta', 'Italian pasta dishes'),
-('Drink', 'Beverages');
+                                                    ('Pizza', 'Italian-style flatbread with various toppings'),
+                                                    ('Pasta', 'Italian pasta dishes'),
+                                                    ('Drink', 'Beverages'),
+                                                    ('Dessert', 'Sweet treats to finish your meal'),
+                                                    ('Appetizer', 'Small dishes to start your meal'),
+                                                    ('Salad', 'Fresh vegetable salads'),
+                                                    ('Combo', 'Special meal combinations for sharing'),
+                                                    ('Seafood', 'Dishes made with fresh seafood'),
+                                                    ('Vegan', 'Plant-based healthy options'),
+                                                    ('Special', 'Limited-time or seasonal items');
 
 -- Foods
 INSERT INTO foods (name, description, base_price, image_url, category_id) VALUES
@@ -116,3 +123,45 @@ INSERT INTO reviews (user_id, order_id, food_id, rating, comment) VALUES
 -- Invoices
 INSERT INTO invoices (order_id, total, status, file_url) VALUES
 (1, 16.00, 'ISSUED', 'invoice-1.pdf');
+
+INSERT INTO menu_items (name, description, price, image_url, available, category_id) VALUES
+-- Pizza
+('Margherita', 'Classic cheese and tomato pizza with mozzarella and basil', 5.00, 'margherita.jpg', 1, 1),
+('Pepperoni', 'Loaded with spicy pepperoni slices and cheese', 6.50, 'pepperoni.jpg', 1, 1),
+('Veggie Delight', 'Topped with mushrooms, bell peppers, and olives', 6.00, 'veggie.jpg', 1, 1),
+('Seafood Pizza', 'Pizza with shrimp, squid, and creamy sauce', 8.00, 'seafood_pizza.jpg', 1, 1),
+
+-- Pasta
+('Spaghetti Carbonara', 'Creamy pasta with bacon, egg, and cheese', 7.50, 'carbonara.jpg', 1, 2),
+('Fettuccine Alfredo', 'Pasta in rich creamy Alfredo sauce', 7.00, 'alfredo.jpg', 1, 2),
+('Lasagna', 'Layered pasta with cheese and meat sauce', 8.50, 'lasagna.jpg', 1, 2),
+
+-- Drinks
+('Lemonade', 'Refreshing fresh lemonade', 2.00, 'lemonade.jpg', 1, 3),
+('Iced Coffee', 'Cold brewed coffee with ice', 2.50, 'iced_coffee.jpg', 1, 3),
+('Coke', 'Chilled Coca-Cola can (330ml)', 1.80, 'coke.jpg', 1, 3),
+
+-- Desserts
+('Chocolate Cake', 'Rich and moist chocolate cake slice', 3.50, 'chocolate_cake.jpg', 1, 4),
+('Tiramisu', 'Italian layered dessert with coffee and mascarpone', 4.00, 'tiramisu.jpg', 1, 4),
+('Cheesecake', 'Classic baked cheesecake with berry topping', 4.20, 'cheesecake.jpg', 1, 4),
+
+-- Appetizers
+('Garlic Bread', 'Crispy garlic bread with butter and herbs', 3.00, 'garlic_bread.jpg', 1, 5),
+('Mozzarella Sticks', 'Fried mozzarella cheese sticks with sauce', 4.50, 'mozzarella_sticks.jpg', 1, 5),
+
+-- Salad
+('Caesar Salad', 'Fresh lettuce with Caesar dressing and croutons', 5.00, 'caesar_salad.jpg', 1, 6),
+('Greek Salad', 'Salad with feta cheese, olives, and tomatoes', 5.50, 'greek_salad.jpg', 1, 6),
+
+-- Combos
+('Family Combo', '2 pizzas + 1 drink + 1 dessert', 20.00, 'family_combo.jpg', 1, 7),
+('Couple Combo', '1 pizza + 2 drinks + 1 dessert', 14.00, 'couple_combo.jpg', 1, 7),
+
+-- Vegan
+('Vegan Pizza', 'Pizza with vegan cheese and vegetables', 6.50, 'vegan_pizza.jpg', 1, 9),
+('Vegan Salad', 'Mix of fresh greens, chickpeas, and dressing', 5.50, 'vegan_salad.jpg', 1, 9),
+
+-- Specials
+('BBQ Chicken Pizza', 'Pizza topped with BBQ sauce and grilled chicken', 7.50, 'bbq_chicken.jpg', 1, 10),
+('Seafood Pasta', 'Pasta with shrimp and garlic sauce', 8.00, 'seafood_pasta.jpg', 1, 10);

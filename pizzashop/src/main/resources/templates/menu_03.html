@@ -285,22 +285,32 @@
                 <div class="menu_sidebar sticky_sidebar">
                     <div class="sidebar_wizard sidebar_search">
                         <h2>Search</h2>
-                        <form>
-                            <input type="text" placeholder="Search here...">
+                        <form th:action="@{'/menu_03'}" method="get">
+                            <input type="text" name="search" placeholder="Search here..." th:value="${search}">
+                            <input type="hidden" name="categoryId" th:value="${selectedCategoryId}" />
+                            <input type="hidden" name="minPrice" th:value="${minPrice}" />
+                            <input type="hidden" name="maxPrice" th:value="${maxPrice}" />
                             <button type="submit"><i class="far fa-search"></i></button>
                         </form>
                     </div>
                     <div class="sidebar_wizard sidebar_price_ranger mt_25">
                         <h2>Pricing Filter</h2>
-                        <div class="price_ranger">
-                            <input type="hidden" id="slider_range" class="flat-slider" />
-                        </div>
+                        <form th:action="@{'/menu_03'}" method="get" id="priceForm">
+                            <input type="hidden" name="categoryId" th:value="${selectedCategoryId}" />
+                            <input type="hidden" name="search" th:value="${search}" />
+                            <div class="price_ranger">
+                                <input type="hidden" id="slider_range" class="flat-slider" />
+                                <input type="hidden" name="minPrice" id="minPrice" th:value="${minPrice}" />
+                                <input type="hidden" name="maxPrice" id="maxPrice" th:value="${maxPrice}" />
+                            </div>
+                            <button type="submit" class="btn btn-primary mt-2">Apply Price Filter</button>
+                        </form>
                     </div>
                     <div class="sidebar_wizard sidebar_category mt_25">
                         <h2>Categories</h2>
                         <ul>
                             <li th:each="category : ${categories}">
-                                <a href="#" th:text="${category.name + ' (' + #lists.size(foods.?[category.id == category.id]) + ')'}">Category name</a>
+                                <a th:href="@{'/menu_03?categoryId=' + ${category.id} + (${search != null and !search.isEmpty()} ? '&search=' + ${search} : '') + (${minPrice != null} ? '&minPrice=' + ${minPrice} : '') + (${maxPrice != null} ? '&maxPrice=' + ${maxPrice} : '')}" th:text="${category.name + ' (' + ${counts[category.id] ?: 0} + ')'}">Category name</a>
                             </li>
                         </ul>
                     </div>
@@ -318,255 +328,29 @@
                 </div>
             </div>
             <div class="col-xl-9 col-lg-8 order-lg-2">
-                <div class="row">
-                    <div class="col-xl-4 col-sm-6 wow fadeInUp">
-                        <div class="single_menu">
-                            <div class="single_menu_img">
-                                <img src="/images/menu_img_1.jpg" alt="menu" class="img-fluid w-100">
-                                <ul>
-                                    <li><a href="#"><i class="far fa-eye"></i></a></li>
-                                    <li><a href="#"><i class="far fa-heart"></i></a></li>
-                                </ul>
+                <div class="row g-4">
+                    <div class="col-xl-4 col-md-6" th:each="food : ${foods}">
+                        <div class="product-card h-100">
+                            <div class="thumb">
+                                <img class="w-100" alt="food image" th:src="@{'/images/' + ${food.image}}" />
+                                <span class="badge-cat" th:text="${food.category.name}"></span>
                             </div>
-                            <div class="single_menu_text">
-                                <p class="rating">
+                            <div class="body">
+                                <div class="rating mb-2" aria-label="5 stars">
                                     <i class="fas fa-star"></i>
                                     <i class="fas fa-star"></i>
                                     <i class="fas fa-star"></i>
                                     <i class="fas fa-star"></i>
                                     <i class="fas fa-star"></i>
-                                </p>
-                                <a class="category" href="#">Chicken</a>
-                                <a class="title" href="menu_details.html">Daria Shevtsova</a>
-                                <p class="descrption">Homemade pizza crust, pizza sauce</p>
-                                <div class="d-flex flex-wrap align-items-center">
-                                    <a class="add_to_cart" href="#" data-bs-toggle="modal"
-                                       data-bs-target="#cartModal">Add To Cart</a>
-                                    <h3>$40 <del>$50</del></h3>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-4 col-sm-6 wow fadeInUp">
-                        <div class="single_menu">
-                            <div class="single_menu_img">
-                                <img src="/images/menu_img_2.jpg" alt="menu" class="img-fluid w-100">
-                                <ul>
-                                    <li><a href="#"><i class="far fa-eye"></i></a></li>
-                                    <li><a href="#"><i class="far fa-heart"></i></a></li>
-                                </ul>
-                            </div>
-                            <div class="single_menu_text">
-                                <p class="rating">
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                </p>
-                                <a class="category" href="#">Biryani</a>
-                                <a class="title" href="menu_details.html">Hyderabadi Biryani</a>
-                                <p class="descrption">Homemade pizza crust, pizza sauce</p>
-                                <div class="d-flex flex-wrap align-items-center">
-                                    <a class="add_to_cart" href="#" data-bs-toggle="modal"
-                                       data-bs-target="#cartModal">Add To Cart</a>
-                                    <h3>$30 <del>$45</del></h3>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-4 col-sm-6 wow fadeInUp">
-                        <div class="single_menu">
-                            <div class="single_menu_img">
-                                <img src="/images/menu_img_3.jpg" alt="menu" class="img-fluid w-100">
-                                <ul>
-                                    <li><a href="#"><i class="far fa-eye"></i></a></li>
-                                    <li><a href="#"><i class="far fa-heart"></i></a></li>
-                                </ul>
-                            </div>
-                            <div class="single_menu_text">
-                                <p class="rating">
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                </p>
-                                <a class="category" href="#">Burger</a>
-                                <a class="title" href="menu_details.html">Spicy Burger</a>
-                                <p class="descrption">Homemade pizza crust, pizza sauce</p>
-                                <div class="d-flex flex-wrap align-items-center">
-                                    <a class="add_to_cart" href="#" data-bs-toggle="modal"
-                                       data-bs-target="#cartModal">Add To Cart</a>
-                                    <h3>$59 <del>$65</del></h3>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-4 col-sm-6 wow fadeInUp">
-                        <div class="single_menu">
-                            <div class="single_menu_img">
-                                <img src="/images/menu_img_4.jpg" alt="menu" class="img-fluid w-100">
-                                <ul>
-                                    <li><a href="#"><i class="far fa-eye"></i></a></li>
-                                    <li><a href="#"><i class="far fa-heart"></i></a></li>
-                                </ul>
-                            </div>
-                            <div class="single_menu_text">
-                                <p class="rating">
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                </p>
-                                <a class="category" href="#">Pizza</a>
-                                <a class="title" href="menu_details.html">Mexican Pizza</a>
-                                <p class="descrption">Homemade pizza crust, pizza sauce</p>
-                                <div class="d-flex flex-wrap align-items-center">
-                                    <a class="add_to_cart" href="#" data-bs-toggle="modal"
-                                       data-bs-target="#cartModal">Add To Cart</a>
-                                    <h3>$36 <del>$40</del></h3>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-4 col-sm-6 wow fadeInUp">
-                        <div class="single_menu">
-                            <div class="single_menu_img">
-                                <img src="/images/menu_img_5.jpg" alt="menu" class="img-fluid w-100">
-                                <ul>
-                                    <li><a href="#"><i class="far fa-eye"></i></a></li>
-                                    <li><a href="#"><i class="far fa-heart"></i></a></li>
-                                </ul>
-                            </div>
-                            <div class="single_menu_text">
-                                <p class="rating">
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                </p>
-                                <a class="category" href="#">Kabab</a>
-                                <a class="title" href="menu_details.html">Mozzarella Sticks</a>
-                                <p class="descrption">Homemade pizza crust, pizza sauce</p>
-                                <div class="d-flex flex-wrap align-items-center">
-                                    <a class="add_to_cart" href="#" data-bs-toggle="modal"
-                                       data-bs-target="#cartModal">Add To Cart</a>
-                                    <h3>$20 <del>$30</del></h3>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-4 col-sm-6 wow fadeInUp">
-                        <div class="single_menu">
-                            <div class="single_menu_img">
-                                <img src="/images/menu_img_6.jpg" alt="menu" class="img-fluid w-100">
-                                <ul>
-                                    <li><a href="#"><i class="far fa-eye"></i></a></li>
-                                    <li><a href="#"><i class="far fa-heart"></i></a></li>
-                                </ul>
-                            </div>
-                            <div class="single_menu_text">
-                                <p class="rating">
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                </p>
-                                <a class="category" href="#">Fry</a>
-                                <a class="title" href="menu_details.html">Popcorn Chicken</a>
-                                <p class="descrption">Homemade pizza crust, pizza sauce</p>
-                                <div class="d-flex flex-wrap align-items-center">
-                                    <a class="add_to_cart" href="#" data-bs-toggle="modal"
-                                       data-bs-target="#cartModal">Add To Cart</a>
-                                    <h3>$36 <del>$45</del></h3>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-4 col-sm-6 wow fadeInUp">
-                        <div class="single_menu">
-                            <div class="single_menu_img">
-                                <img src="/images/menu_img_7.jpg" alt="menu" class="img-fluid w-100">
-                                <ul>
-                                    <li><a href="#"><i class="far fa-eye"></i></a></li>
-                                    <li><a href="#"><i class="far fa-heart"></i></a></li>
-                                </ul>
-                            </div>
-                            <div class="single_menu_text">
-                                <p class="rating">
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                </p>
-                                <a class="category" href="#">Sandwich</a>
-                                <a class="title" href="menu_details.html">Mexican Pizza</a>
-                                <p class="descrption">Homemade pizza crust, pizza sauce</p>
-                                <div class="d-flex flex-wrap align-items-center">
-                                    <a class="add_to_cart" href="#" data-bs-toggle="modal"
-                                       data-bs-target="#cartModal">Add To Cart</a>
-                                    <h3>$49 <del>$55</del></h3>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-4 col-sm-6 wow fadeInUp">
-                        <div class="single_menu">
-                            <div class="single_menu_img">
-                                <img src="/images/menu_img_8.jpg" alt="menu" class="img-fluid w-100">
-                                <ul>
-                                    <li><a href="#"><i class="far fa-eye"></i></a></li>
-                                    <li><a href="#"><i class="far fa-heart"></i></a></li>
-                                </ul>
-                            </div>
-                            <div class="single_menu_text">
-                                <p class="rating">
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                </p>
-                                <a class="category" href="#">Sandwich</a>
-                                <a class="title" href="menu_details.html">Onion Rings</a>
-                                <p class="descrption">Homemade pizza crust, pizza sauce</p>
-                                <div class="d-flex flex-wrap align-items-center">
-                                    <a class="add_to_cart" href="#" data-bs-toggle="modal"
-                                       data-bs-target="#cartModal">Add To Cart</a>
-                                    <h3>$59 <del>$69</del></h3>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-4 col-sm-6 wow fadeInUp">
-                        <div class="single_menu">
-                            <div class="single_menu_img">
-                                <img src="/images/menu_img_3.jpg" alt="menu" class="img-fluid w-100">
-                                <ul>
-                                    <li><a href="#"><i class="far fa-eye"></i></a></li>
-                                    <li><a href="#"><i class="far fa-heart"></i></a></li>
-                                </ul>
-                            </div>
-                            <div class="single_menu_text">
-                                <p class="rating">
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                </p>
-                                <a class="category" href="#">Burger</a>
-                                <a class="title" href="menu_details.html">Spicy Burger</a>
-                                <p class="descrption">Homemade pizza crust, pizza sauce</p>
-                                <div class="d-flex flex-wrap align-items-center">
-                                    <a class="add_to_cart" href="#" data-bs-toggle="modal"
-                                       data-bs-target="#cartModal">Add To Cart</a>
-                                    <h3>$59 <del>$65</del></h3>
+                                <a class="title" th:href="@{'/menu/details/' + ${food.id}}" th:text="${food.name}"></a>
+                                <p class="desc" th:text="${food.description}"></p>
+                                <div class="d-flex justify-content-between align-items-center mt-3">
+                                    <a th:href="@{'/menu/details/' + ${food.id}}" class="btn btn-sm btn-outline-dark">Xem chi tiết</a>
+                                    <h3 class="price">
+                                        <span th:text="${food.price}"></span>
+                                        <del th:text="${food.oldPrice}"></del>
+                                    </h3>
                                 </div>
                             </div>
                         </div>
@@ -838,4 +622,3 @@
 
 <!-- Mirrored from html.narzotech.com/restina/html/ltr/menu_03.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 07 Oct 2024 16:20:14 GMT -->
 </html>
-

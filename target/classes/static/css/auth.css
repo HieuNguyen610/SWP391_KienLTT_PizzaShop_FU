@@ -1,0 +1,216 @@
+body {
+  font-family: Arial, sans-serif;
+  background: #f8f8f8;
+}
+
+.container {
+  max-width: 420px;
+  margin: 60px auto;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  padding: 32px 24px;
+}
+
+/* Add card modifier for clarity */
+.auth-card { }
+
+h2, .title {
+  color: #d35400;
+  text-align: center;
+  margin: 0 0 8px;
+}
+
+.subtitle {
+  text-align: center;
+  color: #666;
+  margin: 0 0 20px;
+  font-size: 14px;
+}
+
+.form-group {
+  margin-bottom: 18px;
+}
+
+label {
+  display: block;
+  margin-bottom: 6px;
+  color: #333;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="email"] {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box; /* ensure padding does not increase total width */
+}
+
+.password-field {
+  position: relative;
+}
+
+.toggle-password {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #666;
+  padding: 4px;
+}
+
+/* Ensure room for the eye toggle so text doesn't go under the button */
+.password-field input[type="password"],
+.password-field input[type="text"] {
+  padding-right: 36px; /* reduced from 44px to avoid perceived extra length */
+}
+
+.form-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 6px 0 16px;
+}
+
+.checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #333;
+}
+
+.forgot {
+  color: #2980b9;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.btn {
+  width: 100%;
+  padding: 12px;
+  background: #d35400;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.btn:hover { background: #e67e22; }
+
+.error,
+.field-error {
+  color: #c0392b;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.success {
+  color: #1e7e34;
+  background: #e6ffed;
+  border: 1px solid #b7efc5;
+  padding: 10px 12px;
+  border-radius: 4px;
+  margin-bottom: 12px;
+}
+
+.divider {
+  position: relative;
+  text-align: center;
+  margin: 18px 0;
+  color: #888;
+  font-size: 14px;
+}
+
+.divider::before,
+.divider::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 40%;
+  height: 1px;
+  background: #e0e0e0;
+}
+
+.divider::before { left: 0; }
+.divider::after { right: 0; }
+
+.social-buttons {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 10px;
+  /* remove grid layout now that only one provider is shown */
+}
+
+/* Adjust single social button sizing */
+.social-buttons .btn-social {
+  width: auto;
+  min-width: 170px;
+  padding: 10px 20px;
+}
+
+.btn-social {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  /* width: 100%;  removed to allow intrinsic sizing */
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  text-decoration: none;
+  color: #333;
+  background: #fff;
+}
+
+/* Consistent sizing for svg/png social icons */
+.btn-social .icon {
+  width: 18px;
+  height: 18px;
+  display: inline-block;
+  object-fit: contain;
+}
+
+.btn-social.facebook { border-color: #1877f2; color: #1877f2; }
+.btn-social.google { border-color: #db4437; color: #db4437; }
+
+.btn-social:hover { background: #fafafa; }
+
+.bottom-link {
+  text-align: center;
+  font-size: 14px;
+  color: #555;
+  margin-top: 8px;
+}
+
+.bottom-link a { color: #2980b9; text-decoration: none; }
+.bottom-link a:hover { text-decoration: underline; }
+
+.link {
+  display: block;
+  text-align: center;
+  margin-top: 18px;
+  color: #2980b9;
+  text-decoration: none;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+/* ---- Reset Password & Shared Enhancements ---- */
+.helper { font-size: .85rem; color:#555; margin-top:-4px; margin-bottom:12px; }
+.rules { font-size:.72rem; line-height:1.2; background:#fafafa; border:1px solid #e3e3e3; border-radius:6px; padding:8px 10px; margin:6px 0 10px; }
+.rules li { margin-left:14px; }
+.support { font-size:.75rem; text-align:center; margin-top:14px; }
+.strength { height:6px; border-radius:3px; background:#e1e1e1; margin-top:6px; overflow:hidden; }
+.strength-bar { height:100%; width:0; background:#d33; transition:width .35s ease, background .35s ease; }
+.pw-match { font-size:.7rem; margin-top:4px; }
+.pw-match.ok { color:#118a00; }
+.pw-match.bad { color:#b30000; }
+.password-field .toggle-password { /* ensure consistent toggle inside new pages */ }

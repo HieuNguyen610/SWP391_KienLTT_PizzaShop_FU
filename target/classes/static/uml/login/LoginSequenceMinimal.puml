@@ -1,0 +1,28 @@
+@startuml
+autonumber
+
+actor User
+participant "AuthenticationController" as AC
+participant "AuthenticationManager" as AM
+participant "UserDetailsService" as UDS
+participant "UserService" as US
+database "UserRepository" as UR
+participant "ProfileController" as PC
+
+User -> AC: GET /login
+AC --> User: 200 login page
+
+User -> AC: POST /do-login (email,password)
+AC -> AM: authenticate(token)
+AM -> UDS: loadUserByUsername(email)
+UDS -> US: findByEmail(email)
+US -> UR: findByEmail(email)
+UR --> US: User
+US --> UDS: User
+UDS --> AM: UserDetails
+AM --> AC: Authentication
+AC --> User: 302 Redirect /profile
+User -> PC: GET /profile
+PC --> User: 200 profile page
+
+@enduml

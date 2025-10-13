@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pizza Shop</title>
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/all.min.css">
+    <link rel="stylesheet" href="/css/animate.css">
+    <link rel="stylesheet" href="/css/nice-select.css">
+    <link rel="stylesheet" href="/css/slick.css">
+    <link rel="stylesheet" href="/css/ranger_slider.css">
+    <link rel="stylesheet" href="/css/venobox.min.css">
+    <link rel="stylesheet" href="/css/animated_barfiller.css">
+    <link rel="stylesheet" href="/css/responsive.css">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<div th:replace="~{fragments/header :: page_header}"></div>
+
+
+<main>
+    <section class="pizza-menu">
+        <nav class="sub-category-nav">
+            <ul>
+                <li><a href="#" class="active">premium seafood</a></li>
+                <li><a href="#">special formula</a></li>
+                <li><a href="#">premium food</a></li>
+                <li><a href="#">traditional</a></li>
+                <li><a href="#">vegetarian pizza</a></li>
+            </ul>
+        </nav>
+
+        <div class="product-grid">
+            <div class="product-card" th:each="pizza : ${pizzas}">
+                <img class="product-image"
+                     th:src="${pizza.imageUrl == null ? '/images/product_img_1.jpg' : ((#strings.startsWith(pizza.imageUrl,'http') or #strings.startsWith(pizza.imageUrl,'/images/') or #strings.startsWith(pizza.imageUrl,'images/')) ? pizza.imageUrl : '/images/' + pizza.imageUrl)}"
+                     alt="Pizza Image" />
+                <h3 class="product-name" th:text="${pizza.name}">Seafood Pizza Cocktail</h3>
+                <p class="product-description" th:text="${pizza.description}">Shrimp, crab, ham and Thousand Island dressing.</p>
+                <p class="product-price">Price from only</p>
+                <p class="product-price-value" th:text="${#numbers.formatDecimal(pizza.basePrice, 0, 'COMMA', 0, 'POINT')} + 'đ'">154,000đ</p>
+                <button class="buy-now-btn">mua ngay -></button>
+            </div>
+
+            <div th:if="${pizzas.isEmpty()}">
+                <p>Hiện chưa có pizza nào trong menu. Vui lòng quay lại sau.</p>
+            </div>
+        </div>
+    </section>
+</main>
+
+
+<div th:replace="~{fragments/header :: page_footer}"></div>
+
+
+</body>
+</html>
