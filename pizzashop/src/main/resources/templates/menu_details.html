@@ -44,8 +44,8 @@
                             <div class="col-12">
                                 <div class="details_large_img">
                                     <!-- main product image bound to food.imageUrl with fallback -->
-                                    <img th:src="${#strings.isEmpty(food.imageUrl) ? '/images/product_img_1.jpg' : food.imageUrl}"
-                                         src="/images/product_img_1.jpg" alt="slider" class="img-fluid w-100">
+                                    <img th:src="${#strings.isEmpty(food.imageUrl) ? '/images/menu_img_1.jpg' : food.imageUrl}"
+                                         src="/images/menu_img_1.jpg" alt="slider" class="img-fluid w-100">
                                 </div>
                             </div>
                         </div>
@@ -53,26 +53,26 @@
                             <!-- simple thumbnails - reuse main image when there is only one -->
                             <div class="col-xl-3">
                                 <div class="details_small_img">
-                                    <img th:src="${#strings.isEmpty(food.imageUrl) ? '/images/product_img_1.jpg' : food.imageUrl}"
-                                         src="/images/product_img_1.jpg" alt="thumb" class="img-fluid w-100">
+                                    <img th:src="${#strings.isEmpty(food.imageUrl) ? '/images/menu_img_1.jpg' : food.imageUrl}"
+                                         src="/images/menu_img_1.jpg" alt="thumb" class="img-fluid w-100">
                                 </div>
                             </div>
                             <div class="col-xl-3">
                                 <div class="details_small_img">
-                                    <img th:src="${#strings.isEmpty(food.imageUrl) ? '/images/product_img_2.jpg' : food.imageUrl}"
-                                         src="/images/product_img_2.jpg" alt="thumb" class="img-fluid w-100">
+                                    <img th:src="${#strings.isEmpty(food.imageUrl) ? '/images/menu_img_2.jpg' : food.imageUrl}"
+                                         src="/images/menu_img_2.jpg" alt="thumb" class="img-fluid w-100">
                                 </div>
                             </div>
                             <div class="col-xl-3">
                                 <div class="details_small_img">
-                                    <img th:src="${#strings.isEmpty(food.imageUrl) ? '/images/product_img_3.jpg' : food.imageUrl}"
-                                         src="/images/product_img_3.jpg" alt="thumb" class="img-fluid w-100">
+                                    <img th:src="${#strings.isEmpty(food.imageUrl) ? '/images/menu_img_3.jpg' : food.imageUrl}"
+                                         src="/images/menu_img_3.jpg" alt="thumb" class="img-fluid w-100">
                                 </div>
                             </div>
                             <div class="col-xl-3">
                                 <div class="details_small_img">
-                                    <img th:src="${#strings.isEmpty(food.imageUrl) ? '/images/product_img_4.jpg' : food.imageUrl}"
-                                         src="/images/product_img_4.jpg" alt="thumb" class="img-fluid w-100">
+                                    <img th:src="${#strings.isEmpty(food.imageUrl) ? '/images/menu_img_4.jpg' : food.imageUrl}"
+                                         src="/images/menu_img_4.jpg" alt="thumb" class="img-fluid w-100">
                                 </div>
                             </div>
                         </div>
@@ -150,21 +150,29 @@
                             </div>
                         </div>
 
-                        <div class="details_cart_btn"><!-- show Add to Cart like screenshot -->
+                        <div class="details_cart_btn d-flex justify-content-end align-items-center gap-2"><!-- align to right -->
                             <a class="common_btn" href="#">
                                 <span class="icon">
-                                    <img src="/images/cart_icon_1.png" alt="order" class="img-fluid w-100">
                                 </span>
                                 add to cart
                             </a>
                             <a class="love" href="#"><i class="far fa-heart"></i></a>
                         </div>
-                        <ul class="share">
-                            <li>Share with friends:</li>
-                            <li><a href="#"><i class="fab fa-facebook-f" aria-hidden="true"></i></a></li>
-                            <li><a href="#"><i class="fab fa-twitter" aria-hidden="true"></i></a></li>
-                            <li><a href="#"><i class="fab fa-linkedin-in" aria-hidden="true"></i></a></li>
-                            <li><a href="#"><i class="fab fa-behance" aria-hidden="true"></i></a></li>
+                        <!-- Make share icons visible and in a single row -->
+                        <ul class="share d-flex align-items-center gap-2 flex-wrap" style="list-style: none; padding-left: 0; margin: 0;">
+                            <li class="me-2">Share with friends:</li>
+                            <li>
+                                <a href="#" class="text-decoration-none" aria-label="Share on Facebook"><i class="fab fa-facebook-f" aria-hidden="true"></i></a>
+                            </li>
+                            <li>
+                                <a href="#" class="text-decoration-none" aria-label="Share on Twitter"><i class="fab fa-twitter" aria-hidden="true"></i></a>
+                            </li>
+                            <li>
+                                <a href="#" class="text-decoration-none" aria-label="Share on LinkedIn"><i class="fab fa-linkedin-in" aria-hidden="true"></i></a>
+                            </li>
+                            <li>
+                                <a href="#" class="text-decoration-none" aria-label="Share on Behance"><i class="fab fa-behance" aria-hidden="true"></i></a>
+                            </li>
                         </ul>
                     </div>
                 </div>
@@ -184,8 +192,7 @@
                                 <h5>Get Up to 50% Off</h5>
                                 <h3>Burger Combo Pack</h3>
                                 <a href="#">
-                                    <span><img src="/images/cart_icon_2.png" alt="cart"
-                                            class="img-fluid w-100"></span>
+                                    <span></span>
                                     shop now
                                     <i class="far fa-arrow-right"></i>
                                 </a>
@@ -605,7 +612,7 @@
                             <ul class="details_button_area d-flex flex-wrap">
                                 <li>
                                     <a class="common_btn" href="#">
-                                        <span class="icon"><img src="/images/cart_icon_1.png" alt=""></span>
+                                        <span class="icon"></span>
                                         add to cart
                                     </a>
                                 </li>

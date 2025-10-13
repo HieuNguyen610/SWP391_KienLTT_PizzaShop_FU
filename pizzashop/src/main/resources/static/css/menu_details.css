@@ -87,7 +87,7 @@ body.menu-details-page { background: var(--bg); margin: 0; }
 .menu-details-page .menu_details_offer { background: var(--beige); border: 1px solid var(--beige-border); border-radius: var(--radius); padding: 14px; }
 .menu-details-page .menu_details_offer a { color: var(--accent); text-decoration: none; font-weight: 700; }
 .menu-details-page .menu_details_banner { margin-top: 12px; position: relative; border-radius: var(--radius); overflow: hidden; border: 1px solid #eee; }
-.menu-details-page .menu_details_banner img { display:block; width:100%; height: 210px; object-fit: cover; }
+.menu-details-page .menu_details_banner img { display:block; object-fit: cover; }
 .menu-details-page .menu_details_banner .text { position: absolute; inset: 0; display:flex; flex-direction: column; justify-content: center; align-items: flex-start; padding: 18px; color:#fff; background: linear-gradient(180deg, rgba(0,0,0,.0), rgba(0,0,0,.45)); }
 .menu-details-page .menu_details_banner a { display:inline-flex; align-items:center; gap:8px; color:#fff; text-decoration:none; font-weight:700; margin-top: 8px; }
 
@@ -128,27 +128,25 @@ body.menu-details-page { background: var(--bg); margin: 0; }
 .menu-details-page .details_cart_btn {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-top: 16px;
+  gap: 10px;
+  margin-top: 14px;
 }
 .menu-details-page .details_cart_btn .common_btn {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   background: var(--accent);
   color: #fff;
   border: none;
   border-radius: 10px;
-  padding: 12px 18px;
+  padding: 8px 14px;
+  font-size: 14px;
   font-weight: 700;
   text-decoration: none;
   box-shadow: var(--shadow);
 }
-.menu-details-page .details_cart_btn .common_btn:hover { filter: brightness(0.95); }
-.menu-details-page .common_btn .icon { display:inline-flex; width:18px; height:18px; align-items:center; justify-content:center; }
-.menu-details-page .common_btn .icon img { width: 100% !important; height: 100% !important; object-fit: contain; }
 .menu-details-page .details_cart_btn .love {
-  width: 44px; height: 44px;
+  width: 36px; height: 36px;
   display: inline-flex; align-items: center; justify-content: center;
   border: 1px solid #e5e7eb; border-radius: 50%; background: #fff; color: #111827;
   text-decoration: none;
