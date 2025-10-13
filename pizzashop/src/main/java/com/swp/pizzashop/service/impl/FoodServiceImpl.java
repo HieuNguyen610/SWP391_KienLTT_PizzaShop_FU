@@ -72,8 +72,8 @@ public class FoodServiceImpl implements FoodService {
             String old = food.getImageUrl();
             String stored = imageStorageService.storeFoodImage(form.getImageFile());
             food.setImageUrl(stored);
-            // best-effort cleanup of old stored file if it was in our uploads path
-            if (old != null && old.startsWith("/uploads/")) {
+            // best-effort cleanup of old stored file (supports /uploads/** and /images/upload/**)
+            if (old != null) {
                 imageStorageService.deleteByPublicPath(old);
             }
         } else if (form.getImageUrl() != null) {

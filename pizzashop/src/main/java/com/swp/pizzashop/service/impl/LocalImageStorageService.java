@@ -50,7 +50,8 @@ public class LocalImageStorageService implements ImageStorageService {
             }
             Files.copy(file.getInputStream(), target, StandardCopyOption.REPLACE_EXISTING);
             log.info("Stored food image at {}", target);
-            return "/uploads/foods/" + filename;
+            // Public URL under the new mapping
+            return "/images/upload/foods/" + filename;
         } catch (IOException ex) {
             log.error("Failed to store image", ex);
             throw new RuntimeException("Failed to store image");
@@ -60,10 +61,15 @@ public class LocalImageStorageService implements ImageStorageService {
     @Override
     public boolean deleteByPublicPath(String publicPath) {
         if (publicPath == null || publicPath.isBlank()) return false;
-        String prefix = "/uploads/";
-        if (!publicPath.startsWith(prefix)) return false; // only allow deleting in our uploads mapping
-        String relative = publicPath.substring(prefix.length());
-        Path target = Path.of(uploadsRoot).resolve(relative).normalize();
+        String rel = null;
+        if (publicPath.startsWith("/uploads/")) {
+            rel = publicPath.substring("/uploads/".length());
+        } else if (publicPath.startsWith("/images/upload/")) {
+            rel = publicPath.substring("/images/upload/".length());
+        } else {
+            return false; // only allow deleting within our mapped uploads paths
+        }
+        Path target = Path.of(uploadsRoot).resolve(rel).normalize();
         try {
             if (Files.exists(target)) {
                 Files.delete(target);
@@ -101,4 +107,3 @@ public class LocalImageStorageService implements ImageStorageService {
         return ext.replaceAll("[^a-z0-9]", "");
     }
 }
-
