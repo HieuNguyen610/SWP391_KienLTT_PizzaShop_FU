@@ -279,3 +279,5 @@ Use: `git lg`.
 **Q: My branch shows many unrelated commits.**
 - You branched from an outdated base. Rebase onto latest `origin/develop`.
 
+**Q: How to measure my contribution percentage?**
+powershell -ExecutionPolicy Bypass -File scripts\contrib-percentage.ps1 -Mode current -VerboseTiming
