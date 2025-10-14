@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<body>
+<!-- admin sidebar fragment -->
+<div th:fragment="sidebar">
+    <nav class="admin-sidebar">
+        <div class="brand">Pizza Admin</div>
+        <ul class="menu">
+            <li><a th:classappend="${activeSection}=='dashboard' ? ' active'" th:href="@{/admin}">Dashboard</a></li>
+            <li><a th:classappend="${activeSection}=='categories' ? ' active'" th:href="@{/admin/categories}">Categories</a></li>
+            <li><a th:classappend="${activeSection}=='foods' ? ' active'" th:href="@{/admin/foods}">Foods</a></li>
+            <li><a th:href="@{/admin/toppings}">Toppings</a></li>
+            <li><a th:href="@{/admin/orders}">Orders</a></li>
+            <li><a th:href="@{/admin/users}">Users</a></li>
+        </ul>
+    </nav>
+</div>
+</body>
+</html>
+

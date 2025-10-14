@@ -152,4 +152,14 @@ public class UserServiceImpl implements UserService {
             return ChangePasswordResult.ERROR;
         }
     }
+
+    @Override
+    public long countByIsDeletedFalse() {
+        return userRepository.countByIsDeletedFalse();
+    }
+
+    @Override
+    public long countByStatusAndIsDeletedFalse(String active) {
+        return userRepository.countByStatusAndIsDeletedFalse(active);
+    }
 }

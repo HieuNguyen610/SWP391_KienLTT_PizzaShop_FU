@@ -49,7 +49,10 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/", "/login", "/register", "/verify", "/do-login",
                                  "/forgot-password", "/reset-password", "/reset-password/**",
-                                 "/css/**", "/js/**", "/images/**", "/static/**", "/favicon.ico").permitAll()
+                                 "/css/**", "/js/**", "/images/**", "/static/**", "/favicon.ico",
+                                 "/uploads/**").permitAll()
+//                .requestMatchers("/admin/**").hasRole("ADMIN")
+//                .requestMatchers("/food/**").hasAnyRole("ADMIN", "MANAGER", "CUSTOMER")
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form
@@ -57,7 +60,7 @@ public class SecurityConfig {
                 .loginProcessingUrl("/do-login")
                 .usernameParameter("email")
                 .passwordParameter("password")
-                .defaultSuccessUrl("/profile", true)
+                .defaultSuccessUrl("/admin", true)
                 .failureHandler(authenticationFailureHandler) // use custom handler
                 .permitAll()
             )
