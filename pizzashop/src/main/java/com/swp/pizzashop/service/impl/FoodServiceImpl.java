@@ -95,11 +95,27 @@ public class FoodServiceImpl implements FoodService {
     @Override
     @Transactional(readOnly = true)
     public Page<Food> findPage(String q, Pageable pageable) {
+        // Delegate to the overloaded method without category filter
+        return findPage(q, null, pageable);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<Food> findPage(String q, Long categoryId, Pageable pageable) {
         String query = (q == null) ? null : q.trim();
-        if (query == null || query.isEmpty()) {
-            return foodRepository.findByIsDeletedFalse(pageable);
+        boolean hasQ = query != null && !query.isEmpty();
+        boolean hasCat = categoryId != null;
+
+        if (hasCat && hasQ) {
+            return foodRepository.findByIsDeletedFalseAndCategoryIdAndNameContainingIgnoreCase(categoryId, query, pageable);
         }
-        return foodRepository.findByIsDeletedFalseAndNameContainingIgnoreCase(query, pageable);
+        if (hasCat) {
+            return foodRepository.findByIsDeletedFalseAndCategoryId(categoryId, pageable);
+        }
+        if (hasQ) {
+            return foodRepository.findByIsDeletedFalseAndNameContainingIgnoreCase(query, pageable);
+        }
+        return foodRepository.findByIsDeletedFalse(pageable);
     }
 
     @Override

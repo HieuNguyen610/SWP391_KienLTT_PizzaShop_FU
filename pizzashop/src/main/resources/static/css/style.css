@@ -98,12 +98,18 @@ main {
 .product-name {
     font-size: 1.2em;
     margin: 10px 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .product-description {
     color: #666;
     font-size: 0.9em;
     min-height: 40px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .product-price-value {
@@ -124,3 +130,21 @@ main {
     width: 100%;
     margin-top: 10px;
 }
+
+/* Helper: single-line text ellipsis for table or product fields */
+.table-text-ellipsis {
+    display: block;
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap; /* keep single-line */
+}
+
+/* Optional: multi-line clamp (uncomment to use a 2-line clamp)
+.table-text-ellipsis--multiline {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+*/

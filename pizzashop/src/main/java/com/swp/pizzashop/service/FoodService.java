@@ -21,6 +21,9 @@ public interface FoodService {
     // Paged list with optional search by name
     Page<Food> findPage(String q, Pageable pageable);
 
+    // Paged list with optional search by name and optional category filter
+    Page<Food> findPage(String q, Long categoryId, Pageable pageable);
+
     Optional<Food> findById(Long id);
 
     void softDelete(Long id);

@@ -11,14 +11,19 @@ import java.util.List;
 
 @Repository
 public interface FoodRepository extends JpaRepository<Food, Long> {
+
     List<Food> findByIsDeletedFalseOrderByIdDesc();
 
     long countByCategoryAndIsDeletedFalse(FoodCategory category);
 
     long countByCategoryAndIsActiveTrueAndIsDeletedFalse(FoodCategory category);
 
-    // Admin listing helpers
     Page<Food> findByIsDeletedFalse(Pageable pageable);
 
     Page<Food> findByIsDeletedFalseAndNameContainingIgnoreCase(String name, Pageable pageable);
+
+    Page<Food> findByIsDeletedFalseAndCategoryId(Long categoryId, Pageable pageable);
+
+    Page<Food> findByIsDeletedFalseAndCategoryIdAndNameContainingIgnoreCase(Long categoryId, String name, Pageable pageable);
 }
+
