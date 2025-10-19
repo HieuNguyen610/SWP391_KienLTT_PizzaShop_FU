@@ -1,4 +1,4 @@
-package com.swp.pizzashop.controller;
+package com.swp.pizzashop.controller.admin;
 
 import com.swp.pizzashop.form.CategoryForm;
 import com.swp.pizzashop.model.FoodCategory;
