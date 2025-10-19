@@ -6,32 +6,54 @@
 .category-tabs a { padding:8px 12px; border:1px solid #ddd; border-radius:4px; text-decoration:none; color:#333; }
 .category-tabs a.active { background:#2b93d6; color:#fff; }
 
+/* Filters: search and category */
+.menu-page .menu-filters { display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin: 12px 0 20px; }
+.menu-page .menu-filters input[type="text"],
+.menu-page .menu-filters select { height:40px; padding:0 12px; border:1px solid #d0d7de; border-radius:8px; background:#fff; outline:none; color:#24292f; box-sizing:border-box; }
+.menu-page .menu-filters input[type="text"]{ min-width:220px; flex:1 1 260px; }
+.menu-page .menu-filters select{ min-width:180px; }
+.menu-page .menu-filters input[type="text"]::placeholder{ color:#8b949e; }
+.menu-page .menu-filters button[type="submit"]{ height:40px; padding:0 16px; border:none; border-radius:8px; background:#2b93d6; color:#fff; font-weight:600; cursor:pointer; }
+.menu-page .menu-filters input[type="text"]:focus,
+.menu-page .menu-filters select:focus { border-color:#2b93d6; box-shadow:0 0 0 3px rgba(43,147,214,.15); }
+.menu-page .menu-filters button[type="submit"]:hover{ background:#257fb6; }
+
 /* Slider */
 .slider { display:flex; gap:12px; overflow-x:auto; padding:12px 0; }
 .slider .slide { min-width:220px; border:1px solid #eee; border-radius:6px; padding:12px; background:#fff; text-align:center; }
 .slider .slide img { width:160px; height:160px; object-fit:cover; border-radius:50%; }
 .slide-title { margin-top:8px; font-weight:600; }
 
-/* Product grid */
-.product-grid { display:flex; gap:24px; flex-wrap:wrap; }
-.product-card { width:calc(33.333% - 16px); box-sizing:border-box; padding:18px; border:1px solid #f0f0f0; border-radius:8px; background:#fff; text-align:center; }
-.product-image { width:140px; height:140px; object-fit:cover; border-radius:50%; margin:0 auto 12px; }
-.product-name { color:#2b9b2b; font-weight:700; margin:8px 0; }
-.product-description { color:#666; font-size:0.95rem; margin:8px 0; }
+/* Product grid (scoped) */
+.menu-page .product-grid { display:flex; gap:16px; flex-wrap:wrap; }
+.menu-page .product-card { width:calc(20% - 12px); box-sizing:border-box; padding:10px; border:1px solid #f0f0f0; border-radius:6px; background:#fff; text-align:center; }
+.menu-page .product-image { width:90px; height:90px; object-fit:cover; border-radius:0; margin:0 auto 8px; }
+.menu-page .product-name { color:#2b9b2b; font-weight:700; margin:6px 0; font-size:0.95rem; }
+.menu-page .product-description { display:none; }
+.menu-page .product-price { display:none; }
+/* SHOW price visibly */
+.menu-page .product-price-value { display:block; font-size:1rem; font-weight:700; margin:4px 0; color:#d32f2f; }
 
 /* Actions */
-.product-actions { display:flex; align-items:center; justify-content:space-between; margin-top:12px; }
-.share-icons { display:flex; gap:8px; align-items:center; }
-.share-icons svg { width:20px; height:20px; cursor:pointer; fill:#555; }
+.menu-page .product-actions { display:flex; align-items:center; justify-content:center; margin-top:10px; }
+.menu-page .share-icons { display:flex; gap:8px; align-items:center; }
+.menu-page .share-icons svg { width:20px; height:20px; cursor:pointer; fill:#555; }
 
-/* Add-to-cart aligned right */
-.details_cart_btn { margin-left:auto; background:#5cb85c; color:#fff; border:none; padding:8px 12px; border-radius:6px; cursor:pointer; }
+/* Add-to-cart centered and red */
+.menu-page .details_cart_btn { margin:0 auto; background:#e53935; color:#fff; border:none; padding:8px 12px; border-radius:6px; cursor:pointer; }
+.menu-page .details_cart_btn:hover{ background:#c62828; }
 
 /* Responsive */
+@media (max-width: 1400px) {
+  .menu-page .product-card { width:calc(25% - 12px); }
+}
+@media (max-width: 1100px) {
+  .menu-page .product-card { width:calc(33.333% - 12px); }
+}
 @media (max-width: 900px) {
-  .product-card { width:calc(50% - 16px); }
+  .menu-page .product-card { width:calc(50% - 12px); }
 }
 @media (max-width: 600px) {
-  .product-card { width:100%; }
-  .product-actions { flex-direction:row; gap:8px; }
+  .menu-page .product-card { width:100%; }
+  .menu-page .product-actions { flex-direction:row; gap:8px; }
 }

@@ -14,22 +14,16 @@
 <main>
     <section class="menu-page">
         <!-- Top category tabs -->
-        <nav class="category-tabs">
-            <a href="#">Promotions</a>
-            <a href="#">Appetizers</a>
-            <a href="#" class="active">Pizza</a>
-            <a href="#">Pasta</a>
-            <a href="#">Fried Chicken</a>
-            <a href="#">Salad</a>
-            <a href="#">Baked Pasta</a>
-            <a href="#">Drinks</a>
-            <a href="#">Combo</a>
+        <nav class="category-tabs" >
+            <div th:each="cat : ${categories}">
+                <a href="#" th:value="${cat.id}" th:text="${cat.name}"></a>
+            </div>
         </nav>
 
         <!-- Filters: search by name and category -->
         <form class="menu-filters" th:action="@{/menu}" method="get">
-            <input type="text" name="q" placeholder="Search by name..." th:value="${q}">
-            <select id="categorySelect">
+            <input type="text" name="q" placeholder="Search by name..." th:value="${q}" aria-label="Search by name">
+            <select id="categorySelect" aria-label="Filter by category">
                 <option value="" th:selected="${categoryId == null}">All categories</option>
                 <option th:each="cat : ${categories}"
                         th:value="${cat.id}"
@@ -43,18 +37,6 @@
             <button type="submit">Search</button>
         </form>
 
-        <!-- Simple slider using the same image source as related food items -->
-        <div class="slider" aria-label="Featured pizzas">
-            <div class="slide" th:each="pizza, iterStat : ${pizzas}" th:if="${iterStat.index} &lt; 6">
-                <img th:src="${#strings.isEmpty(pizza.imageUrl) ? '/images/default_food.jpg' : ((#strings.startsWith(pizza.imageUrl,'http') or #strings.startsWith(pizza.imageUrl,'/images/') or #strings.startsWith(pizza.imageUrl,'images/')) ? pizza.imageUrl : '/images/' + pizza.imageUrl)}"
-                     alt="Featured Pizza"/>
-                <div class="slide-title" th:text="${pizza.name}">Pizza Name</div>
-            </div>
-            <div th:if="${pizzas == null or pizzas.isEmpty()}">
-                <p>No featured items available.</p>
-            </div>
-        </div>
-
         <!-- Product grid -->
         <div class="product-grid">
             <div class="product-card" th:each="pizza : ${pizzas}">
@@ -63,29 +45,13 @@
                      alt="Pizza Image"/>
 
                 <h3 class="product-name" th:text="${pizza.name}">Premium Seafood Pizza</h3>
-                <p class="product-description" th:text="${pizza.description}">Shrimp, crab, squid, clams and marinara
-                    sauce.</p>
 
-                <p class="product-price">Price from only</p>
                 <p class="product-price-value"
                    th:text="${#numbers.formatDecimal(pizza.basePrice, 0, 'COMMA', 0, 'POINT')} + 'đ'">154,000đ</p>
 
-                <!-- Actions: share icons (in a row) and add-to-cart button shifted to the right -->
                 <div class="product-actions">
-                    <div class="share-icons" title="Share with friends">
-                        <!-- Simple inline SVG icons to avoid external deps -->
-                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                            <path d="M18 8a3 3 0 1 0-2.83-4H8.83A3 3 0 1 0 6 8c0 .34.06.67.16.98L9 12l-2.84 3.02A3 3 0 1 0 9.17 20h6.66A3 3 0 1 0 18 8z"/>
-                        </svg>
-                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                            <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm1 15l-5-3 5-3v6z"/>
-                        </svg>
-                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                            <path d="M12 4a8 8 0 1 0 0 16 8 8 0 0 0 0-16zm1 11h-2v2h2v-2zm0-8h-2v6h2V7z"/>
-                        </svg>
-                    </div>
-
-                    <button class="details_cart_btn" th:attr="data-foodid=${pizza.id}">Add to cart</button>
+                    <!-- Changed button to anchor to navigate directly to /menu/food/{id} -->
+                    <a class="details_cart_btn" th:href="@{/menu/food/{id}(id=${pizza.id})}">Add to cart</a>
                 </div>
 
             </div>

@@ -60,7 +60,7 @@ public class SecurityConfig {
                 .loginProcessingUrl("/do-login")
                 .usernameParameter("email")
                 .passwordParameter("password")
-                .defaultSuccessUrl("/admin", true)
+                .defaultSuccessUrl("/menu", true)
                 .failureHandler(authenticationFailureHandler) // use custom handler
                 .permitAll()
             )
@@ -92,7 +92,7 @@ public class SecurityConfig {
             )
             .oauth2Login(oauth2 -> oauth2
                 .loginPage("/login")
-                .defaultSuccessUrl("/profile", true)
+                .defaultSuccessUrl("/menu", true)
             );
         return http.build();
     }

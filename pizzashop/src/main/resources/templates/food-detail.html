@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${food != null ? food.name : 'Chi tiết món'}">Chi tiết món</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/food-detail.css" />
+</head>
+<body>
+
+<div th:replace="~{fragments/header :: page_header}"></div>
+
+<main class="fd-container" th:with="priceText=${#numbers.formatDecimal(food.basePrice, 0, 'COMMA', 0, 'POINT')} + 'đ'">
+    <!-- Breadcrumb -->
+    <nav class="fd-breadcrumb">
+        <a th:href="@{/}">Trang chủ</a>
+        <span>&gt;</span>
+        <a th:href="@{/menu(categoryId=${food.category != null ? food.category.id : null})}" th:text="${food.category != null ? food.category.name : 'Menu'}">Menu</a>
+        <span>&gt;</span>
+        <span class="current" th:text="${food.name}">Tên món</span>
+    </nav>
+
+    <div class="fd-grid">
+        <!-- Left: Image + short info -->
+        <div class="fd-left">
+            <div class="fd-image-wrap">
+                <img class="fd-image" alt="Ảnh món"
+                     th:src="${#strings.isEmpty(food.imageUrl) ? '/images/default_food.jpg' : ((#strings.startsWith(food.imageUrl,'http') or #strings.startsWith(food.imageUrl,'/images/') or #strings.startsWith(food.imageUrl,'images/')) ? food.imageUrl : '/images/' + food.imageUrl)}" />
+            </div>
+            <div class="fd-basic">
+                <h1 class="fd-title" th:text="${food.name}">Tên món</h1>
+                <div class="fd-price" th:text="${priceText}">0đ</div>
+            </div>
+            <div class="fd-desc" th:if="${food.description}">
+                <h3>Mô tả</h3>
+                <p th:text="${food.description}">Mô tả món...</p>
+            </div>
+        </div>
+
+        <!-- Right: Purchase panel -->
+        <aside class="fd-right">
+            <div class="fd-card">
+                <h2 class="fd-card-title">Tùy chọn đặt món</h2>
+                <form>
+                    <div class="fd-qty">
+                        <label for="qty">Số lượng</label>
+                        <div class="fd-qty-ctrl">
+                            <button type="button" class="fd-btn fd-qty-dec" aria-label="Giảm">−</button>
+                            <input id="qty" name="qty" type="number" value="1" min="1" />
+                            <button type="button" class="fd-btn fd-qty-inc" aria-label="Tăng">+</button>
+                        </div>
+                    </div>
+
+                    <div class="fd-actions">
+                        <button type="button" class="fd-addtocart" th:attr="data-foodid=${food.id}">
+                            Thêm vào giỏ • <span th:text="${priceText}">0đ</span>
+                        </button>
+                        <a class="fd-back" th:href="@{/menu}">Quay lại menu</a>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Optional upsell placeholder (static for now) -->
+            <div class="fd-card fd-upsell">
+                <h3>Gợi ý thêm</h3>
+                <ul>
+                    <li>Thêm phô mai (+10,000đ)</li>
+                    <li>Viền phô mai (+25,000đ)</li>
+                    <li>Thêm xúc xích (+12,000đ)</li>
+                </ul>
+                <p class="fd-note">Gợi ý chỉ mang tính minh họa.</p>
+            </div>
+        </aside>
+    </div>
+</main>
+
+<div th:replace="~{fragments/header :: page_footer}"></div>
+
+<script>
+(function(){
+  const dec = document.querySelector('.fd-qty-dec');
+  const inc = document.querySelector('.fd-qty-inc');
+  const input = document.getElementById('qty');
+  if(dec && inc && input){
+    dec.addEventListener('click', function(){
+      const v = Math.max(1, (parseInt(input.value||'1',10)-1));
+      input.value = v;
+    });
+    inc.addEventListener('click', function(){
+      const v = Math.max(1, (parseInt(input.value||'1',10)+1));
+      input.value = v;
+    });
+  }
+})();
+</script>
+
+</body>
+</html>
+

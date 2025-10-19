@@ -11,6 +11,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
@@ -54,5 +55,16 @@ public class MenuController {
         model.addAttribute("categories", categoryService.findAll());
         model.addAttribute("categorySummaries", categoryService.getCategorySummaries());
         return "view-menu";
+    }
+
+    @GetMapping("/menu/food/{id}")
+    public String foodDetail(@PathVariable("id") Long id, Model model) {
+        return foodService.findById(id)
+                .map(food -> {
+                    model.addAttribute("food", food);
+                    model.addAttribute("categories", categoryService.findAll());
+                    return "food-detail";
+                })
+                .orElse("error");
     }
 }
