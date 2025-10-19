@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Create Topping</title>
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}" href="/css/dashboard.css" />
+    <link rel="stylesheet" th:href="@{/css/categories.css}" href="/css/categories.css" />
+</head>
+<body>
+<div class="layout">
+    <aside th:replace="fragments/admin-sidebar :: sidebar"></aside>
+    <main>
+        <div class="container">
+            <h1 class="page-title">Create Topping</h1>
+
+            <div th:if="${error}" class="card alert-error" th:text="${error}"></div>
+
+            <div class="card">
+                <form th:action="@{/admin/toppings/create}" th:object="${toppingForm}" method="post" class="add-form vertical">
+                    <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                    <div class="field">
+                        <label for="name">Name</label>
+                        <input id="name" type="text" th:field="*{name}" maxlength="100" placeholder="Topping name" required />
+                        <div th:if="${#fields.hasErrors('name')}" class="muted" style="color:#991b1b;" th:errors="*{name}"></div>
+                    </div>
+                    <div class="field">
+                        <label for="price">Price</label>
+                        <input id="price" type="number" step="0.01" min="0.01" th:field="*{price}" placeholder="0.00" required />
+                        <div th:if="${#fields.hasErrors('price')}" class="muted" style="color:#991b1b;" th:errors="*{price}"></div>
+                    </div>
+                    <div class="field">
+                        <label class="checkbox">
+                            <input type="checkbox" th:field="*{active}" />
+                            <span>Active</span>
+                        </label>
+                    </div>
+                    <div class="form-actions-row">
+                        <button type="submit" class="btn">Create</button>
+                        <a th:href="@{/admin/toppings}" class="btn secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+</div>
+</body>
+</html>
+

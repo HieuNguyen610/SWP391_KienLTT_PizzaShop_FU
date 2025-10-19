@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Admin - Toppings</title>
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}" href="/css/dashboard.css" />
+    <link rel="stylesheet" th:href="@{/css/admin-list.css}" href="/css/admin-list.css" />
+</head>
+<body>
+<div class="layout">
+    <aside th:replace="fragments/admin-sidebar :: sidebar"></aside>
+    <main>
+        <div class="container">
+            <h1 class="page-title">Toppings</h1>
+
+            <div th:if="${success}" class="card alert-success" th:text="${success}"></div>
+            <div th:if="${error}" class="card alert-error" th:text="${error}"></div>
+
+            <div class="mb-12" style="display:flex; gap:12px; align-items:center; justify-content:space-between;">
+                <form th:action="@{/admin/toppings}" method="get" style="display:flex; gap:8px; align-items:center;">
+                    <input type="text" name="q" th:value="${q}" placeholder="Search by name..." style="min-width:260px; padding:8px 10px; border:1px solid #d1d5db; border-radius:6px;" />
+                    <input type="hidden" name="sort" th:value="${sort}" />
+                    <input type="hidden" name="dir" th:value="${dir}" />
+                    <button type="submit" class="btn">Search</button>
+                    <a th:if="${q != null && !#strings.isEmpty(q)}" class="btn secondary" th:href="@{/admin/toppings(sort=${sort}, dir=${dir})}">Clear</a>
+                </form>
+                <a class="btn" th:href="@{/admin/toppings/create}">Add</a>
+            </div>
+
+            <div class="card">
+                <div th:if="${#lists.isEmpty(toppings)}" class="muted">No toppings found.</div>
+                <table class="table-fixed" th:if="${!#lists.isEmpty(toppings)}">
+                    <thead>
+                    <tr>
+                        <th style="width:80px;">ID</th>
+                        <th style="width:240px;">Name</th>
+                        <th style="width:120px;">Price</th>
+                        <th style="width:110px;">Status</th>
+                        <th class="actions-cell text-right" style="width:160px;"></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="t : ${toppings}">
+                        <td class="cell-id" th:text="${t.id}"></td>
+                        <td>
+                            <span class="table-text-ellipsis" th:text="${t.name}" th:title="${t.name}"></span>
+                        </td>
+                        <td th:text="${#numbers.formatDecimal(t.price, 1, 'COMMA', 2, 'POINT')}"></td>
+                        <td class="cell-status">
+                            <span class="status-pill" th:classappend="${t.active} ? ' status-active' : ' status-inactive'" th:text="${t.active} ? 'Active' : 'Inactive'"></span>
+                        </td>
+                        <td class="actions-cell text-right">
+                            <a class="btn" th:href="@{'/admin/toppings/' + ${t.id} + '/edit'}">Edit</a>
+                            <form th:action="@{'/admin/toppings/' + ${t.id} + '/delete'}" method="post" class="inline-block ml-6" onsubmit="return confirm('Delete this topping?');">
+                                <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                                <button type="submit" class="btn danger">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <div class="pagination" th:if="${pageData != null && pageData.totalPages > 1}">
+                    <a th:if="${!pageData.first}" th:href="@{/admin/toppings(page=${pageData.number - 1}, q=${q}, sort=${sort}, dir=${dir})}">Prev</a>
+                    <span th:each="i : ${#numbers.sequence(0, pageData.totalPages - 1)}" th:classappend="${i == pageData.number} ? 'active' : ''">
+                        <a th:if="${i} != ${pageData.number}" th:href="@{/admin/toppings(page=${i}, q=${q}, sort=${sort}, dir=${dir})}" th:text="${i + 1}"></a>
+                        <span th:if="${i} == ${pageData.number}" th:text="${i + 1}"></span>
+                    </span>
+                    <a th:if="${!pageData.last}" th:href="@{/admin/toppings(page=${pageData.number + 1}, q=${q}, sort=${sort}, dir=${dir})}">Next</a>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+</body>
+</html>
+

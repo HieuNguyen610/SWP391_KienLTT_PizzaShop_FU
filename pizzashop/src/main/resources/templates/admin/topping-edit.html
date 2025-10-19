@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Edit Topping</title>
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}" href="/css/dashboard.css" />
+    <style>
+        .layout { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
+        .container { max-width: 720px; margin: 24px auto; padding: 0 16px; }
+        .card { background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 16px; }
+        label { display:block; font-weight:600; margin-bottom:6px; }
+        input[type=text], input[type=number] { width:100%; padding:9px 10px; border:1px solid #d1d5db; border-radius:6px; }
+        .actions { display:flex; gap:8px; justify-content:flex-end; }
+        .btn { background:#2563eb; color:#fff; border:none; border-radius:6px; padding:8px 14px; cursor:pointer; text-decoration:none; }
+        .btn.secondary { background:#6b7280; }
+        .status-pill { display:inline-block; padding:4px 8px; border-radius:12px; font-size:0.875rem; }
+        .status-active { background-color:#d1fae5; color:#065f46; }
+        .status-inactive { background-color:#fee2e2; color:#991b1b; }
+    </style>
+</head>
+<body>
+<div class="layout">
+    <aside th:replace="fragments/admin-sidebar :: sidebar"></aside>
+    <main>
+        <div class="container">
+            <h1 style="margin:0 0 16px">Edit Topping</h1>
+            <div class="card">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                    <div>
+                        <span>Status: </span>
+                        <span th:classappend="${topping.active} ? ' status-active' : ' status-inactive'" class="status-pill" th:text="${topping.active} ? 'Active' : 'Inactive'"></span>
+                    </div>
+                </div>
+                <form th:action="@{'/admin/toppings/' + ${toppingId} + '/edit'}" th:object="${toppingForm}" method="post">
+                    <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                    <div>
+                        <label for="name">Name</label>
+                        <input id="name" type="text" th:field="*{name}" maxlength="100" required />
+                        <div th:if="${#fields.hasErrors('name')}" style="color:#991b1b;" th:errors="*{name}"></div>
+                    </div>
+                    <div style="margin-top:10px;">
+                        <label for="price">Price</label>
+                        <input id="price" type="number" step="0.01" min="0.01" th:field="*{price}" placeholder="0.00" required />
+                        <div th:if="${#fields.hasErrors('price')}" style="color:#991b1b;" th:errors="*{price}"></div>
+                    </div>
+                    <div style="margin-top:10px;">
+                        <label class="checkbox">
+                            <input type="checkbox" th:field="*{active}" />
+                            <span>Active</span>
+                        </label>
+                    </div>
+                    <div class="actions" style="margin-top:12px;">
+                        <a th:href="@{/admin/toppings}" class="btn secondary">Cancel</a>
+                        <button type="submit" class="btn">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+</div>
+</body>
+</html>
+
