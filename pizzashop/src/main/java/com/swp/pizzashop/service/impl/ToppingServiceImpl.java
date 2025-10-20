@@ -64,6 +64,8 @@ public class ToppingServiceImpl implements ToppingService {
     public Topping create(ToppingForm form) {
         Topping topping = Topping.builder()
                 .name(form.getName().trim())
+                .description(form.getDescription())
+                .imageUrl(form.getImageUrl())
                 .price(form.getPrice())
                 .isActive(form.isActive())
                 .build();
@@ -76,6 +78,8 @@ public class ToppingServiceImpl implements ToppingService {
         Topping topping = toppingRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Topping not found: id=" + id));
         topping.setName(form.getName().trim());
+        topping.setDescription(form.getDescription());
+        topping.setImageUrl(form.getImageUrl());
         topping.setPrice(form.getPrice());
         topping.setActive(form.isActive());
         return toppingRepository.save(topping);

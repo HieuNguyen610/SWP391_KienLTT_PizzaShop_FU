@@ -22,6 +22,12 @@ public class Topping extends BaseEntity {
     @Column(length = 100, nullable = false)
     private String name;
 
+    @Column(length = 255)
+    private String description;
+
+    @Column(name = "image_url", length = 255)
+    private String imageUrl;
+
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal price;
 
@@ -37,4 +43,3 @@ public class Topping extends BaseEntity {
     )
     private Set<Food> foods; // foods that include this topping by default
 }
-
