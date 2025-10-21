@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Xác thực OTP • PizzaShop</title>
+</head>
+<body>
+<h2>Nhập mã OTP</h2>
+
+<form th:action="@{/verify-otp}" method="post">
+    <label for="otp">Mã OTP:</label>
+    <input type="text" id="otp" name="otp" required maxlength="6" pattern="\d{6}">
+    <button type="submit">Xác nhận</button>
+</form>
+
+<p th:if="${error}" th:text="${error}" style="color:red"></p>
+<p th:if="${success}" th:text="${success}" style="color:green"></p>
+</body>
+</html>

@@ -1,5 +1,6 @@
 package com.swp.pizzashop.controller;
 
+import com.swp.pizzashop.service.EmailService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import com.swp.pizzashop.form.RegisterForm;
@@ -32,6 +33,9 @@ import com.swp.pizzashop.messages.SystemMessageCode;
 @Slf4j
 @RequiredArgsConstructor
 public class AuthenticationController {
+
+    @Autowired
+    private EmailService emailService;
 
     private final AuthenticationManager authenticationManager;
 
@@ -105,7 +109,8 @@ public class AuthenticationController {
     @PostMapping("/do-register")
     public String doRegister(@Valid @ModelAttribute("registerForm") RegisterForm registerForm,
                              BindingResult bindingResult,
-                             Model model) {
+                             Model model,
+                             HttpServletRequest request) {
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("errors", bindingResult.getAllErrors());
@@ -119,12 +124,18 @@ public class AuthenticationController {
 
         try {
             userService.registerUser(registerForm);
+            // Gửi OTP qua email
+            String otp = emailService.sendOtpEmail(registerForm.getEmail());
+
+            // Lưu OTP tạm vào session
+            request.getSession().setAttribute("otp", otp);
+            request.getSession().setAttribute("email", registerForm.getEmail());
         } catch (IllegalArgumentException e) {
             model.addAttribute("error", e.getMessage());
             return "sign_up";
         }
 
-        return "redirect:/login";
+        return "redirect:/verify-otp";
     }
 
 }

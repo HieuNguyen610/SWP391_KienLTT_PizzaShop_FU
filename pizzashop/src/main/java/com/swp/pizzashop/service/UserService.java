@@ -19,4 +19,5 @@ public interface UserService {
     User findByEmail(String email);
     User registerUser(RegisterForm registerForm);
     User updateUser(User user);
+    public void activateUser(String email) ;
 }

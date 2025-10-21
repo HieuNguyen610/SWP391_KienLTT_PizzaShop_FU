@@ -78,4 +78,6 @@ public class User extends BaseEntity {
     )
     private Set<Role> roles = new HashSet<>();
 
+    @Column(name = "is_verified")
+    private boolean verified = false;
 }
