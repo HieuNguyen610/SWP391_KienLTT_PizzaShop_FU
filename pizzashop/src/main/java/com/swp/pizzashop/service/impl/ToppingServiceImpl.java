@@ -3,7 +3,9 @@ package com.swp.pizzashop.service.impl;
 import com.swp.pizzashop.model.Topping;
 import com.swp.pizzashop.repository.ToppingRepository;
 import com.swp.pizzashop.service.ToppingService;
+import com.swp.pizzashop.service.ImageStorageService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,9 +20,11 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ToppingServiceImpl implements ToppingService {
 
     private final ToppingRepository toppingRepository;
+    private final ImageStorageService imageStorageService;
 
     @Override
     @Transactional(readOnly = true)
@@ -62,14 +66,23 @@ public class ToppingServiceImpl implements ToppingService {
     @Override
     @Transactional
     public Topping create(ToppingForm form) {
+        String imageUrl = null;
+        if (form.getImageFile() != null && !form.getImageFile().isEmpty()) {
+            imageUrl = imageStorageService.storeFoodImage(form.getImageFile());
+        } else if (form.getImageUrl() != null && !form.getImageUrl().trim().isEmpty()) {
+            imageUrl = form.getImageUrl().trim();
+        }
+
         Topping topping = Topping.builder()
                 .name(form.getName().trim())
                 .description(form.getDescription())
-                .imageUrl(form.getImageUrl())
+                .imageUrl(imageUrl)
                 .price(form.getPrice())
                 .isActive(form.isActive())
                 .build();
-        return toppingRepository.save(topping);
+        Topping saved = toppingRepository.save(topping);
+        log.info("Created topping id={} name='{}'", saved.getId(), saved.getName());
+        return saved;
     }
 
     @Override
@@ -77,12 +90,27 @@ public class ToppingServiceImpl implements ToppingService {
     public Topping update(Long id, ToppingForm form) {
         Topping topping = toppingRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Topping not found: id=" + id));
+
         topping.setName(form.getName().trim());
         topping.setDescription(form.getDescription());
-        topping.setImageUrl(form.getImageUrl());
         topping.setPrice(form.getPrice());
         topping.setActive(form.isActive());
-        return toppingRepository.save(topping);
+
+        if (form.getImageFile() != null && !form.getImageFile().isEmpty()) {
+            String old = topping.getImageUrl();
+            String stored = imageStorageService.storeFoodImage(form.getImageFile());
+            topping.setImageUrl(stored);
+            if (old != null) {
+                imageStorageService.deleteByPublicPath(old);
+            }
+        } else if (form.getImageUrl() != null) {
+            String url = form.getImageUrl().trim();
+            topping.setImageUrl(url.isEmpty() ? null : url);
+        }
+
+        Topping saved = toppingRepository.save(topping);
+        log.info("Updated topping id={}", saved.getId());
+        return saved;
     }
 
     @Override

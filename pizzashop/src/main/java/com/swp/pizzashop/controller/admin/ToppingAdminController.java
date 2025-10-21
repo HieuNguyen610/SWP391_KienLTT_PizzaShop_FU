@@ -99,6 +99,8 @@ public class ToppingAdminController {
         Topping t = opt.get();
         ToppingForm form = new ToppingForm();
         form.setName(t.getName());
+        form.setDescription(t.getDescription());
+        form.setImageUrl(t.getImageUrl());
         form.setPrice(t.getPrice());
         form.setActive(t.isActive());
         model.addAttribute("toppingForm", form);
@@ -145,4 +147,3 @@ public class ToppingAdminController {
         return "redirect:/admin/toppings";
     }
 }
-
