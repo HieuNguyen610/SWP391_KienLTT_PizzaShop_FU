@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.Optional;
 
@@ -139,5 +141,31 @@ public class CartItemController {
         ra.addFlashAttribute("success", "Đã cập nhật mặt hàng trong giỏ");
         return "redirect:/cart";
     }
-}
 
+    @GetMapping({"/cart/item/{id}/edit", "/cart/{id}/edit"})
+    public String editItemForm(@PathVariable("id") Long itemId,
+                               Authentication authentication,
+                               RedirectAttributes ra,
+                               Model model) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            ra.addFlashAttribute("error", "Vui lòng đăng nhập");
+            return "redirect:/login";
+        }
+        String email = authentication.getName();
+        User user = userRepository.findByEmail(email);
+        if (user == null) {
+            ra.addFlashAttribute("error", "Không tìm thấy người dùng");
+            return "redirect:/login";
+        }
+        Cart cart = cartService.getOrCreateActiveCart(user.getId());
+        Optional<CartItem> opt = cartItemRepository.findById(itemId);
+        if (opt.isEmpty() || opt.get().getCart() == null || !opt.get().getCart().getId().equals(cart.getId())) {
+            ra.addFlashAttribute("error", "Mục giỏ hàng không hợp lệ");
+            return "redirect:/cart";
+        }
+        CartItem item = opt.get();
+        model.addAttribute("item", item);
+        model.addAttribute("sizes", foodSizeRepository.findByFoodIdAndIsDeletedFalseOrderByPriceAsc(item.getFood().getId()));
+        return "cart-item-edit";
+    }
+}

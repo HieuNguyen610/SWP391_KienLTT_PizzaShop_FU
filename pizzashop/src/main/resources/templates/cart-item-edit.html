@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chỉnh sửa mặt hàng</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/food-detail.css" />
+</head>
+<body>
+
+<div th:replace="~{fragments/header :: page_header}"></div>
+
+<main class="fd-container" th:with="priceText=${#numbers.formatDecimal(item != null ? item.price : 0, 0, 'COMMA', 0, 'POINT')} + 'đ'">
+    <!-- Breadcrumb -->
+    <nav class="fd-breadcrumb" th:if="${item != null}">
+        <a th:href="@{/}">Trang chủ</a>
+        <span>&gt;</span>
+        <a th:href="@{/menu(categoryId=${item.food != null && item.food.category != null ? item.food.category.id : null})}"
+           th:text="${item.food != null && item.food.category != null ? item.food.category.name : 'Menu'}">Menu</a>
+        <span>&gt;</span>
+        <span class="current" th:text="${item.food != null ? item.food.name : 'Món'}">Tên món</span>
+        <span class="current" style="margin-left:8px;color:#6b7280">• Chỉnh sửa</span>
+    </nav>
+
+    <div class="fd-grid" th:if="${item != null}">
+        <!-- Left: Image + short info -->
+        <div class="fd-left">
+            <div class="fd-image-wrap">
+                <img class="fd-image" alt="Ảnh món"
+                     th:src="${#strings.isEmpty(item.food.imageUrl) ? '/images/default_food.jpg' : ((#strings.startsWith(item.food.imageUrl,'http') or #strings.startsWith(item.food.imageUrl,'/images/') or #strings.startsWith(item.food.imageUrl,'images/')) ? item.food.imageUrl : '/images/' + item.food.imageUrl)}" />
+            </div>
+            <div class="fd-basic">
+                <h1 class="fd-title" th:text="${item.food.name}">Tên món</h1>
+                <div class="fd-price" th:text="${priceText}">0đ</div>
+            </div>
+            <div class="fd-desc" th:if="${item.food.description}">
+                <h3>Mô tả</h3>
+                <p th:text="${item.food.description}">Mô tả món...</p>
+            </div>
+        </div>
+
+        <!-- Right: Edit panel -->
+        <aside class="fd-right">
+            <div class="fd-card">
+                <h2 class="fd-card-title">Chỉnh sửa tuỳ chọn</h2>
+                <form th:action="@{/cart/item/{id}/edit(id=${item.id})}" method="post">
+                    <div class="fd-qty">
+                        <label for="quantity">Số lượng</label>
+                        <div class="fd-qty-ctrl">
+                            <button type="button" class="fd-btn fd-qty-dec" aria-label="Giảm">−</button>
+                            <input id="quantity" name="quantity" type="number" th:value="${item.quantity}" min="1" />
+                            <button type="button" class="fd-btn fd-qty-inc" aria-label="Tăng">+</button>
+                        </div>
+                    </div>
+
+                    <div class="fd-qty" style="margin-top:12px;">
+                        <label for="sizeId">Kích cỡ</label>
+                        <select id="sizeId" name="sizeId">
+                            <option th:each="s : ${sizes}"
+                                    th:value="${s.id}"
+                                    th:selected="${s.id} == ${item.sizeId}"
+                                    th:text="${s.size} + ' - ' + ${#numbers.formatDecimal(s.price, 0, 'COMMA', 0, 'POINT')} + 'đ'">Size</option>
+                        </select>
+                    </div>
+
+                    <div class="fd-qty" style="margin-top:12px;">
+                        <label for="notes">Ghi chú</label>
+                        <textarea id="notes" name="notes" rows="3" placeholder="Ví dụ: Ít cay, thêm sốt..." th:text="${item.notes}"></textarea>
+                    </div>
+
+                    <!-- If Spring Security CSRF is enabled, include token here
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                    -->
+
+                    <div class="fd-actions">
+                        <button type="submit" class="fd-addtocart">Cập nhật</button>
+                        <a class="fd-back" th:href="@{/cart}">Hủy</a>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Optional note -->
+            <div class="fd-card fd-upsell">
+                <h3>Lưu ý</h3>
+                <p class="fd-note">Giá hiển thị là giá theo một sản phẩm ở kích cỡ đã chọn.</p>
+            </div>
+        </aside>
+    </div>
+
+    <div th:if="${item} == null" class="fd-card">Không tìm thấy mặt hàng.</div>
+</main>
+
+<div th:replace="~{fragments/header :: page_footer}"></div>
+
+<script>
+    (function(){
+        const dec = document.querySelector('.fd-qty-dec');
+        const inc = document.querySelector('.fd-qty-inc');
+        const input = document.getElementById('quantity');
+        if(dec && inc && input){
+            dec.addEventListener('click', function(){
+                const v = Math.max(1, (parseInt(input.value||'1',10)-1));
+                input.value = v;
+            });
+            inc.addEventListener('click', function(){
+                const v = Math.max(1, (parseInt(input.value||'1',10)+1));
+                input.value = v;
+            });
+        }
+    })();
+</script>
+
+</body>
+</html>
+

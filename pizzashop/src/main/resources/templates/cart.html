@@ -48,6 +48,7 @@
             </tr>
             </thead>
             <tbody>
+
             <tr th:each="i : ${items}">
                 <td>
                     <div><strong th:text="${i.food.name}">Tên món</strong></div>
@@ -58,7 +59,10 @@
                 <td class="text-right" th:text="${i.quantity}">1</td>
                 <td class="text-right"
                     th:text="${#numbers.formatDecimal(i.price * i.quantity , 0, 'COMMA', 0, 'POINT')} + 'đ'">0đ</td>
+                <td><a th:href="@{/cart/{id}/edit(id=${i.id})}">Edit</a></td>
+                <td><a th:href="@{/cart/{id}/delete(id=${i.id})}">Delete</a></td>
             </tr>
+
             </tbody>
             <tfoot>
             <tr>
@@ -78,4 +82,3 @@
 <div th:replace="~{fragments/header :: page_footer}"></div>
 </body>
 </html>
-
