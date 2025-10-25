@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giỏ hàng</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/profile.css" />
+    <style>
+        .cart-container { max-width: 1024px; margin: 24px auto; padding: 0 16px; }
+        .cart-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 16px; }
+        .alert { padding: 10px 12px; border-radius: 6px; margin-bottom: 12px; }
+        .alert-success { background:#ecfdf5; color:#065f46; border:1px solid #a7f3d0; }
+        .alert-error { background:#fef2f2; color:#991b1b; border:1px solid #fecaca; }
+        table.cart { width: 100%; border-collapse: collapse; background: #fff; }
+        table.cart th, table.cart td { padding: 10px; border-bottom: 1px solid #e5e7eb; text-align: left; }
+        table.cart th { background: #f9fafb; font-weight: 600; }
+        .cart-actions { display:flex; justify-content: space-between; align-items: center; margin-top: 16px; }
+        .btn { background:#2563eb; color:#fff; border:none; border-radius:6px; padding:10px 14px; text-decoration:none; cursor:pointer; }
+        .btn.secondary { background:#6b7280; }
+        .text-right { text-align: right; }
+        .muted { color:#6b7280; }
+    </style>
+</head>
+<body>
+<div th:replace="~{fragments/header :: page_header}"></div>
+
+<main class="cart-container">
+    <h1 class="cart-title">Giỏ hàng của bạn</h1>
+
+    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+    <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
+    <div th:if="${items == null or items.isEmpty()}">
+        <p class="muted">Giỏ hàng đang trống. Hãy chọn vài món ngon nhé!</p>
+        <a class="btn" th:href="@{/menu}">Tiếp tục mua sắm</a>
+    </div>
+
+    <div th:if="${items != null and !items.isEmpty()}">
+        <table class="cart">
+            <thead>
+            <tr>
+                <th>Món</th>
+                <th>Kích cỡ</th>
+                <th class="text-right">Đơn giá</th>
+                <th class="text-right">Số lượng</th>
+                <th class="text-right">Thành tiền</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="i : ${items}">
+                <td>
+                    <div><strong th:text="${i.food.name}">Tên món</strong></div>
+                    <div class="muted" th:if="${i.notes}" th:text="${i.notes}"></div>
+                </td>
+                <td th:text="${i.sizeId}">1</td>
+                <td class="text-right" th:text="${#numbers.formatDecimal(i.price, 0, 'COMMA', 0, 'POINT')} + 'đ'">0đ</td>
+                <td class="text-right" th:text="${i.quantity}">1</td>
+                <td class="text-right"
+                    th:text="${#numbers.formatDecimal(i.price * i.quantity , 0, 'COMMA', 0, 'POINT')} + 'đ'">0đ</td>
+            </tr>
+            </tbody>
+            <tfoot>
+            <tr>
+                <th colspan="4" class="text-right">Tạm tính</th>
+                <th class="text-right" th:text="${#numbers.formatDecimal(subtotal, 0, 'COMMA', 0, 'POINT')} + 'đ'">0đ</th>
+            </tr>
+            </tfoot>
+        </table>
+
+        <div class="cart-actions">
+            <a class="btn secondary" th:href="@{/menu}">Tiếp tục mua sắm</a>
+            <a class="btn" href="#" onclick="alert('Checkout flow coming soon'); return false;">Thanh toán</a>
+        </div>
+    </div>
+</main>
+
+<div th:replace="~{fragments/header :: page_footer}"></div>
+</body>
+</html>
+
