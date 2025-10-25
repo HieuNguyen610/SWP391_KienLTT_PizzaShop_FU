@@ -6,6 +6,8 @@
 <body>
 
 <header th:fragment="page_header">
+    <!-- Load header styles -->
+    <link rel="stylesheet" th:href="@{/css/header.css}" href="/css/header.css" />
     <nav class="main-nav">
         <div class="logo">
             <a th:href="@{/}"><img th:src="@{/images/logo.png}" src="/images/logo.png" alt="Logo Pizza Shop" style="height: 60px;"></a>
@@ -13,11 +15,8 @@
         <div class="order-options">
             <button class="active">Order delivery</button>
             <button>Order pickup</button>
-        </div>
-
-        <!-- Added Menu link -->
-        <div class="nav-links" style="margin-left: 16px;">
-            <a th:href="@{/menu}" href="/menu" class="menu-link">Menu</a>
+            <button><a th:href="@{/menu}" href="/menu" class="menu-link">Menu</a></button>
+            <button><a th:href="@{/cart}" class="cart-link">Giỏ hàng</a></button>
         </div>
 
         <!-- Anonymous user: show login and register links separately -->
@@ -38,14 +37,6 @@
                 <button type="submit" class="logout-link" style="background:none; border:none; color:#d35400; cursor:pointer;">Logout</button>
             </form>
         </div>
-    </nav>
-    <nav class="category-nav">
-        <ul>
-            <li><a href="#">Promotions</a></li>
-            <li><a href="#">Appetizers</a></li>
-            <li><a href="#" class="active">Pizza</a></li>
-            <li><a href="#">Pasta</a></li>
-        </ul>
     </nav>
 </header>
 

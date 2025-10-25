@@ -1,0 +1,37 @@
+/* Header-specific link styling and small layout helpers */
+
+/* Remove underline from all links within the header */
+header a,
+.main-nav a,
+.category-nav a,
+.topbar .nav-menu a,
+.topbar .icon-link {
+  text-decoration: none !important;
+  color: inherit;
+}
+
+/* Keep it off on hover/focus as well */
+header a:hover,
+header a:focus,
+.main-nav a:hover,
+.category-nav a:hover,
+.topbar .nav-menu a:hover,
+.topbar .icon-link:hover {
+  text-decoration: none !important;
+}
+
+/* Basic horizontal list styles for a potential category nav */
+.category-nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  gap: 24px;
+}
+
+/* Reset anchors placed inside buttons in the current header */
+.order-options a {
+  display: inline-block;
+  color: inherit;
+}
+
