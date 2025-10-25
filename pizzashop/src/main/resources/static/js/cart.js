@@ -79,6 +79,48 @@ document.addEventListener('DOMContentLoaded', function() {
         });
       }
     }
+
+    // Intercept Remove link clicks on the cart page and convert to POST with confirm
+    var removeLinks = document.querySelectorAll('a[href^="/cart/item/"][href$="/remove"]');
+    if (removeLinks && removeLinks.length) {
+      removeLinks.forEach(function(link){
+        link.addEventListener('click', function(e){
+          e.preventDefault();
+          var href = link.getAttribute('href');
+          if (!href) return;
+          var ok = window.confirm('Bạn có chắc muốn xóa món này khỏi giỏ hàng?');
+          if (!ok) return;
+
+          // Build a POST form to submit to the remove endpoint
+          var form = document.createElement('form');
+          form.method = 'post';
+          form.action = href;
+          form.style.display = 'none';
+
+          // Try to include CSRF token if present (reuse token from logout form)
+          try {
+            var csrfInput = document.querySelector('form[action$="/logout"] input[type="hidden"][name]');
+            if (csrfInput) {
+              var csrfName = csrfInput.getAttribute('name');
+              var csrfValue = csrfInput.value;
+              if (csrfName && csrfValue) {
+                var hidden = document.createElement('input');
+                hidden.type = 'hidden';
+                hidden.name = csrfName;
+                hidden.value = csrfValue;
+                form.appendChild(hidden);
+              }
+            }
+          } catch (err) {
+            // ignore if CSRF not found; server may allow or redirect
+            if (window.console) console.debug('CSRF not attached for remove:', err);
+          }
+
+          document.body.appendChild(form);
+          form.submit();
+        });
+      });
+    }
   } catch (e) {
     if (window && window.console) console.debug('cart.js init skipped:', e);
   }

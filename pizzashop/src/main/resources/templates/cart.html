@@ -59,8 +59,8 @@
                 <td class="text-right" th:text="${i.quantity}">1</td>
                 <td class="text-right"
                     th:text="${#numbers.formatDecimal(i.price * i.quantity , 0, 'COMMA', 0, 'POINT')} + 'đ'">0đ</td>
-                <td><a th:href="@{/cart/{id}/edit(id=${i.id})}">Edit</a></td>
-                <td><a th:href="@{/cart/{id}/delete(id=${i.id})}">Delete</a></td>
+                <td><a th:href="@{/cart/item/{id}/edit(id=${i.id})}">Edit</a></td>
+                <td><a th:href="@{/cart/item/{id}/remove(id=${i.id})}">Remove</a></td>
             </tr>
 
             </tbody>
