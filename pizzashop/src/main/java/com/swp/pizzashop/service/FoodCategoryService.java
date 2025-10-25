@@ -12,6 +12,8 @@ public interface FoodCategoryService {
 
     List<FoodCategory> findAll();
 
+    List<FoodCategory> findByIsDeletedFalse();
+
     FoodCategory findByName(String name);
 
     Optional<FoodCategory> findById(Long id);

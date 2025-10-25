@@ -26,4 +26,7 @@ public interface AddressService {
     long countActiveByUser(User user);
 
     int getMaxAddressesPerUser();
+
+    // New: default (or latest) address for a user
+    Address findDefaultByUser(User user);
 }

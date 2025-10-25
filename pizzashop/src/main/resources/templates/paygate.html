@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PayGate - Thanh toán</title>
+  <link rel="stylesheet" href="/css/style.css" />
+  <style>
+    .pg-wrap { max-width: 1120px; margin: 24px auto; padding: 0 16px; }
+    .pg-grid { display: grid; grid-template-columns: 1fr 340px; gap: 16px; }
+    .pg-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; }
+    .pg-hdr { padding: 12px 16px; border-bottom: 1px solid #e5e7eb; font-weight: 700; color:#374151; }
+    .pg-body { padding: 16px; }
+    .pg-row { display:flex; align-items:center; gap:10px; margin-bottom: 10px; }
+    .pg-field { margin-bottom: 12px; }
+    .pg-field label { display:block; font-size: 0.9rem; color:#374151; margin-bottom: 6px; font-weight:600; }
+    .pg-field input, .pg-field select { width: 100%; height: 40px; padding: 8px 10px; border: 1px solid #d1d5db; border-radius: 8px; box-sizing: border-box; }
+    .pg-inline { display:grid; grid-template-columns: 1fr 1fr; gap:12px; }
+    .pg-note { font-size: 0.85rem; color:#6b7280; }
+    .pg-actions { display:flex; justify-content: space-between; align-items:center; margin-top: 10px; }
+    .pg-btn { background:#db2d2c; color:#fff; border:none; border-radius:8px; padding:10px 14px; font-weight:700; cursor:pointer; }
+    .pg-btn[disabled] { opacity: .6; cursor:not-allowed; }
+    .pg-link { color:#2563eb; text-decoration:none; font-size:0.9rem; }
+    .pg-order .pg-body { padding: 0; }
+    .pg-order ul { list-style:none; padding: 0; margin: 0; }
+    .pg-order li { padding: 12px 16px; border-bottom: 1px solid #f3f4f6; display:flex; justify-content: space-between; }
+    .pg-order .total { font-weight: 800; font-size: 1.1rem; }
+    .pg-method { padding: 8px 16px; display:flex; align-items:center; gap:8px; }
+    .pg-radio { margin-right: 8px; }
+    .pg-foot { text-align:center; margin-top: 12px; color:#6b7280; }
+    @media (max-width: 980px){ .pg-grid{ grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+<div th:replace="~{fragments/header :: page_header}"></div>
+
+<main class="pg-wrap">
+  <div class="pg-grid">
+    <!-- Left: Payment methods and card form -->
+    <section class="pg-card">
+      <div class="pg-hdr">Select payment method</div>
+      <div class="pg-body">
+        <!-- Credit / Debit card -->
+        <label class="pg-method">
+          <input class="pg-radio" type="radio" name="method" checked />
+          <span>Credit / Debit Card
+            <span style="margin-left:8px; opacity:.8;">VISA • MasterCard • JCB</span>
+          </span>
+        </label>
+        <div class="pg-body" style="padding-top:4px;">
+          <div class="pg-field">
+            <label>Card Number*</label>
+            <input type="text" placeholder="1234 5678 9101 1234" inputmode="numeric" />
+          </div>
+          <div class="pg-inline">
+            <div class="pg-field">
+              <label>Expiration Date*</label>
+              <input type="text" placeholder="MM/YY" />
+            </div>
+            <div class="pg-field">
+              <label>CSC*</label>
+              <input type="password" placeholder="123" />
+            </div>
+          </div>
+          <div class="pg-inline">
+            <div class="pg-field">
+              <label>Name on card (no accent)*</label>
+              <input type="text" placeholder="NGUYEN VAN A" />
+            </div>
+            <div class="pg-field">
+              <label>Email*</label>
+              <input type="email" th:value="${userEmail}" placeholder="name@email.com" />
+            </div>
+          </div>
+          <div class="pg-row" style="margin:10px 0 4px;">
+            <input id="agree" type="checkbox" />
+            <label for="agree" class="pg-note">I have read, understood and agree to OnePay's Personal Data Protection and Processing Policy</label>
+          </div>
+          <div class="pg-actions">
+            <a class="pg-link" href="#" onclick="return false;">Payment Guide</a>
+            <button id="payNow" class="pg-btn" disabled>Pay Now</button>
+          </div>
+        </div>
+
+        <!-- ATM -->
+        <label class="pg-method" style="border-top:1px solid #f3f4f6; padding-top:12px;">
+          <input class="pg-radio" type="radio" name="method" />
+          <span>ATM Card / Bank Account <span style="margin-left:6px; background:#e5e7eb; border-radius:6px; padding:2px 6px; font-size:12px;">ATM</span></span>
+        </label>
+
+        <!-- QR -->
+        <label class="pg-method" style="border-top:1px solid #f3f4f6; padding-top:12px;">
+          <input class="pg-radio" type="radio" name="method" />
+          <span>QR Payment with Mobile Apps</span>
+        </label>
+      </div>
+      <div class="pg-foot">✕ Cancel Transaction</div>
+    </section>
+
+    <!-- Right: Order information -->
+    <aside class="pg-card pg-order">
+      <div class="pg-hdr">Order Information <span style="float:right; font-weight:400; opacity:.7;">⏱ 26:20</span></div>
+      <div class="pg-body">
+        <ul>
+          <li><span>Merchant Name</span><strong th:text="${merchantName}">PIZZA HUT</strong></li>
+          <li><span>Order Reference</span><strong th:text="${orderRef}">5X25D82701UB-NIW</strong></li>
+          <li class="total"><span>Total Amount</span><strong th:text="${#numbers.formatDecimal(total, 0, 'COMMA', 0, 'POINT')} + ' VND'">39,000 VND</strong></li>
+        </ul>
+      </div>
+    </aside>
+  </div>
+</main>
+
+<div th:replace="~{fragments/header :: page_footer}"></div>
+
+<script>
+(function(){
+  var agree = document.getElementById('agree');
+  var btn = document.getElementById('payNow');
+  if(agree && btn){
+    agree.addEventListener('change', function(){ btn.disabled = !agree.checked; });
+  }
+})();
+</script>
+</body>
+</html>

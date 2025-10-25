@@ -244,6 +244,31 @@ public class AddressServiceImpl implements AddressService {
         return maxAddressesPerUser;
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public Address findDefaultByUser(User user) {
+        if (user == null) {
+            log.warn("find Default address called with null user");
+            throw new IllegalArgumentException("User is required.");
+        }
+
+        // Try default address first
+        Address def = addressRepository.findFirstByUserAndDefaultAddressTrue(user);
+        if (def != null) {
+            log.debug("Default address found for user={}: id={}", safeUser(user), def.getId());
+            return def;
+        }
+
+        // Fallback to latest non-deleted address
+        Optional<Address> latest = addressRepository.findFirstByUserAndIsDeletedFalseOrderByIdDesc(user);
+        if (latest.isPresent()) {
+            return latest.get();
+        } else {
+            log.debug("No addresses found for user={}", safeUser(user));
+            return null;
+        }
+    }
+
     private String safeUser(User user) {
         if (user == null) return "<null>";
         try {

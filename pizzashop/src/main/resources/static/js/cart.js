@@ -121,6 +121,26 @@ document.addEventListener('DOMContentLoaded', function() {
         });
       });
     }
+
+    // Route Checkout button on cart page to /checkout if it's a placeholder link
+    (function(){
+      try {
+        var checkoutBtn = document.querySelector('.cart-actions a.btn:not(.secondary)');
+        if (checkoutBtn) {
+          // Remove any inline onclick to avoid legacy alert popup
+          try { checkoutBtn.removeAttribute('onclick'); } catch(_) {}
+          checkoutBtn.addEventListener('click', function(e){
+            var href = checkoutBtn.getAttribute('href');
+            // If href is '#' or empty (placeholder), navigate to /checkout
+            if (!href || href === '#') {
+              e.preventDefault();
+              e.stopPropagation();
+              window.location.assign('/checkout');
+            }
+          });
+        }
+      } catch(_e) {}
+    })();
   } catch (e) {
     if (window && window.console) console.debug('cart.js init skipped:', e);
   }
