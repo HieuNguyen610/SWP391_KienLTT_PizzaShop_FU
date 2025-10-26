@@ -13,15 +13,6 @@
 
 <main>
     <section class="pizza-menu">
-        <nav class="sub-category-nav">
-            <ul>
-                <li><a href="#" class="active">premium seafood</a></li>
-                <li><a href="#">special formula</a></li>
-                <li><a href="#">premium food</a></li>
-                <li><a href="#">traditional</a></li>
-                <li><a href="#">vegetarian pizza</a></li>
-            </ul>
-        </nav>
 
         <div class="product-grid">
             <div class="product-card" th:each="pizza : ${pizzas}">
@@ -36,7 +27,7 @@
             </div>
 
             <div th:if="${pizzas.isEmpty()}">
-                <p>Hiện chưa có pizza nào trong menu. Vui lòng quay lại sau.</p>
+                <p>Hiện chưa có sản phẩm nào trong menu. Vui lòng quay lại sau.</p>
             </div>
         </div>
     </section>

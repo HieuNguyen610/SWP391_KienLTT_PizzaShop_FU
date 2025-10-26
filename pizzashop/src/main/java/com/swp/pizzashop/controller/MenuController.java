@@ -33,7 +33,7 @@ public class MenuController {
             @RequestParam(value = "q", required = false) String q,
             @RequestParam(value = "categoryId", required = false) Long categoryId,
             @RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(value = "size", defaultValue = "10") int size,
+            @RequestParam(value = "size", defaultValue = "8") int size,
             Model model
     ) {
         int safePage = Math.max(page, 0);

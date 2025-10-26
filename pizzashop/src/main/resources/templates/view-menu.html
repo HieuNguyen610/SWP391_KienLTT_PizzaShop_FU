@@ -15,8 +15,15 @@
     <section class="menu-page">
         <!-- Top category tabs -->
         <nav class="category-tabs" >
+            <!-- 'All' tab -->
+            <a th:href="@{/menu(q=${q}, size=${page != null ? page.size : 8})}"
+               th:classappend="${categoryId == null} ? ' active' : ''">Tất cả</a>
+
+            <!-- individual category tabs -->
             <div th:each="cat : ${categories}">
-                <a href="#" th:value="${cat.id}" th:text="${cat.name}"></a>
+                <a th:href="@{/menu(q=${q}, categoryId=${cat.id}, size=${page != null ? page.size : 8})}"
+                   th:classappend="${categoryId != null and cat.id == categoryId} ? ' active' : ''"
+                   th:text="${cat.name}"></a>
             </div>
         </nav>
 
@@ -33,7 +40,7 @@
             </select>
             <!-- hidden mirrors the selection to avoid submitting empty string when 'All categories' -->
             <input type="hidden" name="categoryId" id="categoryIdHidden" th:value="${categoryId}">
-            <input type="hidden" name="size" th:value="${page != null ? page.size : 10}">
+            <input type="hidden" name="size" th:value="${page != null ? page.size : 8}">
             <button type="submit">Search</button>
         </form>
 
@@ -57,7 +64,7 @@
             </div>
 
             <div th:if="${pizzas == null or pizzas.isEmpty()}">
-                <p>Hiện chưa có pizza nào trong menu. Vui lòng quay lại sau.</p>
+                <p>Hiện chưa có sản phẩm nào trong menu. Vui lòng quay lại sau.</p>
             </div>
         </div>
 
