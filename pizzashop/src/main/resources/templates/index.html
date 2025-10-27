@@ -23,7 +23,7 @@
                 <p class="product-description" th:text="${pizza.description}">Shrimp, crab, ham and Thousand Island dressing.</p>
                 <p class="product-price">Price from only</p>
                 <p class="product-price-value" th:text="${#numbers.formatDecimal(pizza.basePrice, 0, 'COMMA', 0, 'POINT')} + 'đ'">154,000đ</p>
-                <button class="buy-now-btn">mua ngay -></button>
+                <a class="buy-now-btn" th:href="@{/menu/food/{id}(id=${pizza.id})}">Mua ngay</a>
             </div>
 
             <div th:if="${pizzas.isEmpty()}">
