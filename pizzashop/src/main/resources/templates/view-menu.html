@@ -16,8 +16,10 @@
         <!-- Top category tabs -->
         <nav class="category-tabs" >
             <!-- 'All' tab -->
-            <a th:href="@{/menu(q=${q}, size=${page != null ? page.size : 8})}"
-               th:classappend="${categoryId == null} ? ' active' : ''">Tất cả</a>
+            <div>
+                <a th:href="@{/menu(q=${q}, size=${page != null ? page.size : 8})}"
+                   th:classappend="${categoryId == null} ? ' active' : ''">Tất cả</a>
+            </div>
 
             <!-- individual category tabs -->
             <div th:each="cat : ${categories}">
