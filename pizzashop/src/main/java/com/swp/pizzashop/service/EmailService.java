@@ -1,5 +1,6 @@
 package com.swp.pizzashop.service;
 
+import com.swp.pizzashop.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -13,6 +14,9 @@ public class EmailService {
     @Autowired
     private JavaMailSender mailSender;
 
+public interface EmailService {
+    void sendPasswordResetEmail(User user, String resetLink);
+}
     public String sendOtpEmail(String toEmail) {
         String otp = String.format("%06d", new Random().nextInt(999999));
 

@@ -14,11 +14,13 @@ public enum SystemMessageCode {
     MSG08, // Invalid username/password
     MSG09, // Email not verified
     MSG10, // Account blocked
-    MSG11, // Logged out successfully
-    MSG12, // Account inactive or deleted
-    MSG13, // Reset password link invalid or expired
+    MSG11, // Password reset link sent
+    MSG12, // Reset password successfully
+    MSG13, // Reset link invalid/expired
     MSG14, // Logged out successfully
-    MSG15; // Account inactive or deleted
+    MSG15, // Account inactive or deleted
+    MSG16, // Passwords do not match
+    MSG17; // Email not found for password reset
 
     public String code() { return name(); }
 }

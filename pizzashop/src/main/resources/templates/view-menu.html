@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Menu - Pizza Shop</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/menu.css">
+</head>
+<body>
+
+<div th:replace="~{fragments/header :: page_header}"></div>
+
+<main>
+    <section class="menu-page">
+        <!-- Top category tabs -->
+        <nav class="category-tabs" >
+            <div th:each="cat : ${categories}">
+                <a href="#" th:value="${cat.id}" th:text="${cat.name}"></a>
+            </div>
+        </nav>
+
+        <!-- Filters: search by name and category -->
+        <form class="menu-filters" th:action="@{/menu}" method="get">
+            <input type="text" name="q" placeholder="Search by name..." th:value="${q}" aria-label="Search by name">
+            <select id="categorySelect" aria-label="Filter by category">
+                <option value="" th:selected="${categoryId == null}">All categories</option>
+                <option th:each="cat : ${categories}"
+                        th:value="${cat.id}"
+                        th:text="${cat.name}"
+                        th:selected="${categoryId != null and cat.id == categoryId}">
+                </option>
+            </select>
+            <!-- hidden mirrors the selection to avoid submitting empty string when 'All categories' -->
+            <input type="hidden" name="categoryId" id="categoryIdHidden" th:value="${categoryId}">
+            <input type="hidden" name="size" th:value="${page != null ? page.size : 10}">
+            <button type="submit">Search</button>
+        </form>
+
+        <!-- Product grid -->
+        <div class="product-grid">
+            <div class="product-card" th:each="pizza : ${pizzas}">
+                <img class="product-image"
+                     th:src="${#strings.isEmpty(pizza.imageUrl) ? '/images/default_food.jpg' : ((#strings.startsWith(pizza.imageUrl,'http') or #strings.startsWith(pizza.imageUrl,'/images/') or #strings.startsWith(pizza.imageUrl,'images/')) ? pizza.imageUrl : '/images/' + pizza.imageUrl)}"
+                     alt="Pizza Image"/>
+
+                <h3 class="product-name" th:text="${pizza.name}">Premium Seafood Pizza</h3>
+
+                <p class="product-price-value"
+                   th:text="${#numbers.formatDecimal(pizza.basePrice, 0, 'COMMA', 0, 'POINT')} + 'đ'">154,000đ</p>
+
+                <div class="product-actions">
+                    <!-- Changed button to anchor to navigate directly to /menu/food/{id} -->
+                    <a class="details_cart_btn" th:href="@{/menu/food/{id}(id=${pizza.id})}">Add to cart</a>
+                </div>
+
+            </div>
+
+            <div th:if="${pizzas == null or pizzas.isEmpty()}">
+                <p>Hiện chưa có pizza nào trong menu. Vui lòng quay lại sau.</p>
+            </div>
+        </div>
+
+        <!-- Pagination controls -->
+        <div class="pagination" th:if="${page != null and page.totalPages > 1}">
+            <a th:if="${!page.first}"
+               th:href="@{/menu(q=${q}, categoryId=${categoryId}, page=${page.number - 1}, size=${page.size})}">&laquo; Prev</a>
+            <span th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}">
+                <a th:if="${i != page.number}"
+                   th:href="@{/menu(q=${q}, categoryId=${categoryId}, page=${i}, size=${page.size})}"
+                   th:text="${i + 1}"></a>
+                <span class="current" th:if="${i == page.number}" th:text="${i + 1}"></span>
+            </span>
+            <a th:if="${!page.last}"
+               th:href="@{/menu(q=${q}, categoryId=${categoryId}, page=${page.number + 1}, size=${page.size})}">Next &raquo;</a>
+        </div>
+
+    </section>
+</main>
+
+<div th:replace="~{fragments/header :: page_footer}"></div>
+
+<script>
+(function(){
+  var form = document.querySelector('.menu-filters');
+  if(form){
+    form.addEventListener('submit', function(){
+      var sel = document.getElementById('categorySelect');
+      var hidden = document.getElementById('categoryIdHidden');
+      if(sel && hidden){
+        var val = sel.value;
+        if(val === '' || val === null){
+          // Remove hidden input so categoryId param is not sent at all
+          hidden.parentNode && hidden.parentNode.removeChild(hidden);
+        } else {
+          hidden.value = val;
+        }
+      }
+    });
+  }
+})();
+</script>
+
+</body>
+</html>

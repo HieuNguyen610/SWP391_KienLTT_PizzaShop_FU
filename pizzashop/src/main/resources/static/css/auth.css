@@ -45,6 +45,7 @@ input[type="email"] {
   padding: 10px 12px;
   border: 1px solid #ccc;
   border-radius: 4px;
+  box-sizing: border-box; /* ensure padding does not increase total width */
 }
 
 .password-field {
@@ -61,6 +62,12 @@ input[type="email"] {
   cursor: pointer;
   color: #666;
   padding: 4px;
+}
+
+/* Ensure room for the eye toggle so text doesn't go under the button */
+.password-field input[type="password"],
+.password-field input[type="text"] {
+  padding-right: 36px; /* reduced from 44px to avoid perceived extra length */
 }
 
 .form-row {
@@ -195,3 +202,15 @@ input[type="email"] {
 .link:hover {
   text-decoration: underline;
 }
+
+/* ---- Reset Password & Shared Enhancements ---- */
+.helper { font-size: .85rem; color:#555; margin-top:-4px; margin-bottom:12px; }
+.rules { font-size:.72rem; line-height:1.2; background:#fafafa; border:1px solid #e3e3e3; border-radius:6px; padding:8px 10px; margin:6px 0 10px; }
+.rules li { margin-left:14px; }
+.support { font-size:.75rem; text-align:center; margin-top:14px; }
+.strength { height:6px; border-radius:3px; background:#e1e1e1; margin-top:6px; overflow:hidden; }
+.strength-bar { height:100%; width:0; background:#d33; transition:width .35s ease, background .35s ease; }
+.pw-match { font-size:.7rem; margin-top:4px; }
+.pw-match.ok { color:#118a00; }
+.pw-match.bad { color:#b30000; }
+.password-field .toggle-password { /* ensure consistent toggle inside new pages */ }

@@ -1,0 +1,53 @@
+@startuml
+skinparam style strictuml
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Controller" {
+  class AddressController {
+    + addressBook(currentUser: User, model): String
+  }
+  class CurrentUserAdvice {
+    + currentUser(authentication): User
+  }
+}
+
+
+package "Service" {
+  interface AddressService {
+    + findByUser(user: User): List<Address>
+    + countActiveByUser(user: User): long
+    + getMaxAddressesPerUser(): int
+  }
+}
+
+package "Repository" {
+  interface AddressRepository
+  interface UserRepository
+}
+
+package "Domain" {
+  class User {
+    + id: Long
+    + firstname: String
+    + lastname: String
+    + email: String
+  }
+  class Address {
+    + id: Long
+    + addressLine: String
+    + city: String
+    + district: String
+    + phone: String
+    + defaultAddress: boolean
+  }
+  User "1" o-- "*" Address : owns >
+}
+
+AddressController ..> AddressService : uses
+AddressService ..> AddressRepository : reads
+CurrentUserAdvice ..> UserRepository : resolves
+AddressController ..> "profile-address.html" : returns view+model
+"profile-address.html" ..> User : renders
+"profile-address.html" ..> Address : renders
+@enduml

@@ -1,0 +1,81 @@
+@startuml
+skinparam style strictuml
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Controller" {
+  class AddressController {
+    + editAddressForm(currentUser: User, addressId: Long, model, ra): String
+    + updateAddress(currentUser: User, addressId: Long, form: AddressForm, binding, ra): String
+  }
+  class CurrentUserAdvice {
+    + currentUser(authentication): User
+  }
+}
+
+package "View" {
+  class "profile-address-edit.html" <<View>> {
+    + model
+    --
+    user: User
+    addr: Address
+    prefill_number: String
+    prefill_street: String
+  }
+}
+
+package "Service" {
+  interface AddressService {
+    + findByIdForUser(id: Long, user: User): Optional<Address>
+    + updateAddress(user: User, id: Long, form: AddressForm): Address
+  }
+}
+
+package "Repository" {
+  interface AddressRepository {
+    + findByIdAndUser(id: Long, user: User): Optional<Address>
+    + findByIdAndUserAndIsDeletedFalse(id: Long, user: User): Optional<Address>
+    + clearDefaultByUser(user: User): void
+    + save(addr: Address): Address
+  }
+  interface UserRepository {
+    + findByEmail(email: String): User
+  }
+}
+
+package "Domain" {
+  class User {
+    + id: Long
+    + firstname: String
+    + lastname: String
+    + email: String
+  }
+  class Address {
+    + id: Long
+    + addressLine: String
+    + city: String
+    + district: String
+    + phone: String
+    + defaultAddress: boolean
+  }
+  User "1" o-- "*" Address : owns >
+}
+
+package "Form" {
+  class AddressForm {
+    + province: String
+    + district: String
+    + street: String
+    + number: String
+    + phone: String
+    + setDefault: boolean
+  }
+}
+
+AddressController ..> AddressService : uses
+AddressService ..> AddressRepository : reads/writes
+CurrentUserAdvice ..> UserRepository : resolves current user
+AddressController ..> "profile-address-edit.html" : returns view+model
+"profile-address-edit.html" ..> User : renders
+"profile-address-edit.html" ..> Address : renders
+@enduml

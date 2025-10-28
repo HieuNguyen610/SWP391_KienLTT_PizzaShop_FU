@@ -1,0 +1,28 @@
+@startuml
+' Simplified Package Diagram for PizzaShop (flattened service)
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam defaultTextAlignment center
+
+package "com.swp.pizzashop" as root {
+  package controller
+  package config
+  package service
+  package repository
+  package model
+  package form
+  package messages
+}
+
+controller --> service : uses
+controller --> form : binds data
+controller --> messages : i18n/messages
+controller --> config : security beans
+controller --> model : view models
+service --> repository : persistence
+service --> model : domain objects
+repository --> model : JPA entities
+config --> service : wiring
+config --> repository : auth data (indirect)
+
+@enduml

@@ -109,6 +109,8 @@ CREATE TABLE IF NOT EXISTS food_sizes (
 CREATE TABLE IF NOT EXISTS toppings (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,     -- Unique topping ID
     name VARCHAR(100) NOT NULL,               -- Topping name
+    description VARCHAR(255),                 -- Optional short description
+    image_url VARCHAR(255),                   -- Optional image URL for UI display
     price DECIMAL(10,2) NOT NULL,             -- Price for topping
     is_active BOOLEAN DEFAULT TRUE,           -- Is the topping available?
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Creation timestamp

@@ -4,6 +4,8 @@ import com.swp.pizzashop.form.EditProfileForm;
 import com.swp.pizzashop.model.User;
 import com.swp.pizzashop.service.impl.UserServiceImpl;
 import jakarta.validation.Valid;
+import com.swp.pizzashop.service.UserService;
+import com.swp.pizzashop.service.ChangePasswordResult;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -16,13 +18,14 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import java.security.Principal;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequiredArgsConstructor
 @Slf4j
 public class ProfileController {
 
-    private final UserServiceImpl userServiceImpl;
+    private final UserService userService;
 
     @GetMapping("/profile")
     public String profile(@ModelAttribute("currentUser") User currentUser, Model model) {
@@ -33,8 +36,37 @@ public class ProfileController {
         } else {
             log.debug("GET /profile with no authentication in context");
         }
-        log.debug("Loaded current user (from @ModelAttribute): {}", currentUser != null ? currentUser.getEmail() : null);
+        if (currentUser != null) {
+            log.debug("Loaded current user (from @ModelAttribute): id={}, email={}", currentUser.getId(), currentUser.getEmail());
+        } else {
+            log.debug("Loaded current user (from @ModelAttribute): null");
+        }
         model.addAttribute("user", currentUser); // keep existing template variable name
+        return "profile";
+    }
+
+    @PostMapping("/profile/change-password")
+    public String changePassword(@ModelAttribute("currentUser") User currentUser,
+                                 @RequestParam String oldPassword,
+                                 @RequestParam String newPassword,
+                                 @RequestParam String confirmPassword,
+                                 Model model) {
+        if (currentUser == null) {
+            return "redirect:/login";
+        }
+        model.addAttribute("user", currentUser);
+        if (!newPassword.equals(confirmPassword)) {
+            model.addAttribute("pwdError", "New password and confirmation do not match.");
+            return "profile";
+        }
+        ChangePasswordResult result = userService.changePassword(currentUser, oldPassword, newPassword);
+        switch (result) {
+            case SUCCESS -> model.addAttribute("pwdSuccess", "Password changed successfully.");
+            case OLD_PASSWORD_INVALID -> model.addAttribute("pwdError", "Old password is incorrect.");
+            case NEW_PASSWORD_SAME_AS_OLD -> model.addAttribute("pwdError", "New password must be different from the old password.");
+            case WEAK_NEW_PASSWORD -> model.addAttribute("pwdError", "New password is too weak (minimum 8 characters).");
+            default -> model.addAttribute("pwdError", "Unable to change password. Please try again.");
+        }
         return "profile";
     }
 
@@ -65,13 +97,13 @@ public class ProfileController {
         }
 
         String email = principal.getName();
-        User user = userServiceImpl.findByEmail(email);
+        User user = userService.findByEmail(email);
 
         user.setFirstname(form.getFirstName());
         user.setLastname(form.getLastName());
         user.setPhone(form.getPhone());
 
-        userServiceImpl.updateUser(user);
+        userService.updateUser(user);
 
         return "redirect:/profile?success";
     }
