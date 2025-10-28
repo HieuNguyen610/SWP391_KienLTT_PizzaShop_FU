@@ -131,6 +131,33 @@ main {
     margin-top: 10px;
 }
 
+/* Home page (index) product tweaks: square image + red button like menu */
+.pizza-menu .product-image {
+    width: 180px;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 0;        /* square, not circular */
+    margin: 0 auto 8px;      /* center image */
+}
+
+.pizza-menu .buy-now-btn {
+    display: inline-block;
+    padding: 8px 12px;
+    border-radius: 6px;
+    background: #e53935;     /* red like menu */
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    width: auto;             /* no full-width stretch */
+    margin-top: 10px;
+    text-decoration: none;   /* ensure no underline if anchor */
+}
+.pizza-menu .buy-now-btn:hover {
+    background: #c62828;     /* darker on hover */
+    text-decoration: none;
+}
+
 /* Helper: single-line text ellipsis for table or product fields */
 .table-text-ellipsis {
     display: block;
