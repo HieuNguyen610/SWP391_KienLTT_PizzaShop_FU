@@ -48,7 +48,6 @@ public class EmailController {
         }
 
         userService.activateUser(email);
-
         request.getSession().removeAttribute("otp");
         request.getSession().removeAttribute("email");
 

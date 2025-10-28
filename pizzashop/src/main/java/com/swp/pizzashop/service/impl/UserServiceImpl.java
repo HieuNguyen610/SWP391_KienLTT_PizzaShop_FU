@@ -214,5 +214,12 @@ public class UserServiceImpl implements UserService {
     @Override
     public void activateUser(String email) {
 
+        User user = userRepository.findByEmail(email);
+        if (user == null) {
+            throw new IllegalArgumentException("User not found");
+        }
+        user.setStatus("ACTIVE");
+        user.setVerified(true);
+        userRepository.save(user);
     }
 }
