@@ -1,0 +1,74 @@
+@startuml
+' Class Diagram: Admin Category List
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam linetype ortho
+
+package "controller" {
+  class CategoryController <<Controller>> {
+    +listCategories(page, q, sort, dir, msg, err, model) : String
+    +editCategory(id, model, ra) : String
+    +updateCategory(id, form, result, ra, model) : String
+    +showCreateForm(model, err) : String
+    +handleCreate(form, result, model, ra) : String
+    +restoreCategory(id, ra) : String
+    +deleteCategory(id, ra) : String
+  }
+}
+
+package "service" {
+  interface FoodCategoryService {
+    +findAll() : List<FoodCategory>
+    +findByIsDeletedFalse() : List<FoodCategory>
+    +findByName(name) : FoodCategory
+    +findById(id) : Optional<FoodCategory>
+    +save(category) : FoodCategory
+    +getCategorySummaries() : List<CategorySummary>
+    +findPage(q, pageable) : Page<FoodCategory>
+    +update(id, name, description) : FoodCategory
+    +softDelete(id) : void
+    +restore(id) : void
+  }
+  class FoodCategoryServiceImpl <<Service>>
+  FoodCategoryServiceImpl ..|> FoodCategoryService
+}
+
+package "repository" {
+  interface FoodCategoryRepository <<Repository>> {
+    +findByName(name) : FoodCategory
+    +findByNameContainingIgnoreCase(name, pageable) : Page<FoodCategory>
+    +findByIsDeletedFalse() : List<FoodCategory>
+    +findAll(pageable) : Page<FoodCategory>
+    +findAll() : List<FoodCategory>
+    +findById(id) : Optional<FoodCategory>
+    +save(category) : FoodCategory
+  }
+  interface FoodRepository <<Repository>> {
+    +countByCategoryAndIsDeletedFalse(category) : long
+    +countByCategoryAndIsActiveTrueAndIsDeletedFalse(category) : long
+  }
+}
+
+package "model" {
+  class FoodCategory <<Entity>> {
+    +id: Long
+    +name: String
+    +description: String
+    +isDeleted: Boolean
+    +createdAt: LocalDateTime
+    +updatedAt: LocalDateTime
+  }
+}
+
+package "view (Thymeleaf)" {
+  class "admin/categories.html" <<Template>>
+}
+
+' Relationships
+CategoryController --> FoodCategoryService : uses
+FoodCategoryServiceImpl --> FoodCategoryRepository : uses
+FoodCategoryServiceImpl --> FoodRepository : uses (summaries)
+CategoryController ..> "admin/categories.html" : returns
+FoodCategoryRepository o--> FoodCategory : manages
+
+@enduml

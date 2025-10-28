@@ -1,0 +1,96 @@
+@startuml
+' Menu domain class diagram generated from current JPA entities
+' Entities covered: Food, FoodCategory, FoodSize, Topping, and BaseEntity inheritance
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam linetype ortho
+
+package "domain" {
+  class BaseEntity <<abstract>> {
+    +createdAt: LocalDateTime
+    +updatedAt: LocalDateTime
+    +isDeleted: Boolean
+  }
+
+  class FoodCategory <<Entity>> {
+    +id: Long
+    +name: String
+    +description: String
+  }
+
+  class Food <<Entity>> {
+    +id: Long
+    +name: String
+    +description: String
+    +basePrice: BigDecimal
+    +imageUrl: String
+    +isActive: boolean
+  }
+
+  class FoodSize <<Entity>> {
+    +id: Long
+    +size: String
+    +price: BigDecimal
+  }
+
+  class Topping <<Entity>> {
+    +id: Long
+    +name: String
+    +description: String
+    +imageUrl: String
+    +price: BigDecimal
+    +isActive: boolean
+  }
+
+  ' Inheritance from BaseEntity
+  FoodCategory --|> BaseEntity
+  Food --|> BaseEntity
+  FoodSize --|> BaseEntity
+  Topping --|> BaseEntity
+
+  ' Relationships based on JPA mappings
+  Food "*" --> "1" FoodCategory : category
+  FoodSize "*" --> "1" Food : food
+  Food "*" -- "*" Topping : default toppings\n(food_toppings_map)
+}
+
+package "controller" {
+  class MenuController <<Controller>> {
+    +home(model)
+    +menu(q, categoryId, page, size, model)
+    +foodDetail(id, model)
+  }
+}
+
+package "service" {
+  interface FoodService {
+    +findAll()
+    +findPage(q, pageable)
+    +findPage(q, categoryId, pageable)
+    +findById(id)
+  }
+  class FoodServiceImpl <<Service>>
+  FoodServiceImpl ..|> FoodService
+
+  interface FoodCategoryService {
+    +findAll()
+    +findByIsDeletedFalse()
+    +findById(id)
+  }
+  class FoodCategoryServiceImpl <<Service>>
+  FoodCategoryServiceImpl ..|> FoodCategoryService
+}
+
+package "view (Thymeleaf)" {
+  class "view-menu.html" <<Template>>
+}
+
+' Controller uses services
+MenuController --> FoodService
+MenuController --> FoodCategoryService
+
+' Controller returns templates
+MenuController ..> "view-menu.html" : returns
+
+
+@enduml
