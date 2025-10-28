@@ -1,19 +1,150 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>Xác thực OTP • PizzaShop</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Enter OTP • PizzaShop</title>
+    <style>
+        :root{
+            --bg:#f4f6f8;
+            --card:#ffffff;
+            --accent:#0b74de;
+            --muted:#6b7280;
+            --success:#16a34a;
+        }
+        html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;}
+        body{
+            background:linear-gradient(135deg,#eef2ff 0%,var(--bg) 100%);
+            display:flex;align-items:center;justify-content:center;padding:24px;
+        }
+        .card{
+            width:100%;
+            max-width:420px;
+            background:var(--card);
+            border-radius:12px;
+            box-shadow:0 6px 30px rgba(16,24,40,.08);
+            padding:28px;
+        }
+        .title{font-size:20px;font-weight:600;margin:0 0 6px;color:#0f172a}
+        .desc{margin:0 0 18px;color:var(--muted);font-size:14px}
+        .otp-row{display:flex;gap:10px;justify-content:center;margin:16px 0 20px}
+        .otp-input{
+            width:52px;height:52px;border-radius:8px;border:1px solid #e6edf3;
+            font-size:22px;text-align:center;outline:none;
+            box-shadow:inset 0 -2px 0 rgba(2,6,23,.02);
+            transition:all .12s ease;
+            background:transparent;
+        }
+        .otp-input:focus{border-color:var(--accent);box-shadow:0 4px 18px rgba(11,116,222,.12)}
+        .actions{display:flex;justify-content:space-between;align-items:center;gap:12px}
+        .btn{
+            background:var(--accent);color:white;padding:10px 16px;border-radius:8px;border:none;
+            cursor:pointer;font-weight:600;
+        }
+        .btn:disabled{opacity:.6;cursor:not-allowed}
+        .link{background:transparent;border:0;color:var(--accent);cursor:pointer;font-weight:600}
+        .note{font-size:13px;color:var(--muted);margin-top:12px;text-align:center}
+        .success{color:var(--success);font-weight:600;margin-top:12px;text-align:center}
+        .small{font-size:13px;color:var(--muted)}
+        @media (max-width:420px){
+            .otp-input{width:44px;height:44px;font-size:20px}
+        }
+    </style>
 </head>
 <body>
-<h2>Nhập mã OTP</h2>
+<main class="card" role="main" aria-labelledby="title">
+    <h1 id="title" class="title">Enter verification code</h1>
+    <p class="desc">We sent a 6-digit code to your email. Enter it below to verify your account.</p>
 
-<form th:action="@{/verify-otp}" method="post">
-    <label for="otp">Mã OTP:</label>
-    <input type="text" id="otp" name="otp" required maxlength="6" pattern="\d{6}">
-    <button type="submit">Xác nhận</button>
-</form>
+    <!-- ✅ FORM gửi thật về Spring -->
+    <form id="otpForm" th:action="@{/verify-otp}" method="post" autocomplete="off" novalidate>
+        <div class="otp-row" role="group" aria-label="One time password">
+            <input class="otp-input" inputmode="numeric" maxlength="1" aria-label="Digit 1" />
+            <input class="otp-input" inputmode="numeric" maxlength="1" aria-label="Digit 2" />
+            <input class="otp-input" inputmode="numeric" maxlength="1" aria-label="Digit 3" />
+            <input class="otp-input" inputmode="numeric" maxlength="1" aria-label="Digit 4" />
+            <input class="otp-input" inputmode="numeric" maxlength="1" aria-label="Digit 5" />
+            <input class="otp-input" inputmode="numeric" maxlength="1" aria-label="Digit 6" />
+        </div>
 
-<p th:if="${error}" th:text="${error}" style="color:red"></p>
-<p th:if="${success}" th:text="${success}" style="color:green"></p>
+        <!-- ✅ hidden input chứa OTP gộp -->
+        <input type="hidden" name="otp" id="otpValue" />
+
+        <div class="actions">
+            <button type="button" id="resend" class="link">Resend code</button>
+            <button type="submit" id="submitBtn" class="btn" disabled>Verify</button>
+        </div>
+
+        <p th:if="${error}" th:text="${error}" style="color:red"></p>
+        <p th:if="${success}" th:text="${success}" style="color:green"></p>
+
+        <p class="note" id="countdown">Didn’t receive it? You can resend after <span id="timer">60</span>s.</p>
+    </form>
+</main>
+
+<script>
+    (function(){
+        const inputs = Array.from(document.querySelectorAll('.otp-input'));
+        const submitBtn = document.getElementById('submitBtn');
+        const form = document.getElementById('otpForm');
+        const resend = document.getElementById('resend');
+        const timerEl = document.getElementById('timer');
+        const hiddenOtp = document.getElementById('otpValue');
+
+        inputs[0].focus();
+
+        // Xử lý nhập ký tự
+        inputs.forEach((input, idx) => {
+            input.addEventListener('input', (e) => {
+                const v = e.target.value.replace(/\D/g, '');
+                e.target.value = v ? v.slice(-1) : '';
+                if (v && idx < inputs.length - 1) inputs[idx + 1].focus();
+                updateSubmit();
+            });
+
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Backspace' && !e.target.value && idx > 0) {
+                    inputs[idx - 1].focus();
+                }
+            });
+
+            // Cho phép paste toàn bộ mã OTP
+            input.addEventListener('paste', (e) => {
+                e.preventDefault();
+                const paste = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '');
+                if (!paste) return;
+                for (let i = 0; i < inputs.length; i++) {
+                    inputs[i].value = paste[i] || '';
+                }
+                updateSubmit();
+            });
+        });
+
+        function updateSubmit(){
+            const code = inputs.map(i=>i.value).join('');
+            hiddenOtp.value = code;
+            submitBtn.disabled = code.length !== inputs.length;
+        }
+
+        // ✅ Không chặn submit thật — gửi form về server
+        form.addEventListener('submit', () => {
+            const code = inputs.map(i=>i.value).join('');
+            hiddenOtp.value = code;
+        });
+
+        // Timer resend OTP
+        let countdown = 60;
+        let interval = setInterval(() => {
+            countdown--;
+            timerEl.textContent = countdown;
+            if (countdown <= 0) {
+                clearInterval(interval);
+                document.getElementById('countdown').textContent = 'You can resend the code now.';
+                resend.disabled = false;
+            }
+        }, 1000);
+        resend.disabled = true;
+    })();
+</script>
 </body>
 </html>

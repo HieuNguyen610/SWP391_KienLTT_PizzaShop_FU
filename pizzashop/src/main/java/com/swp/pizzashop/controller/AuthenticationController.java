@@ -28,22 +28,23 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.swp.pizzashop.form.LoginForm;
 import com.swp.pizzashop.messages.MessageService;
 import com.swp.pizzashop.messages.SystemMessageCode;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @Slf4j
 @RequiredArgsConstructor
 public class AuthenticationController {
 
-    @Autowired
-    private EmailService emailService;
+
+    private final EmailService emailService;
 
     private final AuthenticationManager authenticationManager;
 
-    private final MessageService messageService;
+
     private final MessageService messageService; // AuthenticationManager removed (handled by Spring Security filter chain)
 
-    @Autowired
-    private UserService userService;
+
+    private final UserService userService;
 
     @GetMapping("/login")
     public String showLoginForm(Model model,
@@ -81,6 +82,7 @@ public class AuthenticationController {
     public String doRegister(@Valid @ModelAttribute("registerForm") RegisterForm registerForm,
                              BindingResult bindingResult,
                              Model model,
+                             RedirectAttributes redirectAttributes,
                              HttpServletRequest request) {
 
         if (bindingResult.hasErrors()) {
@@ -95,14 +97,19 @@ public class AuthenticationController {
 
         try {
             userService.registerUser(registerForm);
-            // Gửi OTP qua email
-            String otp = emailService.sendOtpEmail(registerForm.getEmail());
+            String otp = String.format("%06d", new java.util.Random().nextInt(999999));
+            emailService.sendOtpEmail(registerForm.getEmail(), otp);
+            redirectAttributes.addFlashAttribute("otp", otp);
+            redirectAttributes.addFlashAttribute("email", registerForm.getEmail());
 
-            // Lưu OTP tạm vào session
-            request.getSession().setAttribute("otp", otp);
-            request.getSession().setAttribute("email", registerForm.getEmail());
+
+            log.info("OTP [{}] sent to {}", otp, registerForm.getEmail());
         } catch (IllegalArgumentException e) {
             model.addAttribute("error", e.getMessage());
+            return "sign_up";
+        } catch (Exception ex) {
+            model.addAttribute("error", "Failed to send verification email. Please try again.");
+            log.error("Error sending OTP: {}", ex.getMessage());
             return "sign_up";
         }
 

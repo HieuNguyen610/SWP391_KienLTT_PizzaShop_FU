@@ -52,5 +52,38 @@ public class EmailServiceImpl implements EmailService {
             log.debug("[EMAIL DEBUG]\nTO: {}\nSUBJECT: {}\nBODY:\n{}", user.getEmail(), subject, body);
         }
     }
+
+    @Override
+    public void sendOtpEmail(String toEmail, String otp) {
+        if (toEmail == null || toEmail.isEmpty()) {
+            log.warn("Attempted to send OTP email with null or empty recipient address");
+            return;
+        }
+
+        String subject = "Your PizzaShop OTP Verification Code";
+        String body = "Dear customer,\n\n"
+                + "Your One-Time Password (OTP) for verifying your account is: " + otp + "\n\n"
+                + "This code will expire in 5 minutes.\n"
+                + "Please do not share this code with anyone.\n\n"
+                + "Thank you for registering with PizzaShop!\n"
+                + "Best regards,\nPizzaShop Team";
+
+        try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setFrom(fromAddress);
+            message.setTo(toEmail);
+            message.setSubject(subject);
+            message.setText(body);
+
+            mailSender.send(message);
+            log.info(" OTP email sent successfully to {}", toEmail);
+        } catch (Exception ex) {
+            log.error(" Failed to send OTP email to {}: {}", toEmail, ex.getMessage());
+        }
+
+        if (log.isDebugEnabled()) {
+            log.debug("[EMAIL DEBUG]\nTO: {}\nSUBJECT: {}\nBODY:\n{}", toEmail, subject, body);
+        }
+    }
 }
 

@@ -1,12 +1,14 @@
 package com.swp.pizzashop.controller;
 
 
+import com.swp.pizzashop.form.LoginForm;
 import com.swp.pizzashop.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -19,28 +21,39 @@ public class EmailController {
     private UserService userService;
 
     @GetMapping("/verify-otp")
-    public String showOtpPage() {
-        return "verify_otp"; // Tên file .html trong templates
+    public String showOtpPage(HttpServletRequest request, Model model,
+                              @ModelAttribute("otp") String otp,
+                              @ModelAttribute("email") String email) {
+        request.getSession().setAttribute("otp", otp);
+        request.getSession().setAttribute("email", email);
+        return "verify_otp";
+
     }
 
     @PostMapping("/verify-otp")
-    public String verifyOtp(@RequestParam("otp") String userOtp, HttpServletRequest request, Model model) {
+    public String verifyOtp(@RequestParam("otp") String inputOtp,
+                            HttpServletRequest request,
+                            Model model) {
         String sessionOtp = (String) request.getSession().getAttribute("otp");
         String email = (String) request.getSession().getAttribute("email");
 
-        if (sessionOtp == null || !sessionOtp.equals(userOtp)) {
-            model.addAttribute("error", "Mã OTP không hợp lệ, vui lòng thử lại!");
+        if (sessionOtp == null || email == null) {
+            model.addAttribute("error", "Session expired. Please register again.");
             return "verify_otp";
         }
 
-        // Xác thực thành công -> cập nhật trạng thái user (active = true)
+        if (!sessionOtp.equals(inputOtp)) {
+            model.addAttribute("error", "Invalid OTP. Please try again.");
+            return "verify_otp";
+        }
+
         userService.activateUser(email);
 
-        // Xóa OTP khỏi session
         request.getSession().removeAttribute("otp");
         request.getSession().removeAttribute("email");
 
-        model.addAttribute("success", "Xác thực thành công! Vui lòng đăng nhập.");
-        return "redirect:/login";
+        model.addAttribute("loginForm", new LoginForm());
+        model.addAttribute("success", "Account verified successfully! You can now log in.");
+        return "login";
     }
 }
