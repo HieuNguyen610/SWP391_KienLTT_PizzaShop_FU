@@ -102,20 +102,38 @@ public class FoodServiceImpl implements FoodService {
     @Override
     @Transactional(readOnly = true)
     public Page<Food> findPage(String q, Long categoryId, Pageable pageable) {
+        // Ensure primary sort by category id for consistent grouping
+        Pageable sortedPageable = ensureCategorySort(pageable);
+
         String query = (q == null) ? null : q.trim();
         boolean hasQ = query != null && !query.isEmpty();
         boolean hasCat = categoryId != null;
 
         if (hasCat && hasQ) {
-            return foodRepository.findByIsDeletedFalseAndCategoryIdAndNameContainingIgnoreCase(categoryId, query, pageable);
+            return foodRepository.findByIsDeletedFalseAndCategoryIdAndNameContainingIgnoreCase(categoryId, query, sortedPageable);
         }
         if (hasCat) {
-            return foodRepository.findByIsDeletedFalseAndCategoryId(categoryId, pageable);
+            return foodRepository.findByIsDeletedFalseAndCategoryId(categoryId, sortedPageable);
         }
         if (hasQ) {
-            return foodRepository.findByIsDeletedFalseAndNameContainingIgnoreCase(query, pageable);
+            return foodRepository.findByIsDeletedFalseAndNameContainingIgnoreCase(query, sortedPageable);
         }
-        return foodRepository.findByIsDeletedFalse(pageable);
+        return foodRepository.findByIsDeletedFalse(sortedPageable);
+    }
+
+    private Pageable ensureCategorySort(Pageable pageable) {
+        if (pageable == null) return Pageable.unpaged();
+        var existing = pageable.getSort();
+        var primary = org.springframework.data.domain.Sort.by("category.id");
+        org.springframework.data.domain.Sort combined;
+        if (existing == null || existing.isUnsorted()) {
+            combined = primary;
+        } else {
+            // If category.id already present, keep existing; otherwise prefix with category.id
+            boolean hasCategoryId = existing.stream().anyMatch(o -> "category.id".equalsIgnoreCase(o.getProperty()));
+            combined = hasCategoryId ? existing : primary.and(existing);
+        }
+        return org.springframework.data.domain.PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), combined);
     }
 
     @Override

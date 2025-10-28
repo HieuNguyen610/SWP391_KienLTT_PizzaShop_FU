@@ -53,7 +53,7 @@ public class MenuController {
 
         // categories for filter select/tabs
         model.addAttribute("categories", categoryService.findByIsDeletedFalse());
-        model.addAttribute("categorySummaries", categoryService.getCategorySummaries());
+//        model.addAttribute("categorySummaries", categoryService.getCategorySummaries());
         return "view-menu";
     }
 
