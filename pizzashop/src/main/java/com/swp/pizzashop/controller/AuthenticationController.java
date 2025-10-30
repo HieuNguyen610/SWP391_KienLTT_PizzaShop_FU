@@ -37,13 +37,7 @@ public class AuthenticationController {
 
 
     private final EmailService emailService;
-
-    private final AuthenticationManager authenticationManager;
-
-
-    private final MessageService messageService; // AuthenticationManager removed (handled by Spring Security filter chain)
-
-
+    private final MessageService messageService;
     private final UserService userService;
 
     @GetMapping("/login")
