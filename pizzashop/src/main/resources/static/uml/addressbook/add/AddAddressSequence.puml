@@ -1,0 +1,73 @@
+@startuml
+skinparam style strictuml
+hide footbox
+
+actor Customer as C
+participant Browser as B
+participant "AddressController" as AC
+control "CurrentUserAdvice" as CUA
+database "UserRepository" as UR
+control "AddressService" as AS
+database "AddressRepository" as AR
+boundary "Thymeleaf (profile-address.html)" as TL
+
+== Open Address Book (Add Form) ==
+C -> B : Open Delivery Address page (GET /address)
+B -> AC : GET /address
+activate AC
+AC -> CUA : @ModelAttribute("currentUser")
+activate CUA
+CUA -> UR : findByEmail(auth.name)
+UR --> CUA : User
+deactivate CUA
+AC <-- CUA : currentUser
+AC -> AS : findByUser(currentUser)
+activate AS
+AS -> AR : findByUserAndIsDeletedFalseOrderByDefaultAddressDescIdDesc(user)
+AR --> AS : List<Address>
+AS --> AC : List<Address>
+AC -> AS : countActiveByUser(currentUser)
+AS -> AR : countByUserAndIsDeletedFalse(user)
+AR --> AS : long
+AS --> AC : long
+AC -> AS : getMaxAddressesPerUser()
+AS --> AC : int
+AC -> TL : return view "profile-address" with model (user, addresses, addrUsed, addrMax)
+TL --> B : Render page with Add Address form
+deactivate AS
+deactivate AC
+
+== Create Address (Submit Form) ==
+C -> B : Submit Add Address form (POST /create-address)
+B -> AC : POST /create-address (AddressForm)
+activate AC
+alt currentUser == null
+  AC -> B : redirect:/login
+else currentUser present
+  alt BindingResult has errors
+    AC -> B : redirect:/address with flash addrError
+  else Valid form
+    AC -> AS : createAddress(currentUser, form)
+    activate AS
+    AS -> AR : countByUserAndIsDeletedFalse(user)
+    AR --> AS : long (activeCount)
+    AS -> AC : getMaxAddressesPerUser() [note over AS: internal config]
+    alt activeCount >= max
+      AS --> AC : IllegalArgumentException("max addresses reached")
+      AC -> B : redirect:/address with flash addrError
+    else Below cap
+      alt form.setDefault == true
+        AS -> AR : clearDefaultByUser(user)
+        AR --> AS : int (rowsUpdated)
+      end
+      AS -> AR : save(new Address)
+      AR --> AS : Address
+      AS --> AC : Address
+      AC -> B : redirect:/address with flash addrSuccess
+    end
+    deactivate AS
+  end
+end
+
+deactivate AC
+@enduml

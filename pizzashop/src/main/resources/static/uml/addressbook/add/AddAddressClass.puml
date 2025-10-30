@@ -1,0 +1,84 @@
+@startuml
+skinparam style strictuml
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Controller" {
+  class AddressController {
+    + addressBook(currentUser: User, model): String
+    + createAddress(currentUser: User, form: AddressForm, binding, ra): String
+  }
+  class CurrentUserAdvice {
+    + currentUser(authentication): User
+  }
+}
+
+package "View" {
+  class "profile-address.html" <<View>> {
+    + model
+    --
+    user: User
+    addresses: List<Address>
+    addrUsed: long
+    addrMax: int
+    // Contains Add Address form bound to AddressForm
+  }
+}
+
+package "Service" {
+  interface AddressService {
+    + findByUser(user: User): List<Address>
+    + countActiveByUser(user: User): long
+    + getMaxAddressesPerUser(): int
+    + createAddress(user: User, form: AddressForm): Address
+  }
+}
+
+package "Repository" {
+  interface AddressRepository {
+    + findByUserAndIsDeletedFalseOrderByDefaultAddressDescIdDesc(user: User): List<Address>
+    + countByUserAndIsDeletedFalse(user: User): long
+    + clearDefaultByUser(user: User): int
+    + save(addr: Address): Address
+  }
+  interface UserRepository {
+    + findByEmail(email: String): User
+  }
+}
+
+package "Domain" {
+  class User {
+    + id: Long
+    + firstname: String
+    + lastname: String
+    + email: String
+  }
+  class Address {
+    + id: Long
+    + addressLine: String
+    + city: String
+    + district: String
+    + phone: String
+    + defaultAddress: boolean
+  }
+  User "1" o-- "*" Address : owns >
+}
+
+package "Form" {
+  class AddressForm {
+    + province: String
+    + district: String
+    + street: String
+    + number: String
+    + phone: String
+    + setDefault: boolean
+  }
+}
+
+AddressController ..> AddressService : uses
+AddressService ..> AddressRepository : reads/writes
+CurrentUserAdvice ..> UserRepository : resolves current user
+AddressController ..> "profile-address.html" : returns view+model
+"profile-address.html" ..> User : renders
+"profile-address.html" ..> Address : renders
+@enduml

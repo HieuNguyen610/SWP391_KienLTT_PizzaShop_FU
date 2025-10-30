@@ -1,0 +1,54 @@
+@startuml
+skinparam style strictuml
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Controller" {
+  class AddressController {
+    + deleteAddress(currentUser: User, addressId: Long, ra): String
+  }
+  class CurrentUserAdvice {
+    + currentUser(authentication): User
+  }
+}
+
+package "Service" {
+  interface AddressService {
+    + deleteAddress(user: User, id: Long): void
+  }
+}
+
+package "Repository" {
+  interface AddressRepository {
+    + findByIdAndUserAndIsDeletedFalse(id: Long, user: User): Optional<Address>
+    + findFirstByUserAndIsDeletedFalseOrderByIdDesc(user: User): Optional<Address>
+    + save(addr: Address): Address
+  }
+  interface UserRepository {
+    + findByEmail(email: String): User
+  }
+}
+
+package "Domain" {
+  class User {
+    + id: Long
+    + firstname: String
+    + lastname: String
+    + email: String
+  }
+  class Address {
+    + id: Long
+    + addressLine: String
+    + city: String
+    + district: String
+    + phone: String
+    + defaultAddress: boolean
+    + isDeleted: Boolean
+  }
+  User "1" o-- "*" Address : owns >
+}
+
+AddressController ..> AddressService : uses
+AddressService ..> AddressRepository : reads/writes
+CurrentUserAdvice ..> UserRepository : resolves current user
+@enduml
