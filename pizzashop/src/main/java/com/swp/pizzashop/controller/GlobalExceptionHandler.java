@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @ControllerAdvice
 @Slf4j
@@ -51,20 +52,24 @@ public class GlobalExceptionHandler {
         return mav;
     }
 
-    @ExceptionHandler(NoHandlerFoundException.class)
-    public Object handleNotFound(NoHandlerFoundException ex, HttpServletRequest request) {
+    @ExceptionHandler({NoHandlerFoundException.class, NoResourceFoundException.class})
+    public Object handleNotFound(Exception ex, HttpServletRequest request) {
+        String message = "The page you are looking for does not exist.";
+        if (ex instanceof NoResourceFoundException && ex.getMessage() != null) {
+            message = ex.getMessage();
+        }
         if (isApiRequest(request)) {
             return Map.of(
-                "errorTitle", "404 Not Found",
-                "errorCode", 404,
-                "errorMessage", "The page you are looking for does not exist.",
-                "timestamp", Instant.now().toString(),
-                "path", request != null ? request.getRequestURI() : null
+                    "errorTitle", "404 Not Found",
+                    "errorCode", 404,
+                    "errorMessage", message,
+                    "timestamp", Instant.now().toString(),
+                    "path", request != null ? request.getRequestURI() : null
             );
         }
         ModelAndView mav = new ModelAndView("error/404");
         mav.setStatus(HttpStatus.NOT_FOUND);
-        mav.addObject("message", "The page you are looking for does not exist.");
+        mav.addObject("message", message);
         return mav;
     }
 
