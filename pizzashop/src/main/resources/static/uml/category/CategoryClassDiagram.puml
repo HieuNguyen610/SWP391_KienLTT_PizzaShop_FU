@@ -1,0 +1,44 @@
+@startuml
+
+class CategoryController {
+    +handleCreate(form: CategoryForm, ...)
+}
+
+interface FoodCategoryService {
+    +findByName(name: String): FoodCategory
+    +save(category: FoodCategory): FoodCategory
+    ...
+}
+
+class FoodCategoryServiceImpl {
+    +findByName(name: String): FoodCategory
+    +save(category: FoodCategory): FoodCategory
+    -categoryRepository: FoodCategoryRepository
+    ...
+}
+
+interface FoodCategoryRepository {
+    +findByName(name: String): FoodCategory
+    +save(category: FoodCategory): FoodCategory
+    ...
+}
+
+class FoodCategory {
+    -id: Long
+    -name: String
+    -description: String
+}
+
+class CategoryForm {
+    -name: String
+    -description: String
+}
+
+CategoryController --> FoodCategoryService : uses
+FoodCategoryService <|.. FoodCategoryServiceImpl
+FoodCategoryServiceImpl --> FoodCategoryRepository : uses
+FoodCategoryRepository --> FoodCategory : manages
+CategoryController --> CategoryForm : uses
+
+@enduml
+

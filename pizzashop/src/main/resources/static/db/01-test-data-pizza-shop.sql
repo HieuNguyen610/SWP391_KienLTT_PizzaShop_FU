@@ -4,11 +4,11 @@ INSERT INTO roles (name) VALUES ('Customer'), ('Cashier'), ('Chef'), ('Manager')
 
 -- Users
 INSERT INTO users (firstname, lastname, password, email, phone, status) VALUES
-('Alice', 'Customer', 'password1', 'alice@example.com', '0123456789', 'ACTIVE'),
-('Bob', 'Cashier', 'password2', 'bob@example.com', '0123456790', 'ACTIVE'),
-('Carol', 'Chef', 'password3', 'carol@example.com', '0123456791', 'ACTIVE'),
-('Dave', 'Manager', 'password4', 'dave@example.com', '0123456792', 'ACTIVE'),
-('Eve', 'Admin', 'password5', 'eve@example.com', '0123456793', 'ACTIVE');
+('Alice', 'Customer', '$2a$12$ZL/GWcjyKj04BwCCZMo6GuBUu9y9AYd0x53RAL9/cQzBWYiXZDd/2', 'harrynguyen610@gmail.com', '0123456789', 'ACTIVE'),
+('Bob', 'Cashier', '$2a$12$ZL/GWcjyKj04BwCCZMo6GuBUu9y9AYd0x53RAL9/cQzBWYiXZDd/2', 'bob@example.com', '0123456790', 'ACTIVE'),
+('Carol', 'Chef', '$2a$12$ZL/GWcjyKj04BwCCZMo6GuBUu9y9AYd0x53RAL9/cQzBWYiXZDd/2', 'carol@example.com', '0123456791', 'ACTIVE'),
+('Dave', 'Manager', '$2a$12$ZL/GWcjyKj04BwCCZMo6GuBUu9y9AYd0x53RAL9/cQzBWYiXZDd/2', 'dave@example.com', '0123456792', 'ACTIVE'),
+('Eve', 'Admin', '$2a$12$ZL/GWcjyKj04BwCCZMo6GuBUu9y9AYd0x53RAL9/cQzBWYiXZDd/2', 'eve@example.com', '0123456793', 'ACTIVE');
 
 -- User Roles
 INSERT INTO user_roles (user_id, role_id) VALUES
