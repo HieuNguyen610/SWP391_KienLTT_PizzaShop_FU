@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Admin - Accounts</title>
+
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}" />
+    <link rel="stylesheet" th:href="@{/css/all.min.css}" />
+    <style>
+        /* Thanh search */
+        .input-group .form-control {
+            border-top-left-radius: .5rem !important;
+            border-bottom-left-radius: .5rem !important;
+        }
+
+        .input-group .btn {
+            border-radius: 0 !important;
+        }
+
+        .input-group .btn:last-child {
+            border-top-right-radius: .5rem !important;
+            border-bottom-right-radius: .5rem !important;
+        }
+
+        .input-group .btn + .btn {
+            margin-left: 2px;
+        }
+
+        /* Nút trạng thái */
+        .status-toggle {
+            display: inline-flex;
+            gap: 6px;
+        }
+
+        .status-btn {
+            padding: 6px 12px;
+            border: 1px solid transparent;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.25s;
+        }
+
+        /* Màu cho nút Active */
+        .status-btn.active {
+            background-color: #198754; /* xanh Bootstrap */
+            color: white;
+            border-color: #198754;
+        }
+
+        .status-btn.active.disabled {
+            background-color: #6c757d; /* xám */
+            border-color: #6c757d;
+            color: white;
+            cursor: default;
+        }
+
+        .status-btn.active:hover:not(.disabled) {
+            background-color: #157347;
+        }
+
+        /* Màu cho nút Inactive */
+        .status-btn.inactive {
+            background-color: #dc3545; /* đỏ */
+            color: white;
+            border-color: #dc3545;
+        }
+
+        .status-btn.inactive.disabled {
+            background-color: #6c757d; /* xám */
+            border-color: #6c757d;
+            color: white;
+            cursor: default;
+        }
+
+        .status-btn.inactive:hover:not(.disabled) {
+            background-color: #bb2d3b;
+        }
+
+        .search-form {
+            max-width: 650px;
+            margin: 0; /* căn giữa */
+        }
+
+        /* Ô input */
+        .search-input {
+            border-radius: 10px 0 0 10px !important;
+            border: 1.5px solid #ced4da;
+            padding: 10px 16px;
+            font-size: 1rem;
+            transition: all 0.25s ease;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .search-input:focus {
+            border-color: #0d6efd;
+            box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.15);
+            outline: none;
+        }
+
+
+        .search-btn {
+            border-radius: 0 !important;
+            background: #0d6efd;
+            border: 1.5px solid #0d6efd;
+            font-weight: 500;
+            padding: 10px 20px;
+            transition: all 0.25s ease;
+        }
+
+        .search-btn:hover {
+            background: #0b5ed7;
+            border-color: #0b5ed7;
+            transform: translateY(-1px);
+        }
+
+        /* Nút làm mới */
+        .refresh-btn {
+            border-radius: 0 10px 10px 0 !important;
+            border: 1.5px solid #0d6efd;
+            font-weight: 500;
+            padding: 10px 20px;
+            color: #0d6efd;
+            background: #fff;
+            transition: all 0.25s ease;
+        }
+
+        .refresh-btn:hover {
+            background: #0d6efd;
+            color: #fff;
+            transform: translateY(-1px);
+        }
+
+        /* Hiệu ứng khi hover cả nhóm */
+        .input-group:focus-within .search-input {
+            border-color: #0d6efd;
+        }
+
+        /* Responsive nhỏ hơn 576px */
+        @media (max-width: 576px) {
+            .search-form .input-group {
+                flex-direction: column;
+            }
+
+            .search-btn,
+            .refresh-btn {
+                width: 100%;
+                border-radius: 10px !important;
+                margin-top: 8px;
+            }
+
+            .search-input {
+                border-radius: 10px !important;
+            }
+        }
+    </style>
+</head>
+<body class="layout">
+<aside th:replace="fragments/admin-sidebar :: sidebar"></aside>
+<main>
+    <div class="container">
+        <h2 class="mb-4 text-center">Quản lý người dùng</h2>
+
+        <!-- Search bar -->
+        <form method="get" th:action="@{/admin/users}" class="search-form mb-3 py-4">
+            <div class="input-group">
+                <input type="text"
+                       name="q"
+                       class="form-control search-input"
+                       placeholder="Tìm theo tên, email hoặc số điện thoại..."
+                       th:value="${q}">
+                <button class="btn btn-primary search-btn" type="submit">
+                    <i class="fa fa-search me-1"></i> Tìm kiếm
+                </button>
+                <a th:href="@{/admin/users}" class="btn btn-outline-primary refresh-btn">
+                    <i class="fa fa-rotate-right me-1"></i> Làm mới
+                </a>
+            </div>
+        </form>
+
+        <!-- Table -->
+        <div class="card shadow-sm">
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead class="table-light">
+                    <tr>
+                        <th>ID</th>
+                        <th>Họ và tên</th>
+                        <th>Email</th>
+                        <th>Số điện thoại</th>
+                        <th class="text-center">Trạng thái</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="u : ${pageData.content}">
+                        <td th:text="${u.id}"></td>
+                        <td th:text="${u.firstname + ' ' + u.lastname}"></td>
+                        <td th:text="${u.email}"></td>
+                        <td th:text="${u.phone}"></td>
+
+                        <!-- Hai nút trạng thái -->
+                        <td class="text-center">
+                            <div class="status-toggle">
+                                <!-- Nút Active -->
+                                <form th:action="@{/admin/users/update-status}" method="post" style="display:inline;">
+                                    <input type="hidden" name="id" th:value="${u.id}">
+                                    <button type="submit"
+                                            th:classappend="${u.status == 'ACTIVE'} ? 'status-btn active disabled' : 'status-btn active'"
+                                            th:disabled="${u.status == 'ACTIVE'}"
+                                            th:onclick="${u.status != 'ACTIVE'} ? 'return confirm(\'Bạn có chắc muốn chuyển người dùng này sang trạng thái ACTIVE không?\')' : null"
+                                            title="Đặt trạng thái thành ACTIVE">
+                                        Active
+                                    </button>
+                                </form>
+
+                                <!-- Nút Inactive -->
+                                <form th:action="@{/admin/users/update-status}" method="post" style="display:inline;">
+                                    <input type="hidden" name="id" th:value="${u.id}">
+                                    <button type="submit"
+                                            th:classappend="${u.status == 'INACTIVE'} ? 'status-btn inactive disabled' : 'status-btn inactive'"
+                                            th:disabled="${u.status == 'INACTIVE'}"
+                                            th:onclick="${u.status != 'INACTIVE'} ? 'return confirm(\'Bạn có chắc muốn chuyển người dùng này sang trạng thái INACTIVE không?\')' : null"
+                                            title="Đặt trạng thái thành INACTIVE">
+                                        Inactive
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr th:if="${#lists.isEmpty(pageData.content)}">
+                        <td colspan="6" class="text-center py-3 text-muted">Không có người dùng nào phù hợp.</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+</html>

@@ -1,6 +1,8 @@
 package com.swp.pizzashop.repository;
 
 import com.swp.pizzashop.model.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -12,4 +14,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
     User findByPhone(String phone);
     long countByStatusAndIsDeletedFalse(String active);
     long countByIsDeletedFalse();
+    Page<User> findAll(Pageable pageable);
 }

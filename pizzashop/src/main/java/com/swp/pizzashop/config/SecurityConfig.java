@@ -138,7 +138,7 @@ public class SecurityConfig {
 
             Set<GrantedAuthority> authorities = user.getRoles() == null ? Set.of() :
                     user.getRoles().stream()
-                            .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getName().toUpperCase()))
+                            .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getName()))
                             .collect(Collectors.toSet());
             return User.builder()
                     .username(user.getEmail())

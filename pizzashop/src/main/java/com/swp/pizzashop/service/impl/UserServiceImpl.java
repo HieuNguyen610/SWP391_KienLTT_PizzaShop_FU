@@ -21,6 +21,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -220,6 +222,55 @@ public class UserServiceImpl implements UserService {
         }
         user.setStatus("ACTIVE");
         user.setVerified(true);
+        userRepository.save(user);
+    }
+
+    @Override
+    public Page<User> findAllOrderedWithSearch(String keyword, Pageable pageable) {
+        Page<User> pageData = userRepository.findAll(pageable);
+
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            String lower = keyword.trim().toLowerCase();
+
+            pageData = pageData.map(u -> u); // giữ nguyên Page structure
+            // Tạo danh sách lọc thủ công
+            var filtered = pageData.getContent().stream()
+                    .filter(u ->
+                            (u.getFirstname() != null && u.getFirstname().toLowerCase().contains(lower)) ||
+                                    (u.getLastname() != null && u.getLastname().toLowerCase().contains(lower)) ||
+                                    ((u.getFirstname() + " " + u.getLastname()).toLowerCase().contains(lower)) ||
+                                    (u.getEmail() != null && u.getEmail().toLowerCase().contains(lower)) ||
+                                    (u.getPhone() != null && u.getPhone().toLowerCase().contains(lower))
+                    )
+                    .toList();
+
+            // Chuyển danh sách lọc lại thành Page
+            return new org.springframework.data.domain.PageImpl<>(filtered, pageable, filtered.size());
+        }
+
+        // Sắp xếp Active trước
+        var sorted = pageData.getContent().stream()
+                .sorted((u1, u2) -> {
+                    if ("ACTIVE".equalsIgnoreCase(u1.getStatus()) && !"ACTIVE".equalsIgnoreCase(u2.getStatus()))
+                        return -1;
+                    if (!"ACTIVE".equalsIgnoreCase(u1.getStatus()) && "ACTIVE".equalsIgnoreCase(u2.getStatus()))
+                        return 1;
+                    return u1.getFirstname().compareToIgnoreCase(u2.getFirstname());
+                })
+                .toList();
+
+        return new org.springframework.data.domain.PageImpl<>(sorted, pageable, sorted.size());
+    }
+
+    @Override
+    public void toggleUserStatus(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy người dùng"));
+        if ("ACTIVE".equalsIgnoreCase(user.getStatus())) {
+            user.setStatus("INACTIVE");
+        } else {
+            user.setStatus("ACTIVE");
+        }
         userRepository.save(user);
     }
 }
