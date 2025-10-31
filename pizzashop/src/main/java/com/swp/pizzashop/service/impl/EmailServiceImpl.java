@@ -85,5 +85,19 @@ public class EmailServiceImpl implements EmailService {
             log.debug("[EMAIL DEBUG]\nTO: {}\nSUBJECT: {}\nBODY:\n{}", toEmail, subject, body);
         }
     }
+
+    @Override
+    public void sendSimpleMessage(String to, String subject, String text) {
+        try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setTo(to);
+            message.setSubject(subject);
+            message.setText(text);
+            mailSender.send(message);
+            log.info("Đã gửi email tới {}", to);
+        } catch (Exception e) {
+            log.error("Gửi email thất bại: {}", e.getMessage());
+        }
+    }
 }
 

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Thêm người dùng mới</title>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/all.min.css}">
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .create-user-card {
+            max-width: 650px;
+            margin: 40px auto;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+        }
+
+        .create-user-card h3 {
+            font-weight: 600;
+            text-align: center;
+            color: #333;
+            margin-bottom: 25px;
+        }
+
+        .form-label {
+            font-weight: 500;
+        }
+
+        .btn-success {
+            background-color: #198754;
+            border: none;
+            padding: 10px 20px;
+            font-weight: 500;
+            transition: 0.25s ease;
+        }
+
+        .btn-success:hover {
+            background-color: #157347;
+            transform: translateY(-2px);
+        }
+
+        .btn-outline-secondary:hover {
+            background-color: #e9ecef;
+        }
+
+        .alert-info {
+            font-size: 0.95rem;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="card create-user-card p-4">
+        <h3><i class="fa fa-user-plus me-2"></i> Thêm người dùng mới</h3>
+
+        <!-- Hiển thị thông báo -->
+        <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+        <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+
+        <form th:action="@{/admin/users/create}" th:object="${user}" method="post">
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label class="form-label">Họ</label>
+                    <input type="text" th:field="*{firstname}" class="form-control" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Tên</label>
+                    <input type="text" th:field="*{lastname}" class="form-control" required>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input type="email" th:field="*{email}" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Vai trò</label>
+                <select th:field="*{roles}" class="form-select" required>
+                    <option value="" disabled selected>-- Chọn vai trò --</option>
+                    <option th:each="r : ${roles}" th:value="${r.id}" th:text="${r.name}"></option>
+                </select>
+                <div class="alert alert-info mt-2 p-2">
+                    Mật khẩu mặc định sẽ được đặt là <strong>Staff1234@</strong> <br>
+                    Sau khi tạo, hệ thống sẽ tự động gửi email thông báo đến người dùng. <br>
+                     <strong>Không chia sẻ thông tin đăng nhập này cho bất kỳ ai.</strong>
+                </div>
+            </div>
+
+            <div class="text-end">
+                <a th:href="@{/admin/users}" class="btn btn-outline-secondary">
+                    <i class="fa fa-arrow-left me-1"></i> Quay lại
+                </a>
+                <button type="submit" class="btn btn-success">
+                    <i class="fa fa-save me-1"></i> Tạo người dùng
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>

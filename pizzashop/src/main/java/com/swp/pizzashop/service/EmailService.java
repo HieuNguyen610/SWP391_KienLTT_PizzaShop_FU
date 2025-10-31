@@ -12,6 +12,7 @@ import java.util.Random;
 public interface EmailService {
     void sendPasswordResetEmail(User user, String resetLink);
     void sendOtpEmail(String toEmail, String otp);
+    void sendSimpleMessage(String to, String subject, String text);
 }
 
 

@@ -7,14 +7,12 @@ import com.swp.pizzashop.model.User;
 import com.swp.pizzashop.repository.PasswordResetTokenRepository;
 import com.swp.pizzashop.repository.RoleRepository;
 import com.swp.pizzashop.repository.UserRepository;
+import com.swp.pizzashop.service.EmailService;
 import com.swp.pizzashop.service.UserService;
 import com.swp.pizzashop.service.ChangePasswordResult;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
-import java.util.Base64;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +32,7 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private RoleRepository roleRepository;
+    private final EmailService emailService;
     private final UserRepository userRepository;
     private final PasswordResetTokenRepository passwordResetTokenRepository;
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
@@ -225,41 +224,11 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
-    @Override
     public Page<User> findAllOrderedWithSearch(String keyword, Pageable pageable) {
-        Page<User> pageData = userRepository.findAll(pageable);
-
-        if (keyword != null && !keyword.trim().isEmpty()) {
-            String lower = keyword.trim().toLowerCase();
-
-            pageData = pageData.map(u -> u); // giữ nguyên Page structure
-            // Tạo danh sách lọc thủ công
-            var filtered = pageData.getContent().stream()
-                    .filter(u ->
-                            (u.getFirstname() != null && u.getFirstname().toLowerCase().contains(lower)) ||
-                                    (u.getLastname() != null && u.getLastname().toLowerCase().contains(lower)) ||
-                                    ((u.getFirstname() + " " + u.getLastname()).toLowerCase().contains(lower)) ||
-                                    (u.getEmail() != null && u.getEmail().toLowerCase().contains(lower)) ||
-                                    (u.getPhone() != null && u.getPhone().toLowerCase().contains(lower))
-                    )
-                    .toList();
-
-            // Chuyển danh sách lọc lại thành Page
-            return new org.springframework.data.domain.PageImpl<>(filtered, pageable, filtered.size());
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return userRepository.findAllByIsDeletedFalseOrderByIdDesc(pageable);
         }
-
-        // Sắp xếp Active trước
-        var sorted = pageData.getContent().stream()
-                .sorted((u1, u2) -> {
-                    if ("ACTIVE".equalsIgnoreCase(u1.getStatus()) && !"ACTIVE".equalsIgnoreCase(u2.getStatus()))
-                        return -1;
-                    if (!"ACTIVE".equalsIgnoreCase(u1.getStatus()) && "ACTIVE".equalsIgnoreCase(u2.getStatus()))
-                        return 1;
-                    return u1.getFirstname().compareToIgnoreCase(u2.getFirstname());
-                })
-                .toList();
-
-        return new org.springframework.data.domain.PageImpl<>(sorted, pageable, sorted.size());
+        return userRepository.searchByKeyword(keyword.trim(), pageable);
     }
 
     @Override
@@ -272,5 +241,53 @@ public class UserServiceImpl implements UserService {
             user.setStatus("ACTIVE");
         }
         userRepository.save(user);
+    }
+
+    @Override
+    @Transactional
+    public void createUserWithRole(User user) {
+        if (userRepository.findByEmail(user.getEmail()) != null) {
+            throw new IllegalArgumentException("Email đã được sử dụng");
+        }
+
+        Role role = roleRepository.findByName(user.getRoles().iterator().next().getName());
+        if (role == null || !List.of("Admin", "Cashier", "Chef", "Manager").contains(role.getName())) {
+            throw new IllegalArgumentException("Không được phép tạo người dùng với vai trò này");
+        }
+
+        String defaultPassword = "Staff1234@";
+        user.setPassword(passwordEncoder.encode(defaultPassword));
+        user.setStatus("ACTIVE");
+        user.setCreatedAt(LocalDateTime.now());
+        user.setUpdatedAt(LocalDateTime.now());
+user.setVerified(true);
+        Set<Role> roles = new HashSet<>();
+        roles.add(role);
+        user.setRoles(roles);
+
+        userRepository.save(user);
+
+        // Gửi email thông báo
+        try {
+            String subject = "Thông tin tài khoản PizzaShop";
+            String body = String.format("""
+                    Xin chào %s %s,
+
+                    Tài khoản của bạn đã được tạo thành công trên hệ thống PizzaShop.
+
+                    📨 Email đăng nhập: %s
+                    🔑 Mật khẩu tạm thời: Staff1234@
+
+                    ⚠️ Vui lòng đổi mật khẩu ngay sau khi đăng nhập và KHÔNG chia sẻ thông tin này cho bất kỳ ai.
+
+                    Trân trọng,
+                    PizzaShop Team
+                    """, user.getFirstname(), user.getLastname(), user.getEmail());
+
+            emailService.sendSimpleMessage(user.getEmail(), subject, body);
+            log.info("Đã gửi email tạo tài khoản cho {}", user.getEmail());
+        } catch (Exception e) {
+            log.error("Không thể gửi email đến {}: {}", user.getEmail(), e.getMessage());
+        }
     }
 }
