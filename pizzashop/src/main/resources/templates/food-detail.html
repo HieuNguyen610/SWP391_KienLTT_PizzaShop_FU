@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="${food != null ? food.name : 'Chi tiết món'}">Chi tiết món</title>
+    <title th:text="${food != null ? food.name : 'Food details'}">Food details</title>
     <link rel="stylesheet" href="/css/style.css" />
     <link rel="stylesheet" href="/css/food-detail.css" />
 </head>
@@ -18,23 +18,23 @@
         <span>&gt;</span>
         <a th:href="@{/menu(categoryId=${food.category != null ? food.category.id : null})}" th:text="${food.category != null ? food.category.name : 'Menu'}">Menu</a>
         <span>&gt;</span>
-        <span class="current" th:text="${food.name}">Tên món</span>
+        <span class="current" th:text="${food.name}">Food name</span>
     </nav>
 
     <div class="fd-grid">
         <!-- Left: Image + short info -->
         <div class="fd-left">
             <div class="fd-image-wrap">
-                <img class="fd-image" alt="Ảnh món"
+                <img class="fd-image" alt="Food image"
                      th:src="${#strings.isEmpty(food.imageUrl) ? '/images/default_food.jpg' : ((#strings.startsWith(food.imageUrl,'http') or #strings.startsWith(food.imageUrl,'/images/') or #strings.startsWith(food.imageUrl,'images/')) ? food.imageUrl : '/images/' + food.imageUrl)}" />
             </div>
             <div class="fd-basic">
-                <h1 class="fd-title" th:text="${food.name}">Tên món</h1>
+                <h1 class="fd-title" th:text="${food.name}">Food name</h1>
                 <div class="fd-price" th:text="${priceText}">0đ</div>
             </div>
             <div class="fd-desc" th:if="${food.description}">
                 <h3>Description</h3>
-                <p th:text="${food.description}">Mô tả món...</p>
+                <p th:text="${food.description}">Food description...</p>
             </div>
         </div>
 
@@ -46,9 +46,9 @@
                     <div class="fd-qty">
                         <label for="qty">Quantity</label>
                         <div class="fd-qty-ctrl">
-                            <button type="button" class="fd-btn fd-qty-dec" aria-label="Giảm">−</button>
+                            <button type="button" class="fd-btn fd-qty-dec" aria-label="Decrease">−</button>
                             <input id="qty" name="qty" type="number" value="1" min="1" />
-                            <button type="button" class="fd-btn fd-qty-inc" aria-label="Tăng">+</button>
+                            <button type="button" class="fd-btn fd-qty-inc" aria-label="Increase">+</button>
                         </div>
                     </div>
 
@@ -62,15 +62,15 @@
             </div>
 
             <!-- Optional upsell placeholder (static for now) -->
-<!--            <div class="fd-card fd-upsell">-->
-<!--                <h3>Gợi ý thêm</h3>-->
-<!--                <ul>-->
-<!--                    <li>Thêm phô mai (+10,000đ)</li>-->
-<!--                    <li>Viền phô mai (+25,000đ)</li>-->
-<!--                    <li>Thêm xúc xích (+12,000đ)</li>-->
-<!--                </ul>-->
-<!--                <p class="fd-note">Gợi ý chỉ mang tính minh họa.</p>-->
-<!--            </div>-->
+            <!--            <div class="fd-card fd-upsell">-->
+            <!--                <h3>Suggestions</h3>-->
+            <!--                <ul>-->
+            <!--                    <li>Add cheese (+10,000đ)</li>-->
+            <!--                    <li>Cheese crust (+25,000đ)</li>-->
+            <!--                    <li>Add sausage (+12,000đ)</li>-->
+            <!--                </ul>-->
+            <!--                <p class="fd-note">Suggestions are for illustration only.</p>-->
+            <!--            </div>-->
         </aside>
     </div>
 </main>
@@ -78,21 +78,21 @@
 <div th:replace="~{fragments/header :: page_footer}"></div>
 
 <script>
-(function(){
-  const dec = document.querySelector('.fd-qty-dec');
-  const inc = document.querySelector('.fd-qty-inc');
-  const input = document.getElementById('qty');
-  if(dec && inc && input){
-    dec.addEventListener('click', function(){
-      const v = Math.max(1, (parseInt(input.value||'1',10)-1));
-      input.value = v;
-    });
-    inc.addEventListener('click', function(){
-      const v = Math.max(1, (parseInt(input.value||'1',10)+1));
-      input.value = v;
-    });
-  }
-})();
+    (function(){
+        const dec = document.querySelector('.fd-qty-dec');
+        const inc = document.querySelector('.fd-qty-inc');
+        const input = document.getElementById('qty');
+        if(dec && inc && input){
+            dec.addEventListener('click', function(){
+                const v = Math.max(1, (parseInt(input.value||'1',10)-1));
+                input.value = v;
+            });
+            inc.addEventListener('click', function(){
+                const v = Math.max(1, (parseInt(input.value||'1',10)+1));
+                input.value = v;
+            });
+        }
+    })();
 </script>
 
 </body>

@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chỉnh sửa mặt hàng</title>
+    <title>Edit item</title>
     <link rel="stylesheet" href="/css/style.css" />
     <link rel="stylesheet" href="/css/food-detail.css" />
 </head>
@@ -19,24 +19,24 @@
         <a th:href="@{/menu(categoryId=${item.food != null && item.food.category != null ? item.food.category.id : null})}"
            th:text="${item.food != null && item.food.category != null ? item.food.category.name : 'Menu'}">Menu</a>
         <span>&gt;</span>
-        <span class="current" th:text="${item.food != null ? item.food.name : 'Món'}">Tên món</span>
-        <span class="current" style="margin-left:8px;color:#6b7280">• Chỉnh sửa</span>
+        <span class="current" th:text="${item.food != null ? item.food.name : 'Item'}">Item name</span>
+        <span class="current" style="margin-left:8px;color:#6b7280">• Edit</span>
     </nav>
 
     <div class="fd-grid" th:if="${item != null}">
         <!-- Left: Image + short info -->
         <div class="fd-left">
             <div class="fd-image-wrap">
-                <img class="fd-image" alt="Ảnh món"
+                <img class="fd-image" alt="Food image"
                      th:src="${#strings.isEmpty(item.food.imageUrl) ? '/images/default_food.jpg' : ((#strings.startsWith(item.food.imageUrl,'http') or #strings.startsWith(item.food.imageUrl,'/images/') or #strings.startsWith(item.food.imageUrl,'images/')) ? item.food.imageUrl : '/images/' + item.food.imageUrl)}" />
             </div>
             <div class="fd-basic">
-                <h1 class="fd-title" th:text="${item.food.name}">Tên món</h1>
+                <h1 class="fd-title" th:text="${item.food.name}">Item name</h1>
                 <div class="fd-price" th:text="${priceText}">0đ</div>
             </div>
             <div class="fd-desc" th:if="${item.food.description}">
                 <h3>Description</h3>
-                <p th:text="${item.food.description}">Mô tả món...</p>
+                <p th:text="${item.food.description}">Item description...</p>
             </div>
         </div>
 
@@ -48,9 +48,9 @@
                     <div class="fd-qty">
                         <label for="quantity">Quantity</label>
                         <div class="fd-qty-ctrl">
-                            <button type="button" class="fd-btn fd-qty-dec" aria-label="Giảm">−</button>
+                            <button type="button" class="fd-btn fd-qty-dec" aria-label="Decrease">−</button>
                             <input id="quantity" name="quantity" type="number" th:value="${item.quantity}" min="1" />
-                            <button type="button" class="fd-btn fd-qty-inc" aria-label="Tăng">+</button>
+                            <button type="button" class="fd-btn fd-qty-inc" aria-label="Increase">+</button>
                         </div>
                     </div>
 
@@ -66,7 +66,7 @@
 
                     <div class="fd-qty" style="margin-top:12px;">
                         <label for="notes">Note</label>
-                        <textarea id="notes" name="notes" rows="3" placeholder="Ví dụ: Ít cay, thêm sốt..." th:text="${item.notes}"></textarea>
+                        <textarea id="notes" name="notes" rows="3" placeholder="Example: Less spicy, extra sauce..." th:text="${item.notes}"></textarea>
                     </div>
 
                     <!-- If Spring Security CSRF is enabled, include token here
