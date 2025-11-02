@@ -45,7 +45,7 @@ public class CartController {
         String email = authentication.getName();
         User user = userRepository.findByEmail(email);
         if (user == null) {
-            ra.addFlashAttribute("error", "Không tìm thấy người dùng. Vui lòng đăng nhập lại");
+            ra.addFlashAttribute("error", "User not found. Please log in");
             return "redirect:/login";
         }
 
@@ -82,7 +82,7 @@ public class CartController {
             String email = authentication.getName();
             User user = userRepository.findByEmail(email);
             if (user == null) {
-                ra.addFlashAttribute("error", "Không tìm thấy người dùng. Vui lòng đăng nhập lại");
+                ra.addFlashAttribute("error", "User not found. Please log in");
                 return "redirect:/login";
             }
             AddToCartForm form = new AddToCartForm();
@@ -128,7 +128,7 @@ public class CartController {
             String email = authentication.getName();
             User user = userRepository.findByEmail(email);
             if (user == null) {
-                ra.addFlashAttribute("error", "Không tìm thấy người dùng. Vui lòng đăng nhập lại");
+                ra.addFlashAttribute("error", "User not found. Please log in");
                 return "redirect:/login";
             }
 

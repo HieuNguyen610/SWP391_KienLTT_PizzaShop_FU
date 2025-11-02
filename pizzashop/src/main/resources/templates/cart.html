@@ -26,39 +26,39 @@
 <div th:replace="~{fragments/header :: page_header}"></div>
 
 <main class="cart-container">
-    <h1 class="cart-title">Giỏ hàng của bạn</h1>
+    <h1 class="cart-title">My cart</h1>
 
     <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
     <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
 
     <div th:if="${items == null or items.isEmpty()}">
-        <p class="muted">Giỏ hàng đang trống. Hãy chọn vài món ngon nhé!</p>
-        <a class="btn" th:href="@{/menu}">Tiếp tục mua sắm</a>
+        <p class="muted">Your cart is empty. Please add some delicious items!</p>
+        <a class="btn" th:href="@{/menu}">Continue shopping</a>
     </div>
 
     <div th:if="${items != null and !items.isEmpty()}">
         <table class="cart">
             <thead>
             <tr>
-                <th>Món</th>
-                <th>Kích cỡ</th>
-                <th class="text-right">Đơn giá</th>
-                <th class="text-right">Số lượng</th>
-                <th class="text-right">Thành tiền</th>
+                <th>Item</th>
+                <th>Size</th>
+                <th class="text-right">Price</th>
+                <th class="text-right">Quantity</th>
+                <th class="text-right">Total</th>
             </tr>
             </thead>
             <tbody>
 
             <tr th:each="i : ${items}">
                 <td>
-                    <div><strong th:text="${i.food.name}">Tên món</strong></div>
+                    <div><strong th:text="${i.food.name}">Name</strong></div>
                     <div class="muted" th:if="${i.notes}" th:text="${i.notes}"></div>
                 </td>
                 <td th:text="${i.sizeId}">1</td>
-                <td class="text-right" th:text="${#numbers.formatDecimal(i.price, 0, 'COMMA', 0, 'POINT')} + 'đ'">0đ</td>
+                <td class="text-right" th:text="${#numbers.formatDecimal(i.price, 0, 'COMMA', 0, 'POINT')} + 'đ'">$0</td>
                 <td class="text-right" th:text="${i.quantity}">1</td>
                 <td class="text-right"
-                    th:text="${#numbers.formatDecimal(i.price * i.quantity , 0, 'COMMA', 0, 'POINT')} + 'đ'">0đ</td>
+                    th:text="${#numbers.formatDecimal(i.price * i.quantity , 0, 'COMMA', 0, 'POINT')} + 'đ'">$0</td>
                 <td><a th:href="@{/cart/item/{id}/edit(id=${i.id})}">Edit</a></td>
                 <td><a th:href="@{/cart/item/{id}/remove(id=${i.id})}">Remove</a></td>
             </tr>
@@ -66,15 +66,15 @@
             </tbody>
             <tfoot>
             <tr>
-                <th colspan="4" class="text-right">Tạm tính</th>
-                <th class="text-right" th:text="${#numbers.formatDecimal(subtotal, 0, 'COMMA', 0, 'POINT')} + 'đ'">0đ</th>
+                <th colspan="4" class="text-right">Estimated price</th>
+                <th class="text-right" th:text="${#numbers.formatDecimal(subtotal, 0, 'COMMA', 0, 'POINT')} + 'đ'">$0</th>
             </tr>
             </tfoot>
         </table>
 
         <div class="cart-actions">
-            <a class="btn secondary" th:href="@{/menu}">Tiếp tục mua sắm</a>
-            <a class="btn" href="#" onclick="alert('Checkout flow coming soon'); return false;">Thanh toán</a>
+            <a class="btn secondary" th:href="@{/menu}">Continue shopping</a>
+            <a class="btn" href="#" onclick="alert('Checkout flow coming soon'); return false;">Checkout</a>
         </div>
     </div>
 </main>

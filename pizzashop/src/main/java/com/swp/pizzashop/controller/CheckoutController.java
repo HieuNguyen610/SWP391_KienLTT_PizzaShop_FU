@@ -35,7 +35,7 @@ public class CheckoutController {
         String email = authentication.getName();
         User user = userRepository.findByEmail(email);
         if (user == null) {
-            ra.addFlashAttribute("error", "Không tìm thấy người dùng");
+            ra.addFlashAttribute("error", "User not found");
             return "redirect:/login";
         }
         Address address = addressService.findDefaultByUser(user);
@@ -75,7 +75,7 @@ public class CheckoutController {
         String email = authentication.getName();
         User user = userRepository.findByEmail(email);
         if (user == null) {
-            ra.addFlashAttribute("error", "Không tìm thấy người dùng");
+            ra.addFlashAttribute("error", "User not found");
             return "redirect:/login";
         }
         Cart cart = cartService.getOrCreateActiveCart(user.getId());

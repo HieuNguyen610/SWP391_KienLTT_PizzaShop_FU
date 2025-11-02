@@ -14,7 +14,7 @@
 <main class="fd-container" th:with="priceText=${#numbers.formatDecimal(food.basePrice, 0, 'COMMA', 0, 'POINT')} + 'đ'">
     <!-- Breadcrumb -->
     <nav class="fd-breadcrumb">
-        <a th:href="@{/}">Trang chủ</a>
+        <a th:href="@{/}">Home</a>
         <span>&gt;</span>
         <a th:href="@{/menu(categoryId=${food.category != null ? food.category.id : null})}" th:text="${food.category != null ? food.category.name : 'Menu'}">Menu</a>
         <span>&gt;</span>
@@ -33,7 +33,7 @@
                 <div class="fd-price" th:text="${priceText}">0đ</div>
             </div>
             <div class="fd-desc" th:if="${food.description}">
-                <h3>Mô tả</h3>
+                <h3>Description</h3>
                 <p th:text="${food.description}">Mô tả món...</p>
             </div>
         </div>
@@ -41,10 +41,10 @@
         <!-- Right: Purchase panel -->
         <aside class="fd-right">
             <div class="fd-card">
-                <h2 class="fd-card-title">Tùy chọn đặt món</h2>
+                <h2 class="fd-card-title">Customize item</h2>
                 <form>
                     <div class="fd-qty">
-                        <label for="qty">Số lượng</label>
+                        <label for="qty">Quantity</label>
                         <div class="fd-qty-ctrl">
                             <button type="button" class="fd-btn fd-qty-dec" aria-label="Giảm">−</button>
                             <input id="qty" name="qty" type="number" value="1" min="1" />
@@ -54,23 +54,23 @@
 
                     <div class="fd-actions">
                         <button type="button" class="fd-addtocart" th:attr="data-foodid=${food.id}">
-                            Thêm vào giỏ • <span th:text="${priceText}">0đ</span>
+                            Add to cart • <span th:text="${priceText}">0đ</span>
                         </button>
-                        <a class="fd-back" th:href="@{/menu}">Quay lại menu</a>
+                        <a class="fd-back" th:href="@{/menu}">Back to menu</a>
                     </div>
                 </form>
             </div>
 
             <!-- Optional upsell placeholder (static for now) -->
-            <div class="fd-card fd-upsell">
-                <h3>Gợi ý thêm</h3>
-                <ul>
-                    <li>Thêm phô mai (+10,000đ)</li>
-                    <li>Viền phô mai (+25,000đ)</li>
-                    <li>Thêm xúc xích (+12,000đ)</li>
-                </ul>
-                <p class="fd-note">Gợi ý chỉ mang tính minh họa.</p>
-            </div>
+<!--            <div class="fd-card fd-upsell">-->
+<!--                <h3>Gợi ý thêm</h3>-->
+<!--                <ul>-->
+<!--                    <li>Thêm phô mai (+10,000đ)</li>-->
+<!--                    <li>Viền phô mai (+25,000đ)</li>-->
+<!--                    <li>Thêm xúc xích (+12,000đ)</li>-->
+<!--                </ul>-->
+<!--                <p class="fd-note">Gợi ý chỉ mang tính minh họa.</p>-->
+<!--            </div>-->
         </aside>
     </div>
 </main>

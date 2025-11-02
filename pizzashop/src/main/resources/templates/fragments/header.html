@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <title>Pizza Shop</title>
 </head>
@@ -16,14 +16,13 @@
             <button><a th:href="@{/menu}" href="/menu" class="menu-link">Menu</a></button>
             <button><a th:href="@{/profile}" href="/profile" class="menu-link">Profile</a></button>
             <button><a th:href="@{/address}" href="/address" class="menu-link">Address</a></button>
-            <button><a th:href="@{/cart}" class="menu-link">Giỏ hàng</a></button>
+            <button><a th:href="@{/cart}" class="menu-link">Cart</a></button>
         </div>
 
         <!-- Anonymous user: show login and register links separately -->
         <div class="user-actions" sec:authorize="isAnonymous()" style="display:flex; gap:10px; align-items:center;">
-            <a th:href="@{/login}" href="/login" class="login-link">Đăng nhập</a>
-            <span>|</span>
-            <a th:href="@{/register}" href="/register" class="register-link">Đăng ký</a>
+            <a th:href="@{/login}" href="/login" class="login-link">Login</a>
+            <a th:href="@{/register}" href="/register" class="register-link">Register</a>
         </div>
 
         <!-- Authenticated user: show name and logout -->

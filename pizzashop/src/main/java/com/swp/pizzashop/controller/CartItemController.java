@@ -36,7 +36,7 @@ public class CartItemController {
                                  Authentication authentication,
                                  RedirectAttributes ra) {
         if (authentication == null || !authentication.isAuthenticated()) {
-            ra.addFlashAttribute("error", "Vui lòng đăng nhập");
+            ra.addFlashAttribute("error", "Please log in");
             return "redirect:/login";
         }
         if (quantity == null) quantity = 1;
@@ -45,24 +45,24 @@ public class CartItemController {
         String email = authentication.getName();
         User user = userRepository.findByEmail(email);
         if (user == null) {
-            ra.addFlashAttribute("error", "Không tìm thấy người dùng");
+            ra.addFlashAttribute("error", "User not found");
             return "redirect:/login";
         }
         Cart cart = cartService.getOrCreateActiveCart(user.getId());
 
         Optional<CartItem> opt = cartItemRepository.findById(itemId);
         if (opt.isEmpty() || opt.get().getCart() == null || !opt.get().getCart().getId().equals(cart.getId())) {
-            ra.addFlashAttribute("error", "Mục giỏ hàng không hợp lệ");
+            ra.addFlashAttribute("error", "Invalid cart item");
             return "redirect:/cart";
         }
         CartItem item = opt.get();
         if (quantity <= 0) {
             cartItemRepository.delete(item);
-            ra.addFlashAttribute("success", "Đã xóa mặt hàng khỏi giỏ");
+            ra.addFlashAttribute("success", "Item removed from cart");
         } else {
             item.setQuantity(quantity);
             cartItemRepository.save(item);
-            ra.addFlashAttribute("success", "Đã cập nhật số lượng");
+            ra.addFlashAttribute("success", "Quantity updated");
         }
         return "redirect:/cart";
     }
@@ -72,22 +72,22 @@ public class CartItemController {
                              Authentication authentication,
                              RedirectAttributes ra) {
         if (authentication == null || !authentication.isAuthenticated()) {
-            ra.addFlashAttribute("error", "Vui lòng đăng nhập");
+            ra.addFlashAttribute("error", "Please log in");
             return "redirect:/login";
         }
         String email = authentication.getName();
         User user = userRepository.findByEmail(email);
         if (user == null) {
-            ra.addFlashAttribute("error", "Không tìm thấy người dùng");
+            ra.addFlashAttribute("error", "User not found");
             return "redirect:/login";
         }
         Cart cart = cartService.getOrCreateActiveCart(user.getId());
         Optional<CartItem> opt = cartItemRepository.findById(itemId);
         if (opt.isPresent() && opt.get().getCart() != null && opt.get().getCart().getId().equals(cart.getId())) {
             cartItemRepository.delete(opt.get());
-            ra.addFlashAttribute("success", "Đã xóa mặt hàng khỏi giỏ");
+            ra.addFlashAttribute("success", "Item removed from cart");
         } else {
-            ra.addFlashAttribute("error", "Mục giỏ hàng không hợp lệ");
+            ra.addFlashAttribute("error", "Invalid cart item");
         }
         return "redirect:/cart";
     }
@@ -100,19 +100,19 @@ public class CartItemController {
                            Authentication authentication,
                            RedirectAttributes ra) {
         if (authentication == null || !authentication.isAuthenticated()) {
-            ra.addFlashAttribute("error", "Vui lòng đăng nhập");
+            ra.addFlashAttribute("error", "Please log in");
             return "redirect:/login";
         }
         String email = authentication.getName();
         User user = userRepository.findByEmail(email);
         if (user == null) {
-            ra.addFlashAttribute("error", "Không tìm thấy người dùng");
+            ra.addFlashAttribute("error", "User not found");
             return "redirect:/login";
         }
         Cart cart = cartService.getOrCreateActiveCart(user.getId());
         Optional<CartItem> opt = cartItemRepository.findById(itemId);
         if (opt.isEmpty() || opt.get().getCart() == null || !opt.get().getCart().getId().equals(cart.getId())) {
-            ra.addFlashAttribute("error", "Mục giỏ hàng không hợp lệ");
+            ra.addFlashAttribute("error", "Invalid cart item");
             return "redirect:/cart";
         }
         CartItem item = opt.get();
@@ -120,7 +120,7 @@ public class CartItemController {
         int newQty = (quantity == null ? item.getQuantity() : quantity);
         if (newQty <= 0) {
             cartItemRepository.delete(item);
-            ra.addFlashAttribute("success", "Đã xóa mặt hàng khỏi giỏ");
+            ra.addFlashAttribute("success", "Item removed from cart");
             return "redirect:/cart";
         }
 
@@ -128,7 +128,7 @@ public class CartItemController {
         if (!newSizeId.equals(item.getSizeId())) {
             var sizeOpt = foodSizeRepository.findById(newSizeId);
             if (sizeOpt.isEmpty() || sizeOpt.get().getFood() == null || !sizeOpt.get().getFood().getId().equals(item.getFood().getId())) {
-                ra.addFlashAttribute("error", "Kích cỡ không hợp lệ cho món này");
+                ra.addFlashAttribute("error", "Invalid size for this item");
                 return "redirect:/cart";
             }
             item.setSizeId(newSizeId);
@@ -138,7 +138,7 @@ public class CartItemController {
         item.setQuantity(newQty);
         item.setNotes(notes);
         cartItemRepository.save(item);
-        ra.addFlashAttribute("success", "Đã cập nhật mặt hàng trong giỏ");
+        ra.addFlashAttribute("success", "Cart item updated");
         return "redirect:/cart";
     }
 
@@ -148,19 +148,19 @@ public class CartItemController {
                                RedirectAttributes ra,
                                Model model) {
         if (authentication == null || !authentication.isAuthenticated()) {
-            ra.addFlashAttribute("error", "Vui lòng đăng nhập");
+            ra.addFlashAttribute("error", "Please log in");
             return "redirect:/login";
         }
         String email = authentication.getName();
         User user = userRepository.findByEmail(email);
         if (user == null) {
-            ra.addFlashAttribute("error", "Không tìm thấy người dùng");
+            ra.addFlashAttribute("error", "User not found");
             return "redirect:/login";
         }
         Cart cart = cartService.getOrCreateActiveCart(user.getId());
         Optional<CartItem> opt = cartItemRepository.findById(itemId);
         if (opt.isEmpty() || opt.get().getCart() == null || !opt.get().getCart().getId().equals(cart.getId())) {
-            ra.addFlashAttribute("error", "Mục giỏ hàng không hợp lệ");
+            ra.addFlashAttribute("error", "Invalid cart item");
             return "redirect:/cart";
         }
         CartItem item = opt.get();

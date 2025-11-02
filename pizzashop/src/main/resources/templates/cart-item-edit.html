@@ -14,7 +14,7 @@
 <main class="fd-container" th:with="priceText=${#numbers.formatDecimal(item != null ? item.price : 0, 0, 'COMMA', 0, 'POINT')} + 'đ'">
     <!-- Breadcrumb -->
     <nav class="fd-breadcrumb" th:if="${item != null}">
-        <a th:href="@{/}">Trang chủ</a>
+        <a th:href="@{/}">Home</a>
         <span>&gt;</span>
         <a th:href="@{/menu(categoryId=${item.food != null && item.food.category != null ? item.food.category.id : null})}"
            th:text="${item.food != null && item.food.category != null ? item.food.category.name : 'Menu'}">Menu</a>
@@ -35,7 +35,7 @@
                 <div class="fd-price" th:text="${priceText}">0đ</div>
             </div>
             <div class="fd-desc" th:if="${item.food.description}">
-                <h3>Mô tả</h3>
+                <h3>Description</h3>
                 <p th:text="${item.food.description}">Mô tả món...</p>
             </div>
         </div>
@@ -43,10 +43,10 @@
         <!-- Right: Edit panel -->
         <aside class="fd-right">
             <div class="fd-card">
-                <h2 class="fd-card-title">Chỉnh sửa tuỳ chọn</h2>
+                <h2 class="fd-card-title">Edit item</h2>
                 <form th:action="@{/cart/item/{id}/edit(id=${item.id})}" method="post">
                     <div class="fd-qty">
-                        <label for="quantity">Số lượng</label>
+                        <label for="quantity">Quantity</label>
                         <div class="fd-qty-ctrl">
                             <button type="button" class="fd-btn fd-qty-dec" aria-label="Giảm">−</button>
                             <input id="quantity" name="quantity" type="number" th:value="${item.quantity}" min="1" />

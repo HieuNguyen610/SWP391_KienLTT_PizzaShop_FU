@@ -23,11 +23,11 @@
                 <p class="product-description" th:text="${pizza.description}">Shrimp, crab, ham and Thousand Island dressing.</p>
                 <p class="product-price">Price from only</p>
                 <p class="product-price-value" th:text="${#numbers.formatDecimal(pizza.basePrice, 0, 'COMMA', 0, 'POINT')} + 'đ'">154,000đ</p>
-                <a class="buy-now-btn" th:href="@{/menu/food/{id}(id=${pizza.id})}">Mua ngay</a>
+                <a class="buy-now-btn" th:href="@{/menu/food/{id}(id=${pizza.id})}">Buy Now</a>
             </div>
 
             <div th:if="${pizzas.isEmpty()}">
-                <p>Hiện chưa có sản phẩm nào trong menu. Vui lòng quay lại sau.</p>
+                <p>There are currently no products in the menu. Please come back later.</p>
             </div>
         </div>
     </section>
