@@ -45,6 +45,8 @@
                 <th class="text-right">Price</th>
                 <th class="text-right">Quantity</th>
                 <th class="text-right">Total</th>
+                <th></th>
+                <th></th>
             </tr>
             </thead>
             <tbody>
@@ -68,6 +70,7 @@
             <tr>
                 <th colspan="4" class="text-right">Estimated price</th>
                 <th class="text-right" th:text="${#numbers.formatDecimal(subtotal, 0, 'COMMA', 0, 'POINT')} + 'đ'">$0</th>
+                <th colspan="2"></th>
             </tr>
             </tfoot>
         </table>

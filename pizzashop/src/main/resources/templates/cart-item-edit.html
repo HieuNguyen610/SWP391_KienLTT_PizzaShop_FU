@@ -55,7 +55,7 @@
                     </div>
 
                     <div class="fd-qty" style="margin-top:12px;">
-                        <label for="sizeId">Kích cỡ</label>
+                        <label for="sizeId">Size</label>
                         <select id="sizeId" name="sizeId">
                             <option th:each="s : ${sizes}"
                                     th:value="${s.id}"
@@ -65,7 +65,7 @@
                     </div>
 
                     <div class="fd-qty" style="margin-top:12px;">
-                        <label for="notes">Ghi chú</label>
+                        <label for="notes">Note</label>
                         <textarea id="notes" name="notes" rows="3" placeholder="Ví dụ: Ít cay, thêm sốt..." th:text="${item.notes}"></textarea>
                     </div>
 
@@ -74,21 +74,15 @@
                     -->
 
                     <div class="fd-actions">
-                        <button type="submit" class="fd-addtocart">Cập nhật</button>
-                        <a class="fd-back" th:href="@{/cart}">Hủy</a>
+                        <button type="submit" class="fd-addtocart">Update</button>
+                        <a class="fd-back" th:href="@{/cart}">Return to cart</a>
                     </div>
                 </form>
-            </div>
-
-            <!-- Optional note -->
-            <div class="fd-card fd-upsell">
-                <h3>Lưu ý</h3>
-                <p class="fd-note">Giá hiển thị là giá theo một sản phẩm ở kích cỡ đã chọn.</p>
             </div>
         </aside>
     </div>
 
-    <div th:if="${item} == null" class="fd-card">Không tìm thấy mặt hàng.</div>
+    <div th:if="${item} == null" class="fd-card">Item not found.</div>
 </main>
 
 <div th:replace="~{fragments/header :: page_footer}"></div>
