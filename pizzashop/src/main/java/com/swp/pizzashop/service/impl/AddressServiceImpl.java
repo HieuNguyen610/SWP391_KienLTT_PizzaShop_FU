@@ -253,7 +253,7 @@ public class AddressServiceImpl implements AddressService {
         }
 
         // Try default address first
-        Address def = addressRepository.findFirstByUserAndDefaultAddressTrue(user);
+        Address def = addressRepository.findFirstByUserAndDefaultAddressTrueAndIsDeletedFalse(user);
         if (def != null) {
             log.debug("Default address found for user={}: id={}", safeUser(user), def.getId());
             return def;
