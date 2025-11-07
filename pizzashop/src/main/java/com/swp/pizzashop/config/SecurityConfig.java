@@ -56,7 +56,7 @@ public class SecurityConfig {
                         .requestMatchers("/", "/login", "/register", "/verify", "/do-login",
                                 "/forgot-password", "/reset-password", "/reset-password/**",
                                 "/css/**", "/js/**", "/images/**", "/static/**", "/favicon.ico",
-                                "/uploads/**", "/do-register", "/verify-otp").permitAll()
+                                "/uploads/**", "/do-register", "/verify-otp", "/menu/**").permitAll()
                         .requestMatchers("/admin/**").hasRole("Admin")
                         .requestMatchers("/user/**").hasRole("Customer")
                         .requestMatchers("/chef/**").hasRole("Chef")
