@@ -53,19 +53,19 @@
             <label for="agree" class="pg-note">I have read, understood and agree to OnePay's Personal Data Protection and Processing Policy</label>
           </div>
           <div class="pg-actions">
-            <a class="pg-link" href="#" onclick="return false;">Payment Guide</a>
             <!-- Submit via Thymeleaf form to server-side controller -->
             <form th:action="@{/payment/confirm}" action="/payment/confirm" method="post" style="display:inline;">
               <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
               <input type="hidden" name="orderRef" th:value="${orderRef}" />
               <button id="payNow" type="submit" class="pg-btn" disabled>Pay Now</button>
+              <button class="btn secondary">
+              <a th:href="@{/checkout}" href="/checkout">Cancel Transaction</a>
+              </button>
             </form>
           </div>
         </div>
 
       </div>
-      <!-- Make cancel a real link back to checkout -->
-      <a class="pg-foot" th:href="@{/checkout}" href="/checkout">✕ Cancel Transaction</a>
     </section>
 
     <!-- Right: Order information -->

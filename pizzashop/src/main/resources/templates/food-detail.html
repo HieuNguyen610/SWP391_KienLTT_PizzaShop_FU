@@ -52,11 +52,10 @@
                         </div>
                     </div>
 
-<!--                    <div>-->
-<!--                        <label>Price</label>-->
-<!--                        <div class="fd-price" th:text="${ '$' +#numbers.formatDecimal(food.basePrice, 0, 'COMMA', 2, 'POINT')}">0đ</div>-->
-<!--                    </div>-->
-
+                    <div class="fd-qty" style="margin-top:12px;">
+                        <label for="notes">Note</label>
+                        <textarea id="notes" name="notes" rows="3" placeholder="Example: Less spicy, extra sauce..." ></textarea>
+                    </div>
 
                     <div class="fd-actions">
                         <button type="button" class="fd-addtocart" th:attr="data-foodid=${food.id}">
