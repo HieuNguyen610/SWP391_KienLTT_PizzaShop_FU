@@ -32,7 +32,7 @@ target/
 .idea/dynamic.xml
 .idea/uiDesigner.xml
 .idea/sonarlint/
-
+.idea/data_source_mapping.xml
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/
