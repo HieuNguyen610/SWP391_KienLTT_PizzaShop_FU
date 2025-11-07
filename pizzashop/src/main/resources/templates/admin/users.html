@@ -6,6 +6,16 @@
 
     <link rel="stylesheet" th:href="@{/css/dashboard.css}" />
     <link rel="stylesheet" th:href="@{/css/all.min.css}" />
+    <!-- third party css -->
+    <link th:href="@{/libs/datatables/dataTables.bootstrap4.css}" rel="stylesheet" type="text/css" />
+    <link th:href="@{/libs/datatables/buttons.bootstrap4.css}" rel="stylesheet" type="text/css" />
+    <link th:href="@{/libs/datatables/responsive.bootstrap4.css}" rel="stylesheet" type="text/css" />
+    <link th:href="@{/libs/datatables/select.bootstrap4.css}" rel="stylesheet" type="text/css" />
+
+    <!-- App CSS (đổi sang css2) -->
+    <link th:href="@{/css2/bootstrap.min.css}" rel="stylesheet" type="text/css" id="bootstrap-stylesheet" />
+    <link th:href="@{/css2/icons.min.css}" rel="stylesheet" type="text/css" />
+    <link th:href="@{/css2/app.min.css}" rel="stylesheet" type="text/css" id="app-stylesheet" />
     <style>
         /* Thanh search */
         .input-group .form-control {
@@ -237,102 +247,135 @@
             }
         }
 
+        .search-form .input-group .search-input,
+        .search-form .input-group .search-btn {
+            height: 44px; /* đồng bộ chiều cao */
+            line-height: 1.2;
+        }
+
+        /* Giảm padding của nút để căn vừa text và icon */
+        .search-form .search-btn {
+            padding: 0 18px;
+        }
+
+        /* Giữ góc bo tròn mượt */
+        .search-form .search-input {
+            border-top-right-radius: 0 !important;
+            border-bottom-right-radius: 0 !important;
+        }
+
+        .search-form .search-btn {
+            border-top-left-radius: 0 !important;
+            border-bottom-left-radius: 0 !important;
+        }
     </style>
 </head>
 <body class="layout">
 <aside th:replace="fragments/admin-sidebar :: sidebar"></aside>
-<main>
-    <div class="container">
-        <h2 class="mb-4 text-center">Quản lý người dùng</h2>
-<div>
-        <!-- Search bar -->
-        <form method="get" th:action="@{/admin/users}" class="search-form mb-3 py-4">
-            <div class="input-group">
-                <input type="text"
-                       name="q"
-                       class="form-control search-input"
-                       placeholder="Tìm theo tên, email hoặc số điện thoại..."
-                       th:value="${q}">
-                <button class="btn btn-primary search-btn" type="submit">
-                    <i class="fa fa-search me-1"></i> Tìm kiếm
-                </button>
-                <a th:href="@{/admin/users}" class="btn btn-outline-primary refresh-btn">
-                    <i class="fa fa-rotate-right me-1"></i> Làm mới
-                </a>
-                <a th:href="@{/admin/users/create}" class="btn btn-success create-btn">
-                    <i class="fa fa-plus me-1"></i> Tạo mới
-                </a>
+<main class="px-4">
+        <div class="row pt-3">
+            <div class="col-12">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h4 class="header-title mb-3">Users</h4>
+                    <a th:href="@{/admin/users/create}">
+                        <button class="btn btn-icon btn-warning" ><i class="fas fa-plus"></i></button>
+                    </a>
+                </div>
             </div>
-        </form>
+            <div>
+                <form method="get" th:action="@{/admin/users}" class="search-form py-2">
+                    <div class="input-group">
+                        <label>
+                            <input type="text"
+                                   name="q"
+                                   class="form-control search-input"
+                                   placeholder="Search..."
+                                  th:value="${q}">
+                        </label>
+                        <button class="btn btn-primary search-btn" type="submit">
+                            <i class="fa fa-search me-1"></i> Search
+                        </button>
 
-</div>
-        <!-- Table -->
-        <div class="card shadow-sm">
-            <div class="card-body p-0">
-                <table class="table table-hover mb-0 align-middle">
-                    <thead class="table-light">
-                    <tr>
-                        <th>ID</th>
-                        <th>Họ và tên</th>
-                        <th>Email</th>
-                        <th>Số điện thoại</th>
-                        <th class="text-center">Trạng thái</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr th:each="u : ${pageData.content}">
-                        <td th:text="${u.id}"></td>
-                        <td th:text="${u.firstname + ' ' + u.lastname}"></td>
-                        <td th:text="${u.email}"></td>
-                        <td th:text="${u.phone}"></td>
-
-                        <!-- Hai nút trạng thái -->
-                        <td class="text-center">
-                            <div class="status-toggle">
-                                <!-- Nút Active -->
-                                <form th:action="@{/admin/users/update-status}" method="post" style="display:inline;">
-                                    <input type="hidden" name="id" th:value="${u.id}">
-                                    <button type="submit"
-                                            th:classappend="${u.status == 'ACTIVE'} ? 'status-btn active disabled' : 'status-btn active'"
-                                            th:disabled="${u.status == 'ACTIVE'}"
-                                            th:onclick="${u.status != 'ACTIVE'} ? 'return confirm(\'Bạn có chắc muốn chuyển người dùng này sang trạng thái ACTIVE không?\')' : null"
-                                            title="Đặt trạng thái thành ACTIVE">
-                                        Active
-                                    </button>
-                                </form>
-
-                                <!-- Nút Inactive -->
-                                <form th:action="@{/admin/users/update-status}" method="post" style="display:inline;">
-                                    <input type="hidden" name="id" th:value="${u.id}">
-                                    <button type="submit"
-                                            th:classappend="${u.status == 'INACTIVE'} ? 'status-btn inactive disabled' : 'status-btn inactive'"
-                                            th:disabled="${u.status == 'INACTIVE'}"
-                                            th:onclick="${u.status != 'INACTIVE'} ? 'return confirm(\'Bạn có chắc muốn chuyển người dùng này sang trạng thái INACTIVE không?\')' : null"
-                                            title="Đặt trạng thái thành INACTIVE">
-                                        Inactive
-                                    </button>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
-
-                    <tr th:if="${#lists.isEmpty(pageData.content)}">
-                        <td colspan="6" class="text-center py-3 text-muted">Không có người dùng nào phù hợp.</td>
-                    </tr>
-                    </tbody>
-                </table>
+                    </div>
+                </form>
             </div>
         </div>
-        <!-- Pagination -->
-        <div class="card-footer d-flex justify-content-between align-items-center px-3 py-2">
-            <span th:text="'Tổng: ' + ${pageData.totalElements} + ' người dùng'"></span>
+        <!-- end row -->
 
-            <nav th:if="${pageData.totalPages > 1}">
+        <div class="row">
+            <div class="col-12">
+                <div class="mt-3">
+                    <table id="datatable-buttons"
+                           class="table table-striped table-bordered dt-responsive nowrap"
+                           style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                        <thead>
+                        <tr>
+                            <th></th>
+                            <th>Full Name</th>
+                            <th>Email</th>
+                            <th>Phone Number</th>
+                            <th>Start date</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                        </thead>
+
+                        <tbody>
+                        <tr th:each="u : ${pageData.content}">
+                            <td class="row-number" th:text="${u.id}"></td>
+                            <td th:text="${u.firstname + ' ' + u.lastname}"></td>
+                            <td th:text="${u.email}"></td>
+                            <td th:text="${u.phone}">Edinburgh</td>
+                            <td th:text="${#temporals.format(u.createdAt, 'yyyy/MM/dd')}"></td>
+                            <td class="status" th:text="${u.status}"
+                                th:classappend="${u.status == 'ACTIVE'} ? 'text-success' : 'text-danger'"></td>
+
+                            <td>
+                            <td>
+                            <form th:action="@{/admin/users/update-status}" method="post" style="display:inline;">
+                                <input type="hidden" name="id" th:value="${u.id}" />
+                                <input type="hidden" name="status" value="INACTIVE" />
+                                <button type="submit" class="btn btn-icon btn-danger"
+                                        th:disabled="${u.status == 'INACTIVE'}"
+                                        th:onclick="${u.status != 'INACTIVE'} ? 'return confirm(\'Khóa tài khoản người dùng này?\')' : null"
+                                        title="Lock user">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </form>
+
+                            <!-- Nút Activate (ACTIVE) -->
+                            <form th:action="@{/admin/users/update-status}" method="post" style="display:inline;">
+                                <input type="hidden" name="id" th:value="${u.id}" />
+                                <input type="hidden" name="status" value="ACTIVE" />
+                                <button type="submit" class="btn btn-icon btn-primary"
+                                        th:disabled="${u.status == 'ACTIVE'}"
+                                        th:onclick="${u.status != 'ACTIVE'} ? 'return confirm(\'Kích hoạt người dùng này?\')' : null"
+                                        title="Activate user">
+                                    <i class="far fa-heart"></i>
+                                </button>
+                            </form>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(pageData.content)}">
+                            <td colspan="7" class="text-center text-muted py-3">Không có người dùng nào phù hợp.</td>
+                        </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    <div class="d-flex justify-content-between align-items-center px-2 py-2 mt-3">
+
+            <span th:if="${pageData != null}"
+                  th:text="${'Total: ' + pageData.totalElements + ' users'}"></span>
+            <span th:unless="${pageData != null}">Total: 0 user</span>
+
+            <nav th:if="${pageData != null and pageData.totalPages > 1}">
                 <ul class="pagination mb-0">
-                    <!-- Trang trước -->
                     <li class="page-item" th:classappend="${pageData.first} ? 'disabled'">
                         <a class="page-link"
-                           th:href="@{/admin/users(page=${pageData.first} ? 0 : ${pageData.number - 1}, q=${q})}"
+                           th:href="@{/admin/users(page=${pageData.number > 0 ? pageData.number - 1 : 0}, q=${q})}"
                            aria-label="Previous">&laquo;</a>
                     </li>
 
@@ -345,10 +388,10 @@
                            th:text="${i + 1}"></a>
                     </li>
 
-                    <!-- Trang sau -->
+                    <!-- Next: nếu đang trang cuối -> next = totalPages-1, else page+1 -->
                     <li class="page-item" th:classappend="${pageData.last} ? 'disabled'">
                         <a class="page-link"
-                           th:href="@{/admin/users(page=${pageData.last} ? ${pageData.totalPages - 1} : ${pageData.number + 1}, q=${q})}"
+                           th:href="@{/admin/users(page=${pageData.number + 1 < pageData.totalPages ? pageData.number + 1 : pageData.totalPages - 1}, q=${q})}"
                            aria-label="Next">&raquo;</a>
                     </li>
                 </ul>
@@ -357,5 +400,46 @@
 
     </div>
 </main>
+
+<!-- Vendor JS -->
+<script th:src="@{/js2/vendor.min.js}"></script>
+
+<!-- Required DataTable JS -->
+<script th:src="@{/libs/datatables/jquery.dataTables.min.js}"></script>
+<script th:src="@{/libs/datatables/dataTables.bootstrap4.min.js}"></script>
+
+<!-- Buttons examples -->
+<script th:src="@{/libs/datatables/dataTables.buttons.min.js}"></script>
+<script th:src="@{/libs/datatables/buttons.bootstrap4.min.js}"></script>
+<script th:src="@{/libs/datatables/dataTables.keyTable.min.js}"></script>
+<script th:src="@{/libs/datatables/dataTables.select.min.js}"></script>
+<script th:src="@{/libs/jszip/jszip.min.js}"></script>
+<script th:src="@{/libs/pdfmake/pdfmake.min.js}"></script>
+<script th:src="@{/libs/pdfmake/vfs_fonts.js}"></script>
+<script th:src="@{/libs/datatables/buttons.html5.min.js}"></script>
+<script th:src="@{/libs/datatables/buttons.print.min.js}"></script>
+
+<!-- Responsive examples -->
+<script th:src="@{/libs/datatables/dataTables.responsive.min.js}"></script>
+<script th:src="@{/libs/datatables/responsive.bootstrap4.min.js}"></script>
+
+<!-- Datatables init -->
+<script th:src="@{/js2/pages/datatables.init.js}"></script>
+
+<!-- App JS -->
+<script th:src="@{/js2/app.min.js}"></script>
+<script>
+    function updateRowNumbers() {
+        var rows = document.querySelectorAll("#datatable-buttons tbody tr");
+        rows.forEach(function (row, index) {
+            var rowNumberCell = row.querySelector('.row-number');
+            rowNumberCell.innerText = index + 1;
+        });
+    }
+
+    // Call the function to update row numbers when the page loads
+    document.addEventListener("DOMContentLoaded", updateRowNumbers);
+</script>
+
 </body>
 </html>

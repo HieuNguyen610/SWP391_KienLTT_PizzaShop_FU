@@ -29,7 +29,7 @@ public class UserController {
     public String listUsers(@RequestParam(value = "page", defaultValue = "0") int page,
                             @RequestParam(value = "q", required = false) String keyword,
                             Model model) {
-        int pageSize = 8; // số lượng user mỗi trang
+        int pageSize = 5;
         Page<User> pageData = userService.findAllOrderedWithSearch(keyword, PageRequest.of(page, pageSize));
 
         model.addAttribute("pageData", pageData);
@@ -65,8 +65,11 @@ public class UserController {
     }
 
     @PostMapping("/update-status")
-    public String toggleStatus(@RequestParam("id") Long id) {
-        userService.toggleUserStatus(id);
+    public String updateStatus(@RequestParam("id") Long id,
+                               @RequestParam("status") String status,
+                               RedirectAttributes redirectAttributes) {
+        userService.toggleUserStatus(id, status);
+        redirectAttributes.addFlashAttribute("successMessage", "Trạng thái đã được cập nhật!");
         return "redirect:/admin/users";
     }
 

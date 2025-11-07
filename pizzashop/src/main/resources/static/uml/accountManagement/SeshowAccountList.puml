@@ -1,0 +1,22 @@
+@startuml
+title SEQUENCE DIAGRAM - View Account List
+
+actor Admin as A
+boundary UserController as UC
+control UserService as US
+entity UserRepository as UR
+database Database as DB
+
+A -> UC: GET /admin/users?page=&q=
+UC -> US: findAllOrderedWithSearch(keyword, pageable)
+US -> UR: searchByKeyword(keyword, pageable)
+UR -> DB: SELECT * FROM users \nWHERE (firstname LIKE ? OR email LIKE ?) \nAND isDeleted = false \nORDER BY status DESC, firstname ASC LIMIT ?, ?
+DB --> UR: List<User> (paged result)
+UR --> US: Page<User>
+US --> UC: Page<User> pageData
+UC --> A: Render users.html with table\n(pageData + pagination + search)
+
+
+
+
+@enduml

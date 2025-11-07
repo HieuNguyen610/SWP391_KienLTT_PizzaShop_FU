@@ -1,0 +1,45 @@
+@startuml
+title CLASS DIAGRAM - User Registration
+
+class AuthenticationController {
+  + showRegisterForm(Model model)
+  + register(User user, RedirectAttributes redirectAttributes)
+}
+
+class UserService {
+  + User register(User user)
+  + User findByEmail(String email)
+}
+
+class UserServiceImpl {
+  - UserRepository userRepository
+  - PasswordEncoder passwordEncoder
+  - EmailService emailService
+  + User register(User user)
+}
+
+class EmailService {
+  + sendVerificationEmail(String email, String otp)
+}
+
+class UserRepository {
+  + Optional<User> findByEmail(String email)
+  + User save(User user)
+}
+
+class User {
+  - Long id
+  - String firstname
+  - String lastname
+  - String email
+  - String password
+  - String otp
+  - Boolean verified
+  - String status
+}
+
+AuthenticationController --> UserService
+UserService --> UserRepository
+UserService --> EmailService
+UserRepository --> User
+@enduml

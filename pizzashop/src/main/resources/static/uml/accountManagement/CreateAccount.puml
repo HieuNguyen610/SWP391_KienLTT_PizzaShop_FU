@@ -1,0 +1,25 @@
+@startuml
+actor Admin
+boundary UserController
+control UserService
+entity UserRepository
+entity EmailService
+
+Admin -> UserController: POST /admin/users/create\n(user form data)
+UserController -> UserService: createUserWithRole(user)
+UserService -> UserRepository: findByEmail(user.email)
+UserRepository --> UserService: Optional<User>
+
+alt Email is existed
+    UserService --> UserController: throw Exception("Email is registed")
+    UserController -> Admin: Show the error "Email is registed for anothe account"
+else Email is not existed
+    UserService -> UserRepository: save(new User(defaultPassword, role))
+    UserRepository --> UserService: User (saved)
+    UserService -> EmailService: sendAccountCreatedEmail(user.email, defaultPassword)
+    EmailService --> UserService: Email sent
+    UserService --> UserController: User created
+    UserController -> Admin: Show the success message "User created successfully"
+end
+
+@enduml

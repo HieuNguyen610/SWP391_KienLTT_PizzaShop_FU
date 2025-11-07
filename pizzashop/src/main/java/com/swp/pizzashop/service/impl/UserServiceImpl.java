@@ -231,28 +231,42 @@ public class UserServiceImpl implements UserService {
         return userRepository.searchByKeyword(keyword.trim(), pageable);
     }
 
+
+
+
     @Override
-    public void toggleUserStatus(Long id) {
+    public void toggleUserStatus(Long id, String status) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy người dùng"));
-        if ("ACTIVE".equalsIgnoreCase(user.getStatus())) {
-            user.setStatus("INACTIVE");
-        } else {
-            user.setStatus("ACTIVE");
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy người dùng với ID: " + id));
+
+        String normalizedStatus = status.toUpperCase().trim();
+
+
+        if (!normalizedStatus.equals("ACTIVE") && !normalizedStatus.equals("INACTIVE")) {
+            throw new IllegalArgumentException("Invalid Status: " + status);
         }
+
+        if (normalizedStatus.equals(user.getStatus())) {
+            log.info("User with ID={} had status {}", id, normalizedStatus);
+            return;
+        }
+
+        user.setStatus(normalizedStatus);
         userRepository.save(user);
+
+        log.info("Update status of user with ID={} to {}", id, normalizedStatus);
     }
 
     @Override
     @Transactional
     public void createUserWithRole(User user) {
         if (userRepository.findByEmail(user.getEmail()) != null) {
-            throw new IllegalArgumentException("Email đã được sử dụng");
+            throw new IllegalArgumentException("Email have existed");
         }
 
         Role role = roleRepository.findByName(user.getRoles().iterator().next().getName());
         if (role == null || !List.of("Admin", "Cashier", "Chef", "Manager").contains(role.getName())) {
-            throw new IllegalArgumentException("Không được phép tạo người dùng với vai trò này");
+            throw new IllegalArgumentException("Have no permition to create user with role");
         }
 
         String defaultPassword = "Staff1234@";
@@ -267,20 +281,19 @@ user.setVerified(true);
 
         userRepository.save(user);
 
-        // Gửi email thông báo
         try {
-            String subject = "Thông tin tài khoản PizzaShop";
+            String subject = "Information about your account";
             String body = String.format("""
-                    Xin chào %s %s,
+                    Welcom %s %s,
 
-                    Tài khoản của bạn đã được tạo thành công trên hệ thống PizzaShop.
+                    Your account has been created successfully.
 
-                    📨 Email đăng nhập: %s
-                    🔑 Mật khẩu tạm thời: Staff1234@
+                    📨 Email: %s
+                    🔑 Password: Staff1234@
 
-                    ⚠️ Vui lòng đổi mật khẩu ngay sau khi đăng nhập và KHÔNG chia sẻ thông tin này cho bất kỳ ai.
+                    ⚠️ Please change your password immediately. Don't share your password with anyone.
 
-                    Trân trọng,
+                    Best regards,
                     PizzaShop Team
                     """, user.getFirstname(), user.getLastname(), user.getEmail());
 

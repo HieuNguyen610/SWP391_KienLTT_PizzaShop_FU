@@ -36,7 +36,9 @@ public interface UserService {
     User updateUser(User user);
     public void activateUser(String email) ;
     Page<User> findAllOrderedWithSearch(String keyword, Pageable pageable);
-    void toggleUserStatus(Long id);
+
+
+    void toggleUserStatus(Long id, String status);
 
     void createUserWithRole(User user);
 
