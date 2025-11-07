@@ -58,7 +58,7 @@ public class OrderController {
 // Format tháng
         for (Map<String, Object> item : monthlyData) {
             int monthNum = Integer.parseInt(item.get("month").toString());
-            item.put("month", String.valueOf(monthNum));
+            item.put("month", String.format("%02d", monthNum)); // ép định dạng 01, 02, ..., 12
         }
 
         try {

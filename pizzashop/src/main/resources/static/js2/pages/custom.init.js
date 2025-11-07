@@ -41,7 +41,12 @@
             behaveLikeLine: true,
             hideHover: 'auto',
             resize: true,
-            gridLineColor: "rgba(108, 120, 151, 0.1)"
+            gridLineColor: "rgba(108, 120, 151, 0.1)",
+            parseTime: false,
+            integerYLabels: true, //
+            yLabelFormat: function (y) {
+                return Math.floor(y);
+            },
         });
     };
 

@@ -30,21 +30,7 @@
     </div>
 
     <!-- end row -->
-    <div>
-        <form method="get" action="#" class="mb-3">
-            <div class="input-group">
-                <input type="text" name="q" class="form-control" placeholder="Search by name" th:value="${query}">
-                <select name="status" class="form-select">
-                    <option value="">All Status</option>
-                    <option value="PENDING" th:selected="${statusFilter == 'PENDING'}">Pending</option>
-                    <option value="DELIVERING" th:selected="${statusFilter == 'DELIVERING'}">Delivering</option>
-                    <option value="COMPLETED" th:selected="${statusFilter == 'COMPLETED'}">Completed</option>
-                    <option value="CANCELLED" th:selected="${statusFilter == 'CANCELLED'}">Cancelled</option>
-                </select>
-                <button class="btn btn-primary" type="submit">Filter</button>
-            </div>
-        </form>
-    </div>
+
 
     <div class="row">
 
@@ -72,6 +58,21 @@
         </div>
         <!-- end col -->
     </div>
+    <div>
+        <form method="get" action="#" class="mb-3">
+            <div class="input-group">
+                <input type="text" name="q" class="form-control" placeholder="Search by name" th:value="${query}">
+                <select name="status" class="form-select">
+                    <option value="">All Status</option>
+                    <option value="PENDING" th:selected="${statusFilter == 'PENDING'}">Pending</option>
+                    <option value="DELIVERING" th:selected="${statusFilter == 'DELIVERING'}">Delivering</option>
+                    <option value="COMPLETED" th:selected="${statusFilter == 'COMPLETED'}">Completed</option>
+                    <option value="CANCELLED" th:selected="${statusFilter == 'CANCELLED'}">Cancelled</option>
+                </select>
+                <button class="btn btn-primary" type="submit">Filter</button>
+            </div>
+        </form>
+    </div>
     <div class="row">
         <div class="col-12">
             <div class="mt-5">
@@ -85,6 +86,7 @@
                         <th>Amount</th>
                         <th>Date</th>
                         <th>Status</th>
+                        <th>Payment Status</th>
                         <th>Action</th>
                     </tr>
                     </thead>

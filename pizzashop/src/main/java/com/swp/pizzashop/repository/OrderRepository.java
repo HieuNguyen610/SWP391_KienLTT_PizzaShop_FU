@@ -25,7 +25,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     @Query("""
         SELECT new com.swp.pizzashop.dto.OrderSummaryDTO(
             o.id,
-            CONCAT(u.firstname, ' ', u.lastname),
+            o.user.email,
             o.totalPrice,
             o.status,
             COALESCE(p.status, 'UNPAID'),
@@ -43,7 +43,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     @Query("""
         SELECT new com.swp.pizzashop.dto.OrderSummaryDTO(
             o.id,
-            CONCAT(u.firstname, ' ', u.lastname),
+            o.user.email ,
             o.totalPrice,
             o.status,
             COALESCE(p.status, 'UNPAID'),
@@ -61,7 +61,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     @Query("""
         SELECT new com.swp.pizzashop.dto.OrderSummaryDTO(
             o.id,
-            CONCAT(u.firstname, ' ', u.lastname),
+            o.user.email,
             o.totalPrice,
             o.status,
             COALESCE(p.status, 'UNPAID'),
@@ -72,9 +72,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
         JOIN o.user u
         LEFT JOIN o.payments p
         WHERE o.isDeleted = false
-          AND (LOWER(u.firstname) LIKE LOWER(CONCAT('%', :keyword, '%'))
-            OR LOWER(u.lastname) LIKE LOWER(CONCAT('%', :keyword, '%'))
-            OR LOWER(u.email) LIKE LOWER(CONCAT('%', :keyword, '%')))
+          AND LOWER(u.email) LIKE LOWER(CONCAT('%', :keyword, '%'))
         ORDER BY o.createdAt DESC
     """)
     Page<OrderSummaryDTO> searchByCustomerName(String keyword, Pageable pageable);
@@ -82,8 +80,8 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     @Query("""
     SELECT new map(
         FUNCTION('MONTH', o.createdAt) as month,
-        SUM(CASE WHEN o.status = 'COMPLETED' THEN o.totalPrice ELSE 0 END) as completedTotal,
-        SUM(CASE WHEN o.status = 'CANCELLED' THEN o.totalPrice ELSE 0 END) as cancelledTotal
+        COUNT(CASE WHEN o.status = 'COMPLETED' THEN 1 END) as completedTotal,
+        COUNT(CASE WHEN o.status = 'CANCELLED' THEN 1 END) as cancelledTotal
     )
     FROM Order o
     WHERE YEAR(o.createdAt) = :year AND o.isDeleted = false
