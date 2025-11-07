@@ -12,21 +12,21 @@ INSERT INTO users (firstname, lastname, password, email, phone, status) VALUES
 
 -- User Roles
 INSERT INTO user_roles (user_id, role_id) VALUES
-(1, 1), -- Alice: Customer
-(2, 2), -- Bob: Cashier
-(3, 3), -- Carol: Chef
-(4, 4), -- Dave: Manager
-(5, 5); -- Eve: Admin
+(15, 1), -- Alice: Customer
+(16, 2), -- Bob: Cashier
+(17, 3), -- Carol: Chef
+(18, 4), -- Dave: Manager
+(19, 5); -- Eve: Admin
 
 -- Addresses
 INSERT INTO addresses (user_id, address_line, city, district, phone, is_default) VALUES
-(1, '123 Pizza St', 'PizzaCity', 'Central', '0123456789', TRUE);
+(15, '123 Pizza St', 'PizzaCity', 'Central', '0123456789', TRUE);
 
 -- Food Categories
-INSERT INTO food_categories (name, description) VALUES
-('Pizza', 'Italian-style flatbread with various toppings'),
-('Pasta', 'Italian pasta dishes'),
-('Drink', 'Beverages');
+INSERT INTO food_categories (name) VALUES
+('Pizza'),
+('Pasta'),
+('Drink');
 
 -- Foods
 INSERT INTO foods (name, description, base_price, image_url, category_id) VALUES
@@ -40,12 +40,12 @@ INSERT INTO foods (name, description, base_price, image_url, category_id) VALUES
 
 -- Food Sizes
 INSERT INTO food_sizes (food_id, size, price) VALUES
-(1, 'S', 5.00), (1, 'M', 7.00), (1, 'L', 9.00),
-(2, 'S', 6.50), (2, 'M', 8.50), (2, 'L', 10.50),
-(3, 'S', 6.00), (3, 'M', 8.00), (3, 'L', 10.00),
-(4, 'M', 7.50),
-(5, 'M', 2.00),
-(6, 'ONE', 4.50);
+(3, 'S', 5.00), (1, 'M', 7.00), (1, 'L', 9.00),
+(4, 'S', 6.50), (2, 'M', 8.50), (2, 'L', 10.50),
+(5, 'S', 6.00), (3, 'M', 8.00), (3, 'L', 10.00),
+(6, 'M', 7.50),
+(7, 'M', 2.00),
+(8, 'ONE', 4.50);
 
 -- Toppings
 INSERT INTO toppings (name, price) VALUES

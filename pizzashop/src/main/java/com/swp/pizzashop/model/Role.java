@@ -1,5 +1,6 @@
 package com.swp.pizzashop.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -19,7 +20,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Getter
 @Setter
-public class Role {
+public class Role extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
@@ -30,18 +31,7 @@ public class Role {
     @Column(name = "name", nullable = false, length = 50)
     private String name;
 
-    @ColumnDefault("CURRENT_TIMESTAMP")
-    @Column(name = "created_at")
-    private Instant createdAt;
-
-    @ColumnDefault("CURRENT_TIMESTAMP")
-    @Column(name = "updated_at")
-    private Instant updatedAt;
-
-    @ColumnDefault("0")
-    @Column(name = "is_deleted")
-    private Boolean isDeleted;
-
-    @ManyToMany(mappedBy = "roles")
+    @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY)
+    @JsonIgnore
     private Set<User> users = new LinkedHashSet<>();
 }

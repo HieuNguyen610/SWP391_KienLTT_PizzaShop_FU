@@ -1,0 +1,51 @@
+@startuml
+title CLASS DIAGRAM - Add Account (Create User)
+
+class UserController {
+  + showCreateForm()
+  + createUser(User user)
+}
+
+class UserService {
+  + void createUserWithRole(User user)
+}
+
+class UserServiceImpl {
+  - UserRepository userRepository
+  - EmailService emailService
+  - PasswordEncoder passwordEncoder
+  + void createUserWithRole(User user)
+}
+
+class EmailService {
+  + sendAccountCreatedEmail(String to, String password)
+}
+
+class UserRepository {
+  + Optional<User> findByEmail(String email)
+  + User save(User user)
+}
+
+class User {
+  - Long id
+  - String firstname
+  - String lastname
+  - String email
+  - String phone
+  - String password
+  - String status
+  - Set<Role> roles
+}
+
+class Role {
+  - Long id
+  - String name
+}
+
+UserController --> UserService
+UserService --> UserRepository
+UserService --> EmailService
+UserRepository --> User
+User "1" --> "*" Role : has
+
+@enduml

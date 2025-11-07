@@ -1,0 +1,58 @@
+/* Container để căn giữa */
+.form-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f9f9f9;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+
+/* Card body có viền cam */
+.card-body {
+    border: 2px solid orange;
+    border-radius: 8px;
+    padding: 25px;
+    background: #fff;
+    width: 600px; /* chiều rộng cố định */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+
+.form-group {
+    margin-bottom: 5px;
+    display: flex;
+    flex-direction: column;
+}
+
+.form-control {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.has-error .form-control {
+    border-color: red;
+    background-color: #ffecec;
+}
+
+.error {
+    color: red;
+    font-size: 13px;
+    margin-top: 4px;
+}
+
+.common_btn {
+    background-color: #2563eb;
+    border: none;
+    color: white;
+    padding: 10px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.common_btn:hover {
+    background-color: #1e40af;
+}

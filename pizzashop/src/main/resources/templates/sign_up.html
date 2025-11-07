@@ -1,0 +1,203 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account • RESTINA</title>
+    <link rel="icon" type="image/png" th:href="@{/images/favicon.png}">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/all.min.css" th:href="@{/css/all.min.css}">
+    <link rel="stylesheet" href="/css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" href="/css/nice-select.css" th:href="@{/css/nice-select.css}">
+    <link rel="stylesheet" href="/css/slick.css" th:href="@{/css/slick.css}">
+    <link rel="stylesheet" href="/css/venobox.min.css" th:href="@{/css/venobox.min.css}">
+    <link rel="stylesheet" href="/css/ranger_slider.css" th:href="@{/css/ranger_slider.css}">
+    <link rel="stylesheet" href="/css/animate.css" th:href="@{/css/animate.css}">
+    <link rel="stylesheet" href="/css/scroll_button.css" th:href="@{/css/scroll_button.css}">
+    <link rel="stylesheet" href="/css/custom_spacing.css" th:href="@{/css/custom_spacing.css}">
+    <link rel="stylesheet" href="/css/select2.min.css" th:href="@{/css/select2.min.css}">
+    <link rel="stylesheet" href="/css/colorfulTab.min.css" th:href="@{/css/colorfulTab.min.css}">
+    <link rel="stylesheet" href="/css/jquery.animatedheadline.css" th:href="@{/css/jquery.animatedheadline.css}">
+    <link rel="stylesheet" href="/css/animated_barfiller.css" th:href="@{/css/animated_barfiller.css}">
+    <link rel="stylesheet" href="/css/style.css" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="/css/responsive.css" th:href="@{/css/responsive.css}">
+    <!-- New page-specific CSS -->
+    <link rel="stylesheet" th:href="@{/css/signup.css}">
+</head>
+
+<body>
+
+<!-- Focused auth layout: left image, right form -->
+<section class="sign_up sign_in">
+    <!-- Nửa trái: hình ảnh -->
+    <div class="left-side">
+        <img th:src="@{/images/sign_in_img_2.jpg}" alt="sign in">
+    </div>
+
+    <!-- Nửa phải: form -->
+    <div class="right-side">
+        <div class="sign_in_form text-center">
+            <a class="sign_in_logo" th:href="@{/}">
+                <img th:src="@{/images/logo.png}" alt="RESTINA" class="img-fluid w-25 mb-3">
+            </a>
+            <h2 style="text-transform: uppercase;">Create Account</h2>
+            <p class="description">Please Enter your Email Address to Start your Online Application</p>
+
+            <!-- Error messages -->
+            <div th:if="${error}" class="alert alert-danger" role="alert" th:text="${error}"></div>
+            <div th:if="${errorEqualPassWord}" class="alert alert-danger" role="alert" th:text="${errorEqualPassWord}"></div>
+
+            <!-- Form -->
+            <form th:action="@{/do-register}" th:object="${registerForm}" method="post">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <input type="text" th:field="*{firstname}" placeholder="First Name"
+                               required pattern="^[A-Za-zÀ-ỹ\s]{2,15}$" title="2-15 letters only">
+                        <div th:if="${#fields.hasErrors('firstname')}" th:errors="*{firstname}" class="text-danger mt-1"></div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label>
+                            <input type="text" th:field="*{lastname}" placeholder="Last Name">
+                        </label>
+                        <div th:if="${#fields.hasErrors('lastname')}" th:errors="*{lastname}" class="text-danger mt-1"></div>
+                    </div>
+                    <div class="col-12 mb-3">
+                        <label>
+                            <input type="email" th:field="*{email}" placeholder="Email...">
+                        </label>
+                        <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="text-danger mt-1"></div>
+                    </div>
+                    <div class="col-12 mb-3">
+                        <input type="tel" th:field="*{phone}" placeholder="Phone (0xxxxxxxxx or +84xxxxxxxxx)"
+                               required pattern="^(0\d{9}|\+84\d{9})$"
+                               title="Phone number must start with 0 or +84 and have 10 digits">
+                        <div th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}" class="text-danger mt-1"></div>
+                    </div>
+                    <div class="col-md-6 mb-3 position-relative">
+                        <input type="password" th:field="*{password}" placeholder="Password..."
+                               required minlength="8" maxlength="30"
+                               pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,30}$"
+                               title="8–30 chars, include uppercase, lowercase, number, special char">
+                    </div>
+                    <div class="col-md-6 mb-3 position-relative">
+                        <label>
+                            <input type="password" th:field="*{confirmPassword}" placeholder="Confirm Password..."
+                                   required>
+                        </label>
+                    </div>
+                    <div class="col-12">
+                        <button class="common_btn" type="submit">Sign Up</button>
+                    </div>
+                </div>
+            </form>
+            <p class="dont_account mt-3">I have an account? <a th:href="@{/login}">Sign in</a></p>
+        </div>
+    </div>
+</section>
+>
+<div class="row justify-content-center">
+    <div class="col-xl-6 col-lg-6 wow fadeInLeft">
+        <div class="sign_in_img">
+            <img th:src="@{/images/sign_in_img_2.jpg}" alt="sign in" class="img-fluid w-100">
+        </div>
+    </div>
+    <div class="col-xl-6 col-md-10 col-lg-6 wow fadeInRight">
+        <div class="sign_in_form">
+            <a class="sign_in_logo" th:href="@{/}">
+                <img th:src="@{/images/logo.png}" alt="RESTINA" class="img-fluid w-100">
+            </a>
+            <h2 style="text-transform: uppercase;">Create Account</h2>
+            <p class="description">Please Enter your Email Address to Start your Online Application</p>
+
+            <!-- Global error messages -->
+            <div th:if="${error}" class="alert alert-danger" role="alert" th:text="${error}"></div>
+            <div th:if="${errorEqualPassWord}" class="alert alert-danger" role="alert" th:text="${errorEqualPassWord}"></div>
+
+            <form th:action="@{/do-register}" th:object="${registerForm}" method="post">
+                <div class="row">
+                    <div class="col-md-6">
+                        <label>
+                            <input type="text" th:field="*{firstname}" placeholder="First Name"
+                                   required pattern="^[A-Za-zÀ-ỹ\s]{2,15}$" title="2-15 letters only">
+                        </label>
+                        <div th:if="${#fields.hasErrors('firstname')}" th:errors="*{firstname}" class="text-danger mt-1"></div>
+                    </div>
+                    <div class="col-md-6">
+                        <label>
+                            <input type="text" th:field="*{lastname}" placeholder="Last Name">
+                        </label>
+                        <div th:if="${#fields.hasErrors('lastname')}" th:errors="*{lastname}" class="text-danger mt-1"></div>
+                    </div>
+                    <div class="col-12">
+                        <label>
+                            <input type="email" th:field="*{email}" placeholder="Email...">
+                        </label>
+                        <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="text-danger mt-1"></div>
+                    </div>
+                    <!-- Phone is required by backend validation -->
+                    <div class="col-12">
+                        <label>
+                            <input type="tel" th:field="*{phone}" placeholder="Phone (0xxxxxxxxx or +84xxxxxxxxx)"
+                                   required pattern="^(0\d{9}|\+84\d{9})$" title="Phone number must start with 0 or +84 and have 10 digits">
+                        </label>
+                        <div th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}" class="text-danger mt-1"></div>
+                    </div>
+                    <div class="col-md-6 position-relative">
+                        <label class="w-100">
+                            <input type="password" th:field="*{password}" placeholder="Password..."
+                                   required minlength="8" maxlength="30"
+                                   pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,30}$"
+                                   title="8–30 chars, include uppercase, lowercase, number, special char"
+                                   class="form-control pr-5">
+                            <span class="toggle-password" onclick="togglePassword(this)">
+            <i class="fa fa-eye"></i>
+        </span>
+                        </label>
+                        <div th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="text-danger mt-1"></div>
+                    </div>
+                    <div class="col-md-6 position-relative">
+                        <label class="w-100">
+                            <input type="password" th:field="*{confirmPassword}" placeholder="Confirm Password..."
+                                   required class="form-control pr-5">
+                            <span class="toggle-password" onclick="togglePassword(this)">
+            <i class="fa fa-eye"></i>
+        </span>
+                        </label>
+                        <div th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}" class="text-danger mt-1"></div>
+                    </div>
+                    <div class="col-12">
+                        <button class="common_btn" type="submit">sign up</button>
+                    </div>
+                </div>
+            </form>
+
+
+            <p class="dont_account">I have an account? <a th:href="@{/login}">Sign in</a></p>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+    function togglePassword(element) {
+        const input = element.parentElement.querySelector('input');
+        const icon = element.querySelector('i');
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            input.type = 'password';
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
+    }
+</script>
+</body>
+
+</html>

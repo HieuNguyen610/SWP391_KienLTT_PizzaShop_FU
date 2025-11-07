@@ -1,0 +1,43 @@
+@startuml
+title CLASS DIAGRAM - Show Account List
+
+class UserController {
+  + listUsers(String q, int page)
+}
+
+class UserService {
+  + Page<User> findAllOrderedWithSearch(String keyword, Pageable pageable)
+}
+
+class UserServiceImpl {
+  - UserRepository userRepository
+  + findAllOrderedWithSearch(String keyword, Pageable pageable)
+}
+
+class UserRepository {
+  + Page<User> searchByKeyword(String keyword, Pageable pageable)
+  + Page<User> findAllByIsDeletedFalseOrderByIdDesc(Pageable pageable)
+}
+
+class User {
+  - Long id
+  - String firstname
+  - String lastname
+  - String email
+  - String phone
+  - String status
+  - Boolean isDeleted
+  - Set<Role> roles
+}
+
+class Role {
+  - Long id
+  - String name
+}
+
+UserController --> UserService
+UserService --> UserRepository
+UserRepository --> User
+User "1" --> "*" Role : has
+
+@enduml

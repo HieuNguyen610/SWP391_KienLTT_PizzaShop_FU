@@ -1,0 +1,174 @@
+/* Page layout */
+.sign_up.sign_in { padding: 40px 0; }
+.sign_up .fadeInLeft .sign_in_img img { height: 100%; object-fit: cover; }
+.sign_up .fadeInRight { background: #F3E7D7; display: flex; align-items: center; }
+
+/* Form container */
+.sign_in_form { max-width: 520px; margin: 0 auto; text-align: center; background: transparent; padding: 30px 20px; }
+.sign_in_form .sign_in_logo { display: inline-block; width: 300px; margin-bottom: 18px; }
+.sign_in_form h2 { font-weight: 800; font-size: 34px; margin: 8px 0 6px; letter-spacing: 0.5px; text-transform: uppercase; }
+.sign_in_form .description { color: #6B6B6B; margin-bottom: 22px; }
+
+/* Inputs and spacing */
+.sign_in_form label { width: 100%; }
+/* Increase the vertical spacing between input fields */
+.sign_in_form .row > [class^="col"] { margin-bottom: 18px; }
+
+.sign_in_form input[type="text"],
+.sign_in_form input[type="email"],
+.sign_in_form input[type="tel"],
+.sign_in_form input[type="password"] {
+    width: 100%; height: 48px; border-radius: 10px; border: 1px solid #E6DED2; background: #fff; padding: 0 14px;
+    box-shadow: 0 1px 0 rgba(0,0,0,0.03); color: #333;
+}
+.sign_in_form .text-danger { font-size: 12px; text-align: left; }
+
+/* Primary button */
+.sign_in_form .common_btn { width: 100%; height: 50px; border-radius: 10px; background: #B01323; border: none; color: #fff; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+.sign_in_form .common_btn:hover { background: #9C0F1E; }
+
+/* OR divider */
+.sign_in_form .or { position: relative; text-transform: uppercase; color: #8F8A83; margin: 12px 0 18px; }
+.sign_in_form .or::before,
+.sign_in_form .or::after { content: ""; position: absolute; top: 50%; width: 35%; height: 1px; background: #E2D6C7; }
+.sign_in_form .or::before { left: 0; }
+.sign_in_form .or::after { right: 0; }
+
+/* Social buttons row */
+.sign_in_form ul { display: flex; gap: 22px; padding: 0; margin: 0 0 10px; list-style: none; justify-content: center; }
+.sign_in_form ul li { flex: 1 1 0; }
+.sign_in_form ul li a { display: flex; align-items: center; justify-content: center; gap: 8px; height: 46px; border-radius: 12px; background: #fff; border: 1px solid #E6DED2; color: #333; font-weight: 600; text-decoration: none; }
+/* Smaller social icons */
+.sign_in_form ul li a span { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; margin-right: 6px; }
+.sign_in_form ul li a span img { width: 18px; height: 18px; object-fit: contain; }
+.sign_in_form ul li a:visited { text-decoration: none; color: #333; }
+
+.sign_in_form .dont_account { color: #6B6B6B; margin-top: 10px; }
+.sign_in_form .dont_account a { font-weight: 700; color: #1B1B1B; }
+
+/* Responsive tweaks */
+@media (max-width: 991px) {
+    .sign_up .fadeInRight { background: #F3E7D7; padding-top: 20px; padding-bottom: 20px; }
+    .sign_in_form { max-width: 560px; }
+}
+
+.password-wrapper {
+    position: relative;
+}
+
+.password-wrapper input {
+    width: 100%;
+    padding-right: 40px; /* chừa chỗ cho icon */
+}
+.toggle-password {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #888;
+}
+
+.toggle-password:hover {
+    color: #333;
+}
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden; /* chặn cuộn */
+}
+
+.sign_up.sign_in {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* Bên trái chứa ảnh */
+.sign_up .left-side {
+    flex: 1;
+    height: 100%;
+    overflow: hidden;
+}
+
+.sign_up .left-side img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+/* Bên phải chứa form */
+.sign_up .right-side {
+    flex: 1;
+    background-color: #f8ecdc;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    padding: 40px;
+    box-sizing: border-box;
+}
+
+/* Form */
+.sign_in_form {
+    width: 100%;
+    max-width: 450px;
+}
+
+.sign_in_form h2 {
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.sign_in_form .description {
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 25px;
+}
+
+.sign_in_form input {
+    width: 100%;
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    outline: none;
+}
+
+.sign_in_form input:focus {
+    border-color: #c0392b;
+}
+
+.common_btn {
+    width: 100%;
+    background: #c0392b;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
+    transition: 0.3s;
+}
+
+.common_btn:hover {
+    background: #a93226;
+}
+
+/* Responsive */
+@media (max-width: 991px) {
+    .sign_up.sign_in {
+        flex-direction: column;
+        height: auto;
+    }
+
+    .sign_up .left-side {
+        height: 300px;
+    }
+
+    .sign_up .right-side {
+        height: auto;
+    }
+}

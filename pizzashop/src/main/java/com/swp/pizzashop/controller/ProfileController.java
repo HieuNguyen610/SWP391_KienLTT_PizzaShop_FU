@@ -1,6 +1,9 @@
 package com.swp.pizzashop.controller;
 
+import com.swp.pizzashop.form.EditProfileForm;
 import com.swp.pizzashop.model.User;
+import com.swp.pizzashop.service.impl.UserServiceImpl;
+import jakarta.validation.Valid;
 import com.swp.pizzashop.service.UserService;
 import com.swp.pizzashop.service.ChangePasswordResult;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +12,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+
+import java.security.Principal;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
@@ -59,5 +68,43 @@ public class ProfileController {
             default -> model.addAttribute("pwdError", "Unable to change password. Please try again.");
         }
         return "profile";
+    }
+
+    @GetMapping("/profile/edit")
+    public String editProfile(@ModelAttribute("currentUser") User currentUser, Model model) {
+        if (currentUser == null) {
+            return "redirect:/login";
+        }
+
+        EditProfileForm form = new EditProfileForm();
+        form.setFirstName(currentUser.getFirstname());
+        form.setLastName(currentUser.getLastname());
+        form.setPhone(currentUser.getPhone());
+        form.setEmail(currentUser.getEmail());
+
+        model.addAttribute("editProfileForm", form);
+        return "dashboard_info_edit";
+    }
+
+    @PostMapping("/profile/edit")
+    public String updateProfile(@Valid @ModelAttribute("editProfileForm") EditProfileForm form,
+                                BindingResult result,
+                                Principal principal,
+                                Model model) {
+        if (result.hasErrors()) {
+            log.warn("Validation errors: {}", result.getAllErrors());
+            return "dashboard_info_edit";
+        }
+
+        String email = principal.getName();
+        User user = userService.findByEmail(email);
+
+        user.setFirstname(form.getFirstName());
+        user.setLastname(form.getLastName());
+        user.setPhone(form.getPhone());
+
+        userService.updateUser(user);
+
+        return "redirect:/profile?success";
     }
 }

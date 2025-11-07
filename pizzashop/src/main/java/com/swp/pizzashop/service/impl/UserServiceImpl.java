@@ -1,19 +1,26 @@
 package com.swp.pizzashop.service.impl;
 
+import com.swp.pizzashop.form.RegisterForm;
 import com.swp.pizzashop.model.PasswordResetToken;
+import com.swp.pizzashop.model.Role;
 import com.swp.pizzashop.model.User;
 import com.swp.pizzashop.repository.PasswordResetTokenRepository;
+import com.swp.pizzashop.repository.RoleRepository;
 import com.swp.pizzashop.repository.UserRepository;
+import com.swp.pizzashop.service.EmailService;
 import com.swp.pizzashop.service.UserService;
 import com.swp.pizzashop.service.ChangePasswordResult;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
-import java.util.Base64;
-import java.util.Optional;
+import java.util.*;
+
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +30,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class UserServiceImpl implements UserService {
 
+    @Autowired
+    private RoleRepository roleRepository;
+    private final EmailService emailService;
     private final UserRepository userRepository;
     private final PasswordResetTokenRepository passwordResetTokenRepository;
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
@@ -161,5 +171,136 @@ public class UserServiceImpl implements UserService {
     @Override
     public long countByStatusAndIsDeletedFalse(String active) {
         return userRepository.countByStatusAndIsDeletedFalse(active);
+    }
+
+    @Override
+    public User registerUser(RegisterForm registerForm) {
+        if (userRepository.findByEmail(registerForm.getEmail()) != null) {
+            throw new IllegalArgumentException("Email is already registered");
+        }
+
+        String hashedPassword = passwordEncoder.encode(registerForm.getPassword());
+
+        User user = new User();
+        user.setFirstname(registerForm.getFirstname());
+        user.setLastname(registerForm.getLastname());
+        user.setEmail(registerForm.getEmail());
+        user.setPassword(hashedPassword);
+        user.setPhone(registerForm.getPhone());
+        user.setStatus("ACTIVE");
+        user.setProvider(null);
+        user.setProviderId(null);
+        user.setVerificationToken(null);
+        user.setVerificationExpiresAt(null);
+        user.setCreatedAt(LocalDateTime.now());
+        user.setUpdatedAt(LocalDateTime.now());
+        Role customerRole = roleRepository.findByName("Customer");
+        if (customerRole != null) {
+            Set<Role> roles = new HashSet<>();
+            roles.add(customerRole);
+            user.setRoles(roles);
+
+        }
+        User savedUser = userRepository.save(user);
+
+
+        return savedUser;
+    }
+
+    @Override
+    public User updateUser(User user) {
+        return userRepository.save(user);
+    }
+
+    @Override
+    public void activateUser(String email) {
+
+        User user = userRepository.findByEmail(email);
+        if (user == null) {
+            throw new IllegalArgumentException("User not found");
+        }
+        user.setStatus("ACTIVE");
+        user.setVerified(true);
+        userRepository.save(user);
+    }
+
+    public Page<User> findAllOrderedWithSearch(String keyword, Pageable pageable) {
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return userRepository.findAllByIsDeletedFalseOrderByIdDesc(pageable);
+        }
+        return userRepository.searchByKeyword(keyword.trim(), pageable);
+    }
+
+
+
+
+    @Override
+    public void toggleUserStatus(Long id, String status) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy người dùng với ID: " + id));
+
+        String normalizedStatus = status.toUpperCase().trim();
+
+
+        if (!normalizedStatus.equals("ACTIVE") && !normalizedStatus.equals("INACTIVE")) {
+            throw new IllegalArgumentException("Invalid Status: " + status);
+        }
+
+        if (normalizedStatus.equals(user.getStatus())) {
+            log.info("User with ID={} had status {}", id, normalizedStatus);
+            return;
+        }
+
+        user.setStatus(normalizedStatus);
+        userRepository.save(user);
+
+        log.info("Update status of user with ID={} to {}", id, normalizedStatus);
+    }
+
+    @Override
+    @Transactional
+    public void createUserWithRole(User user) {
+        if (userRepository.findByEmail(user.getEmail()) != null) {
+            throw new IllegalArgumentException("Email have existed");
+        }
+
+        Role role = roleRepository.findByName(user.getRoles().iterator().next().getName());
+        if (role == null || !List.of("Admin", "Cashier", "Chef", "Manager").contains(role.getName())) {
+            throw new IllegalArgumentException("Have no permition to create user with role");
+        }
+
+        String defaultPassword = "Staff1234@";
+        user.setPassword(passwordEncoder.encode(defaultPassword));
+        user.setStatus("ACTIVE");
+        user.setCreatedAt(LocalDateTime.now());
+        user.setUpdatedAt(LocalDateTime.now());
+user.setVerified(true);
+        Set<Role> roles = new HashSet<>();
+        roles.add(role);
+        user.setRoles(roles);
+
+        userRepository.save(user);
+
+        try {
+            String subject = "Information about your account";
+            String body = String.format("""
+                    Welcom %s %s,
+
+                    Your account has been created successfully.
+
+                    📨 Email: %s
+                    🔑 Password: Staff1234@
+
+                    ⚠️ Please change your password immediately. Don't share your password with anyone.
+
+                    Best regards,
+                    PizzaShop Team
+                    """, user.getFirstname(), user.getLastname(), user.getEmail());
+
+            emailService.sendSimpleMessage(user.getEmail(), subject, body);
+            log.info("Đã gửi email tạo tài khoản cho {}", user.getEmail());
+        } catch (Exception e) {
+            log.error("Không thể gửi email đến {}: {}", user.getEmail(), e.getMessage());
+        }
     }
 }

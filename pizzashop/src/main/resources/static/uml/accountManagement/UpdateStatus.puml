@@ -1,0 +1,15 @@
+@startuml
+actor Admin
+boundary UserController
+control UserService
+entity UserRepository
+
+Admin -> UserController: POST /admin/users/update-status\n(userId)
+UserController -> UserService: updateStatus(userId)
+UserService -> UserRepository: findById(userId)
+UserRepository --> UserService: User
+UserService -> UserRepository: save(user with new status)
+UserRepository --> UserService: OK
+UserService --> UserController: status updated
+UserController -> Admin: Show the message "User status updated successfully"
+@enduml

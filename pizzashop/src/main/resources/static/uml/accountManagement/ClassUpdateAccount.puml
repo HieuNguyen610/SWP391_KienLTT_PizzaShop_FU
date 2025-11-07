@@ -1,0 +1,35 @@
+@startuml
+title CLASS DIAGRAM - Update Account Status
+
+class UserController {
+  + updateStatus(Long id)
+}
+
+class UserService {
+  + void updateStatus(Long id)
+}
+
+class UserServiceImpl {
+  - UserRepository userRepository
+  + void updateStatus(Long id)
+}
+
+class UserRepository {
+  + Optional<User> findById(Long id)
+  + User save(User user)
+}
+
+class User {
+  - Long id
+  - String firstname
+  - String lastname
+  - String email
+  - String status
+  - Boolean isDeleted
+}
+
+UserController --> UserService
+UserService --> UserRepository
+UserRepository --> User
+
+@enduml
