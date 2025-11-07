@@ -1,0 +1,26 @@
+@startuml
+actor User
+participant CategoryController
+participant FoodCategoryService
+participant FoodCategoryRepository
+
+User -> CategoryController : submit edit category form (id, CategoryForm)
+CategoryController -> FoodCategoryService : findByName(form.name)
+FoodCategoryService -> FoodCategoryRepository : findByName(name)
+FoodCategoryRepository --> FoodCategoryService : existing category or null
+FoodCategoryService --> CategoryController : existing category or null
+alt duplicate name (different id)
+    CategoryController -> CategoryController : add validation error
+    CategoryController --> User : return to form with error
+else valid
+    CategoryController -> FoodCategoryService : update(id, name, description)
+    FoodCategoryService -> FoodCategoryRepository : findById(id)
+    FoodCategoryRepository --> FoodCategoryService : FoodCategory
+    FoodCategoryService -> FoodCategory : setName, setDescription
+    FoodCategoryService -> FoodCategoryRepository : save(FoodCategory)
+    FoodCategoryRepository --> FoodCategoryService : saved FoodCategory
+    FoodCategoryService --> CategoryController : saved FoodCategory
+    CategoryController --> User : redirect with success message
+end
+@enduml
+

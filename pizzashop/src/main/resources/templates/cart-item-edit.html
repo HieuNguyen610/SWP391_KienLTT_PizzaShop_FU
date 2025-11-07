@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chỉnh sửa mặt hàng</title>
+    <title>Edit item</title>
     <link rel="stylesheet" href="/css/style.css" />
     <link rel="stylesheet" href="/css/food-detail.css" />
 </head>
@@ -14,48 +14,48 @@
 <main class="fd-container" th:with="priceText=${#numbers.formatDecimal(item != null ? item.price : 0, 0, 'COMMA', 0, 'POINT')} + 'đ'">
     <!-- Breadcrumb -->
     <nav class="fd-breadcrumb" th:if="${item != null}">
-        <a th:href="@{/}">Trang chủ</a>
+        <a th:href="@{/}">Home</a>
         <span>&gt;</span>
         <a th:href="@{/menu(categoryId=${item.food != null && item.food.category != null ? item.food.category.id : null})}"
            th:text="${item.food != null && item.food.category != null ? item.food.category.name : 'Menu'}">Menu</a>
         <span>&gt;</span>
-        <span class="current" th:text="${item.food != null ? item.food.name : 'Món'}">Tên món</span>
-        <span class="current" style="margin-left:8px;color:#6b7280">• Chỉnh sửa</span>
+        <span class="current" th:text="${item.food != null ? item.food.name : 'Item'}">Item name</span>
+        <span class="current" style="margin-left:8px;color:#6b7280">• Edit</span>
     </nav>
 
     <div class="fd-grid" th:if="${item != null}">
         <!-- Left: Image + short info -->
         <div class="fd-left">
             <div class="fd-image-wrap">
-                <img class="fd-image" alt="Ảnh món"
+                <img class="fd-image" alt="Food image"
                      th:src="${#strings.isEmpty(item.food.imageUrl) ? '/images/default_food.jpg' : ((#strings.startsWith(item.food.imageUrl,'http') or #strings.startsWith(item.food.imageUrl,'/images/') or #strings.startsWith(item.food.imageUrl,'images/')) ? item.food.imageUrl : '/images/' + item.food.imageUrl)}" />
             </div>
             <div class="fd-basic">
-                <h1 class="fd-title" th:text="${item.food.name}">Tên món</h1>
+                <h1 class="fd-title" th:text="${item.food.name}">Item name</h1>
                 <div class="fd-price" th:text="${priceText}">0đ</div>
             </div>
             <div class="fd-desc" th:if="${item.food.description}">
-                <h3>Mô tả</h3>
-                <p th:text="${item.food.description}">Mô tả món...</p>
+                <h3>Description</h3>
+                <p th:text="${item.food.description}">Item description...</p>
             </div>
         </div>
 
         <!-- Right: Edit panel -->
         <aside class="fd-right">
             <div class="fd-card">
-                <h2 class="fd-card-title">Chỉnh sửa tuỳ chọn</h2>
+                <h2 class="fd-card-title">Edit item</h2>
                 <form th:action="@{/cart/item/{id}/edit(id=${item.id})}" method="post">
                     <div class="fd-qty">
-                        <label for="quantity">Số lượng</label>
+                        <label for="quantity">Quantity</label>
                         <div class="fd-qty-ctrl">
-                            <button type="button" class="fd-btn fd-qty-dec" aria-label="Giảm">−</button>
+                            <button type="button" class="fd-btn fd-qty-dec" aria-label="Decrease">−</button>
                             <input id="quantity" name="quantity" type="number" th:value="${item.quantity}" min="1" />
-                            <button type="button" class="fd-btn fd-qty-inc" aria-label="Tăng">+</button>
+                            <button type="button" class="fd-btn fd-qty-inc" aria-label="Increase">+</button>
                         </div>
                     </div>
 
                     <div class="fd-qty" style="margin-top:12px;">
-                        <label for="sizeId">Kích cỡ</label>
+                        <label for="sizeId">Size</label>
                         <select id="sizeId" name="sizeId">
                             <option th:each="s : ${sizes}"
                                     th:value="${s.id}"
@@ -65,8 +65,8 @@
                     </div>
 
                     <div class="fd-qty" style="margin-top:12px;">
-                        <label for="notes">Ghi chú</label>
-                        <textarea id="notes" name="notes" rows="3" placeholder="Ví dụ: Ít cay, thêm sốt..." th:text="${item.notes}"></textarea>
+                        <label for="notes">Note</label>
+                        <textarea id="notes" name="notes" rows="3" placeholder="Example: Less spicy, extra sauce..." th:text="${item.notes}"></textarea>
                     </div>
 
                     <!-- If Spring Security CSRF is enabled, include token here
@@ -74,21 +74,15 @@
                     -->
 
                     <div class="fd-actions">
-                        <button type="submit" class="fd-addtocart">Cập nhật</button>
-                        <a class="fd-back" th:href="@{/cart}">Hủy</a>
+                        <button type="submit" class="fd-addtocart">Update</button>
+                        <a class="fd-back" th:href="@{/cart}">Return to cart</a>
                     </div>
                 </form>
-            </div>
-
-            <!-- Optional note -->
-            <div class="fd-card fd-upsell">
-                <h3>Lưu ý</h3>
-                <p class="fd-note">Giá hiển thị là giá theo một sản phẩm ở kích cỡ đã chọn.</p>
             </div>
         </aside>
     </div>
 
-    <div th:if="${item} == null" class="fd-card">Không tìm thấy mặt hàng.</div>
+    <div th:if="${item} == null" class="fd-card">Item not found.</div>
 </main>
 
 <div th:replace="~{fragments/header :: page_footer}"></div>

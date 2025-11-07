@@ -1,0 +1,23 @@
+@startuml
+actor User
+participant MenuController
+participant FoodService
+participant FoodRepository
+participant CategoryService
+participant FoodCategoryRepository
+
+User -> MenuController : GET /menu/food/{id}
+MenuController -> FoodService : findById(id)
+FoodService -> FoodRepository : findById(id)
+FoodRepository --> FoodService : Optional<Food>
+FoodService --> MenuController : Optional<Food>
+alt food found
+    MenuController -> CategoryService : findAll()
+    CategoryService -> FoodCategoryRepository : findAll()
+    FoodCategoryRepository --> CategoryService : List<FoodCategory>
+    CategoryService --> MenuController : List<FoodCategory>
+    MenuController -> View : render "food-detail" with model(food, categories)
+else food not found
+    MenuController -> View : render "error"
+end
+@enduml

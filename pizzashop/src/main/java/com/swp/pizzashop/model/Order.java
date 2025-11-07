@@ -42,4 +42,8 @@ public class Order extends BaseEntity {
     // We don't have a Discount entity in the model yet; keep the FK as scalar id
     @Column(name = "discount_id")
     private Long discountId;
+
+    // Payments associated with this order
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    private java.util.List<Payment> payments = new java.util.ArrayList<>();
 }

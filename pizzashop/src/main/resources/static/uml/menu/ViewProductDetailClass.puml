@@ -1,0 +1,45 @@
+@startuml
+
+class MenuController {
+    +viewFoodDetail(id: Long, ...)
+}
+
+interface FoodService {
+    +findById(id: Long): Optional<Food>
+    ...
+}
+
+class FoodServiceImpl {
+    +findById(id: Long): Optional<Food>
+    -foodRepository: FoodRepository
+    ...
+}
+
+interface FoodRepository {
+    +findById(id: Long): Optional<Food>
+    ...
+}
+
+class Food {
+    -id: Long
+    -name: String
+    -description: String
+    -basePrice: BigDecimal
+    -imageUrl: String
+    -isActive: boolean
+    -category: FoodCategory
+}
+
+class FoodCategory {
+    -id: Long
+    -name: String
+    -description: String
+}
+
+MenuController --> FoodService : uses
+FoodService <|.. FoodServiceImpl
+FoodServiceImpl --> FoodRepository : uses
+FoodRepository --> Food : manages
+Food --> FoodCategory : category
+
+@enduml

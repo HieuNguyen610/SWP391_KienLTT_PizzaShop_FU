@@ -13,15 +13,6 @@
 
 <main>
     <section class="pizza-menu">
-        <nav class="sub-category-nav">
-            <ul>
-                <li><a href="#" class="active">premium seafood</a></li>
-                <li><a href="#">special formula</a></li>
-                <li><a href="#">premium food</a></li>
-                <li><a href="#">traditional</a></li>
-                <li><a href="#">vegetarian pizza</a></li>
-            </ul>
-        </nav>
 
         <div class="product-grid">
             <div class="product-card" th:each="pizza : ${pizzas}">
@@ -31,12 +22,12 @@
                 <h3 class="product-name" th:text="${pizza.name}">Seafood Pizza Cocktail</h3>
                 <p class="product-description" th:text="${pizza.description}">Shrimp, crab, ham and Thousand Island dressing.</p>
                 <p class="product-price">Price from only</p>
-                <p class="product-price-value" th:text="${#numbers.formatDecimal(pizza.basePrice, 0, 'COMMA', 0, 'POINT')} + 'đ'">154,000đ</p>
-                <button class="buy-now-btn">mua ngay -></button>
+                <p class="product-price-value" th:text="${'$' + #numbers.formatDecimal(pizza.basePrice, 0, 'COMMA', 2, 'POINT')}">154,000đ</p>
+                <a class="buy-now-btn" th:href="@{/menu/food/{id}(id=${pizza.id})}">Buy Now</a>
             </div>
 
             <div th:if="${pizzas.isEmpty()}">
-                <p>Hiện chưa có pizza nào trong menu. Vui lòng quay lại sau.</p>
+                <p>There are currently no products in the menu. Please come back later.</p>
             </div>
         </div>
     </section>

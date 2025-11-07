@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Payment Success</title>
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/paygate.css" />
+</head>
+<body>
+<div th:replace="~{fragments/header :: page_header}"></div>
+
+<main class="pg-wrap">
+  <section class="pg-card" style="text-align:center; padding:24px; max-width:640px; margin:0 auto;">
+    <h2>Payment successful</h2>
+    <p style="margin-top:8px;">Order Reference: <strong th:text="${orderRef}">ABC123456789</strong></p>
+    <div style="margin-top:16px; display:flex; gap:10px; justify-content:center;">
+      <a class="pg-btn" href="/">Back to Home</a>
+      <a class="pg-link" href="/menu">Order more</a>
+    </div>
+  </section>
+</main>
+
+<div th:replace="~{fragments/header :: page_footer}"></div>
+</body>
+</html>
+

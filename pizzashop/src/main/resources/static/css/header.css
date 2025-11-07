@@ -35,3 +35,42 @@ header a:focus,
   color: inherit;
 }
 
+/* Category tabs: ensure no underline in any state and define active style */
+.category-tabs a,
+.category-tabs a:visited,
+.category-tabs a:hover,
+.category-tabs a:focus,
+.category-tabs a:active {
+  text-decoration: none !important;
+  color: inherit;
+}
+
+/* Active category tab: light blue background, white text, no underline */
+.category-tabs a.active {
+  background: #4db8ff; /* light blue */
+  color: #fff !important;
+  border-color: #4db8ff;
+  box-shadow: none;
+}
+
+/* Footer layout helpers to keep footer at the bottom of the viewport */
+html, body {
+  height: 100%;
+  margin: 0;
+}
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+.main-content {
+  flex: 1 0 auto; /* grow to push footer down */
+}
+.site-footer {
+  flex-shrink: 0;
+  background: #e6f7ff; /* light blue-ish */
+  color: #333;
+  padding: 16px 0;
+  text-align: center;
+}
+.site-footer a { color: inherit; text-decoration: none; }

@@ -1,0 +1,19 @@
+services:
+  mydb:
+    build: ./docker/mysql
+    image: local-mydb:latest
+    container_name: mydb
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: mydb
+      MYSQL_USER: myuser
+      MYSQL_PASSWORD: mypass
+    ports:
+      - "3306:3306"
+    volumes:
+      - mydb_data:/var/lib/mysql
+    restart: unless-stopped
+
+volumes:
+  mydb_data:
+    driver: local

@@ -1,0 +1,16 @@
+@startuml
+actor User
+participant CategoryController
+participant FoodCategoryService
+participant FoodCategoryRepository
+
+User -> CategoryController : request delete category (id)
+CategoryController -> FoodCategoryService : softDelete(id)
+FoodCategoryService -> FoodCategoryRepository : findById(id)
+FoodCategoryRepository --> FoodCategoryService : FoodCategory
+FoodCategoryService -> FoodCategory : setIsDeleted(true)
+FoodCategoryService -> FoodCategoryRepository : save(FoodCategory)
+FoodCategoryRepository --> FoodCategoryService : saved FoodCategory
+FoodCategoryService --> CategoryController : void
+CategoryController --> User : redirect with result
+@enduml

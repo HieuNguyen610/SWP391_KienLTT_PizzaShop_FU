@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thanh toán</title>
+    <title>Checkout</title>
     <link rel="stylesheet" href="/css/style.css" />
     <style>
         .co-container { max-width: 1100px; margin: 24px auto; padding: 0 16px; display:grid; grid-template-columns: 1fr 360px; gap: 16px; }
@@ -21,6 +21,7 @@
         .co-summary .row { display:flex; justify-content:space-between; margin:6px 0; }
         .co-summary .total { font-size: 1.4rem; font-weight:800; }
         .muted { color:#6b7280; }
+        .warning { background:#fff7ed; border:1px solid #fdba74; color:#7c2d12; padding:10px; border-radius:8px; }
         @media (max-width: 960px){ .co-container{ grid-template-columns: 1fr; } .co-summary{ position: static; } }
     </style>
 </head>
@@ -28,67 +29,67 @@
 <div th:replace="~{fragments/header :: page_header}"></div>
 
 <main>
-    <h1 class="co-title">Thanh toán</h1>
+    <h1 class="co-title">Checkout</h1>
 
     <div class="co-container">
         <!-- Left: Info -->
         <div>
             <div class="co-card co-section">
-                <h3>Mua mang về tại</h3>
-                <div class="muted" th:text="${address.addressLine}">Địa chỉ cửa hàng / giao hàng</div>
-                <div class="co-field">
-                    <label for="co-notes">Ghi chú</label>
-                    <textarea id="co-notes" rows="3" placeholder="Ghi chú cho đơn hàng..." maxlength="200"></textarea>
+                <h3>Delivery address</h3>
+                <div th:if="${address != null}">
+                    <div class="muted" th:text="${address.fullAddress}">123 Street, Ward, City</div>
+                    <div class="muted" th:if="${address.phone != null && !#strings.isEmpty(address.phone)}" th:text="${'Phone: ' + address.phone}">Phone: 0123456789</div>
+                    <div class="co-field" style="margin-top:20px; margin-bottom: 20px">
+                        <a class="btn secondary" th:href="@{/address}">Change address</a>
+                    </div>
                 </div>
-                <div class="co-field">
-                    <label for="co-time">Thời gian nhận</label>
-                    <select id="co-time">
-                        <option>Ngay lập tức</option>
-                        <option>Trong 30 phút</option>
-                        <option>Trong 1 giờ</option>
-                    </select>
+                <div th:if="${address == null}">
+                    <div class="warning" style="margin-bottom:8px;">You don't have a delivery address yet.</div>
+                    <div  class="co-field" style="margin-top:20px; margin-bottom: 20px">
+                        <a class="btn" th:href="@{/address}">Add delivery address</a>
+                    </div>
+                </div>
+                <div class="co-field" style="margin-top:12px;">
+                    <label for="co-notes">Notes</label>
+                    <textarea id="co-notes" rows="3" placeholder="Order notes..." maxlength="200"></textarea>
                 </div>
             </div>
 
             <div class="co-card co-section">
-                <h3>Người đặt hàng</h3>
+                <h3>Customer</h3>
                 <div class="co-field">
-                    <label for="co-name">Họ và tên</label>
-                    <input id="co-name" type="text" th:value="${user != null ? (user.firstname + ' ' + user.lastname) : ''}" placeholder="Nhập họ tên" />
+                    <label for="co-name">Full name</label>
+                    <input id="co-name"  disabled type="text" th:value="${user != null ? (user.firstname + ' ' + user.lastname) : ''}" placeholder="Enter full name" />
                 </div>
                 <div class="co-field">
-                    <label for="co-phone">Số điện thoại</label>
-                    <input id="co-phone" type="tel" th:value="${contactPhone}" placeholder="Nhập số điện thoại" />
+                    <label for="co-phone">Phone number</label>
+                    <input id="co-phone" disabled type="tel" th:value="${user != null ? user.phone:''}" placeholder="Enter phone number" />
                 </div>
                 <div class="co-field">
                     <label for="co-email">Email</label>
-                    <input id="co-email" type="email" th:value="${user != null ? user.email : ''}" placeholder="Nhập email" />
+                    <input id="co-email" disabled type="email" th:value="${user != null ? user.email : ''}" placeholder="Enter email" />
                 </div>
             </div>
 
             <div class="co-card co-section">
-                <h3>Phương thức thanh toán</h3>
-                <div class="co-field"><label><input type="radio" name="pay" checked /> Tiền mặt</label></div>
-                <div class="co-field"><label><input type="radio" name="pay" /> Chuyển khoản</label></div>
+                <h3>Payment method</h3>
+                <div class=""><label><input type="radio" name="pay" checked /> Cash</label></div>
+                <div class=""><label><input type="radio" name="pay" /> Card</label></div>
             </div>
         </div>
 
         <!-- Right: Summary -->
         <aside class="co-summary co-card">
-            <h3>Giỏ hàng của tôi</h3>
-            <div class="muted" th:text="${'Có ' + (items != null ? items.size() : 0) + ' sản phẩm trong giỏ hàng của bạn'}">Có 0 sản phẩm trong giỏ hàng của bạn</div>
+            <h3>My cart</h3>
+            <div class="muted" th:text="${'You have ' + (items != null ? items.size() : 0) + ' items in your cart'}">You have 0 items in your cart</div>
             <hr/>
-            <div class="row"><span>Tạm tính</span><strong th:text="${#numbers.formatDecimal(subtotal, 0, 'COMMA', 0, 'POINT')} + 'đ'">0đ</strong></div>
-            <div class="row"><span>Giảm giá thành viên</span><span th:text="${#numbers.formatDecimal(memberDiscount, 0, 'COMMA', 0, 'POINT')} + 'đ'">0đ</span></div>
-            <div class="row"><span>Phí giao hàng</span><span th:text="${#numbers.formatDecimal(shippingFee, 0, 'COMMA', 0, 'POINT')} + 'đ'">0đ</span></div>
+            <div class="row"><span>Subtotal</span><strong th:text="${ '$' +#numbers.formatDecimal(subtotal, 0, 'COMMA', 2, 'POINT')}">0đ</strong></div>
+            <div class="row"><span>Shipping fee</span><span th:text="${ '$' +#numbers.formatDecimal(shippingFee, 0, 'COMMA', 2, 'POINT')}">0đ</span></div>
             <hr/>
-            <div class="row total"><span>Tổng cộng</span><span th:text="${#numbers.formatDecimal(total, 0, 'COMMA', 0, 'POINT')} + 'đ'">0đ</span></div>
-            <div class="co-field" style="margin-top:12px;">
-                <label><input type="checkbox" checked /> Tôi đồng ý với các điều khoản và điều kiện</label>
-            </div>
+            <div class="row total"><span>Total</span><span th:text="${ '$' +#numbers.formatDecimal(total, 0, 'COMMA', 2, 'POINT')}">0đ</span></div>
             <div class="co-actions">
-                <a class="btn secondary" th:href="@{/cart}">Trở lại</a>
-                <button class="btn" type="button" onclick="alert('Đặt hàng: backend chưa triển khai');">Đặt hàng</button>
+                <a class="btn secondary" th:href="@{/cart}">Back</a>
+                <button class="btn" type="button" id="purchase-btn"><a th:href="@{/checkout/pay}" style="color:white">Place order</a></button>
             </div>
         </aside>
     </div>

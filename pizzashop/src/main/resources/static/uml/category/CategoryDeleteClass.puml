@@ -1,0 +1,36 @@
+@startuml
+
+class CategoryController {
+    +deleteCategory(id: Long, ...)
+}
+
+interface FoodCategoryService {
+    +softDelete(id: Long): void
+    ...
+}
+
+class FoodCategoryServiceImpl {
+    +softDelete(id: Long): void
+    -categoryRepository: FoodCategoryRepository
+    ...
+}
+
+interface FoodCategoryRepository {
+    +findById(id: Long): Optional<FoodCategory>
+    +save(category: FoodCategory): FoodCategory
+    ...
+}
+
+class FoodCategory {
+    -id: Long
+    -name: String
+    -description: String
+    -isDeleted: Boolean
+}
+
+CategoryController --> FoodCategoryService : uses
+FoodCategoryService <|.. FoodCategoryServiceImpl
+FoodCategoryServiceImpl --> FoodCategoryRepository : uses
+FoodCategoryRepository --> FoodCategory : manages
+
+@enduml

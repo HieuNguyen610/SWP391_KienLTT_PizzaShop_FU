@@ -1,0 +1,76 @@
+@startuml
+skinparam style strictuml
+hide footbox
+
+actor Customer as C
+participant Browser as B
+participant "AddressController" as AC
+control "CurrentUserAdvice" as CUA
+database "UserRepository" as UR
+control "AddressService" as AS
+database "AddressRepository" as AR
+
+== Delete Address ==
+C -> B : Click "Delete" (POST /address/{id}/delete)
+B -> AC : POST /address/{id}/delete
+activate AC
+AC -> CUA : @ModelAttribute("currentUser")
+activate CUA
+CUA -> UR : findByEmail(auth.name)
+UR --> CUA : User
+deactivate CUA
+AC <-- CUA : currentUser
+AC -> AS : deleteAddress(currentUser, addressId)
+activate AS
+AS -> AR : findByIdAndUserAndIsDeletedFalse(addressId, currentUser)
+AR --> AS : Optional<Address>
+alt Address found
+  note over AS
+  - Check if address is default
+  - Soft delete: isDeleted=true, defaultAddress=false
+  end note
+  AS -> AR : save(addr as deleted)
+  AR --> AS : Address
+  alt Was default address
+    AS -> AR : findFirstByUserAndIsDeletedFalseOrderByIdDesc(currentUser)
+    AR --> AS : Optional<Address> (replacement)
+    alt Replacement found
+      AS -> AR : save(replacement as default)
+      AR --> AS : Address
+    else No replacement
+      note over AS : No new default address available
+    end
+  end
+  AS --> AC : void
+  AC -> B : redirect:/address with flash addrSuccess
+else Not found / already deleted
+  AS --> AC : IllegalArgumentException("Address not found or already deleted")
+  AC -> B : redirect:/address with flash addrError
+end
+
+deactivate AS
+deactivate AC
+
+== Follow Redirect (optional) ==
+B -> AC : GET /address
+activate AC
+AC -> CUA : @ModelAttribute("currentUser")
+activate CUA
+CUA -> UR : findByEmail(auth.name)
+UR --> CUA : User
+deactivate CUA
+AC <-- CUA : currentUser
+AC -> AS : findByUser(currentUser)
+activate AS
+AS -> AR : findByUserAndIsDeletedFalseOrderByDefaultAddressDescIdDesc(user)
+AR --> AS : List<Address>
+AS --> AC : List<Address>
+AC -> AS : countActiveByUser(currentUser)
+AS -> AR : countByUserAndIsDeletedFalse(user)
+AR --> AS : long
+AS --> AC : long
+AC -> AS : getMaxAddressesPerUser()
+AS --> AC : int
+AC -> B : return view "profile-address" with model (user, addresses, addrUsed, addrMax)
+
+@enduml

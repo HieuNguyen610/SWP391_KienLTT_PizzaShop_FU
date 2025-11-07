@@ -15,8 +15,17 @@
     <section class="menu-page">
         <!-- Top category tabs -->
         <nav class="category-tabs" >
+            <!-- 'All' tab -->
+            <div>
+                <a th:href="@{/menu(q=${q}, size=${page != null ? page.size : 8})}"
+                   th:classappend="${categoryId == null} ? ' active' : ''">All categories</a>
+            </div>
+
+            <!-- individual category tabs -->
             <div th:each="cat : ${categories}">
-                <a href="#" th:value="${cat.id}" th:text="${cat.name}"></a>
+                <a th:href="@{/menu(q=${q}, categoryId=${cat.id}, size=${page != null ? page.size : 8})}"
+                   th:classappend="${categoryId != null and cat.id == categoryId} ? ' active' : ''"
+                   th:text="${cat.name}"></a>
             </div>
         </nav>
 
@@ -33,7 +42,7 @@
             </select>
             <!-- hidden mirrors the selection to avoid submitting empty string when 'All categories' -->
             <input type="hidden" name="categoryId" id="categoryIdHidden" th:value="${categoryId}">
-            <input type="hidden" name="size" th:value="${page != null ? page.size : 10}">
+            <input type="hidden" name="size" th:value="${page != null ? page.size : 8}">
             <button type="submit">Search</button>
         </form>
 
@@ -46,8 +55,9 @@
 
                 <h3 class="product-name" th:text="${pizza.name}">Premium Seafood Pizza</h3>
 
+                <!-- Price formatted as USD with two decimals -->
                 <p class="product-price-value"
-                   th:text="${#numbers.formatDecimal(pizza.basePrice, 0, 'COMMA', 0, 'POINT')} + 'đ'">154,000đ</p>
+                   th:text="${'$' + #numbers.formatDecimal(pizza.basePrice, 0, 'COMMA', 2, 'POINT')}">$154,000.00</p>
 
                 <div class="product-actions">
                     <!-- Changed button to anchor to navigate directly to /menu/food/{id} -->
@@ -57,7 +67,7 @@
             </div>
 
             <div th:if="${pizzas == null or pizzas.isEmpty()}">
-                <p>Hiện chưa có pizza nào trong menu. Vui lòng quay lại sau.</p>
+                <p>Hiện chưa có sản phẩm nào trong menu. Vui lòng quay lại sau.</p>
             </div>
         </div>
 

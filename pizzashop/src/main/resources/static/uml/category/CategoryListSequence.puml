@@ -1,0 +1,39 @@
+@startuml
+' Sequence: Admin views Categories list (/admin/categories)
+' Based on: CategoryController.listCategories -> FoodCategoryService.findPage -> FoodCategoryRepository
+
+actor Admin
+boundary "Spring MVC DispatcherServlet" as Dispatcher
+control CategoryController
+control FoodCategoryService
+database FoodCategoryRepository
+entity "Page<FoodCategory>" as PageFoodCategory
+collections Model
+boundary "admin/categories.html" as CategoriesView
+
+Admin -> Dispatcher : GET /admin/categories?q&sort&dir&page
+Dispatcher -> CategoryController : listCategories(page, q, sort, dir, msg, err, model)
+
+CategoryController -> CategoryController : sanitize sort, dir
+CategoryController -> CategoryController : build Pageable(pageIndex, size=10, Sort)
+
+CategoryController -> FoodCategoryService : findPage(q, pageable)
+activate FoodCategoryService
+
+alt q is null or blank
+  FoodCategoryService -> FoodCategoryRepository : findAll(pageable)
+else q provided
+  FoodCategoryService -> FoodCategoryRepository : findByNameContainingIgnoreCase(q, pageable)
+end
+
+FoodCategoryRepository --> FoodCategoryService : Page<FoodCategory>
+deactivate FoodCategoryService
+
+FoodCategoryService --> CategoryController : Page<FoodCategory>
+
+CategoryController -> Model : add(q, sort, dir, pageData, categories)
+CategoryController --> Dispatcher : return "admin/categories"
+Dispatcher -> CategoriesView : render with model
+CategoriesView --> Admin : HTML (categories list)
+
+@enduml

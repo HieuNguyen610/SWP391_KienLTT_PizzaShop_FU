@@ -17,7 +17,7 @@ public interface AddressRepository extends JpaRepository<Address, Long> {
     // Non-deleted addresses list
     List<Address> findByUserAndIsDeletedFalseOrderByDefaultAddressDescIdDesc(User user);
 
-    Address findFirstByUserAndDefaultAddressTrue(User user);
+    Address findFirstByUserAndDefaultAddressTrueAndIsDeletedFalse(User user);
 
     Optional<Address> findByIdAndUser(Long id, User user);
 
