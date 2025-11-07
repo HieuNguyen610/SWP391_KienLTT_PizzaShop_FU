@@ -63,17 +63,6 @@
           </div>
         </div>
 
-        <!-- ATM -->
-        <label class="pg-method" style="border-top:1px solid #f3f4f6; padding-top:12px;">
-          <input class="pg-radio" type="radio" name="method" />
-          <span>ATM Card / Bank Account <span style="margin-left:6px; background:#e5e7eb; border-radius:6px; padding:2px 6px; font-size:12px;">ATM</span></span>
-        </label>
-
-        <!-- QR -->
-        <label class="pg-method" style="border-top:1px solid #f3f4f6; padding-top:12px;">
-          <input class="pg-radio" type="radio" name="method" />
-          <span>QR Payment with Mobile Apps</span>
-        </label>
       </div>
       <!-- Make cancel a real link back to checkout -->
       <a class="pg-foot" th:href="@{/checkout}" href="/checkout">✕ Cancel Transaction</a>
@@ -84,9 +73,9 @@
       <div class="pg-hdr">Order Information <span style="float:right; font-weight:400; opacity:.7;">⏱ 26:20</span></div>
       <div class="pg-body">
         <ul>
-          <li><span>Merchant Name</span><strong th:text="${merchantName}">PIZZA HUT</strong></li>
+          <li><span>Merchant Name</span><strong th:text="${merchantName}">PIZZA SHOP</strong></li>
           <li><span>Order Reference</span><strong th:text="${orderRef}">5X25D82701UB-NIW</strong></li>
-          <li class="total"><span>Total Amount</span><strong th:text="${#numbers.formatDecimal(total, 0, 'COMMA', 0, 'POINT')} + ' VND'">39,000 VND</strong></li>
+          <li class="total"><span>Total Amount</span><strong th:text="${ '$' +#numbers.formatDecimal(total, 0, 'COMMA', 2, 'POINT')}">39,000 VND</strong></li>
         </ul>
       </div>
     </aside>

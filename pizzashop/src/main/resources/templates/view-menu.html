@@ -55,8 +55,9 @@
 
                 <h3 class="product-name" th:text="${pizza.name}">Premium Seafood Pizza</h3>
 
+                <!-- Price formatted as USD with two decimals -->
                 <p class="product-price-value"
-                   th:text="${#numbers.formatDecimal(pizza.basePrice, 0, 'COMMA', 0, 'POINT')} + 'đ'">154,000đ</p>
+                   th:text="${'$' + #numbers.formatDecimal(pizza.basePrice, 0, 'COMMA', 2, 'POINT')}">$154,000.00</p>
 
                 <div class="product-actions">
                     <!-- Changed button to anchor to navigate directly to /menu/food/{id} -->

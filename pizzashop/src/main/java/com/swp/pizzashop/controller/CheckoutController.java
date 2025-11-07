@@ -50,14 +50,12 @@ public class CheckoutController {
                 .map(i -> i.getPrice().multiply(BigDecimal.valueOf(i.getQuantity())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        BigDecimal memberDiscount = BigDecimal.ZERO; // placeholder for membership discounts
         BigDecimal shippingFee = BigDecimal.ZERO;     // placeholder for shipping
-        BigDecimal total = subtotal.subtract(memberDiscount).add(shippingFee);
+        BigDecimal total = subtotal.add(shippingFee);
 
         model.addAttribute("cart", cart);
         model.addAttribute("items", cart.getItems());
         model.addAttribute("subtotal", subtotal);
-        model.addAttribute("memberDiscount", memberDiscount);
         model.addAttribute("shippingFee", shippingFee);
         model.addAttribute("total", total);
         model.addAttribute("user", user);
@@ -87,7 +85,7 @@ public class CheckoutController {
                 .map(i -> i.getPrice().multiply(BigDecimal.valueOf(i.getQuantity())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        model.addAttribute("merchantName", "PIZZA HUT");
+        model.addAttribute("merchantName", "PIZZA SHOP");
         model.addAttribute("orderRef", UUID.randomUUID().toString().replace("-", "").substring(0, 12).toUpperCase());
         model.addAttribute("total", subtotal);
         model.addAttribute("userEmail", user.getEmail());

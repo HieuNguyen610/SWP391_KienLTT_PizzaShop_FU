@@ -83,11 +83,10 @@
             <h3>My cart</h3>
             <div class="muted" th:text="${'You have ' + (items != null ? items.size() : 0) + ' items in your cart'}">You have 0 items in your cart</div>
             <hr/>
-            <div class="row"><span>Subtotal</span><strong th:text="${#numbers.formatDecimal(subtotal, 0, 'COMMA', 0, 'POINT')} + 'đ'">0đ</strong></div>
-            <div class="row"><span>Member discount</span><span th:text="${#numbers.formatDecimal(memberDiscount, 0, 'POINT', 0, 'COMMA')} + 'đ'">0đ</span></div>
-            <div class="row"><span>Shipping fee</span><span th:text="${#numbers.formatDecimal(shippingFee, 0, 'COMMA', 0, 'POINT')} + 'đ'">0đ</span></div>
+            <div class="row"><span>Subtotal</span><strong th:text="${ '$' +#numbers.formatDecimal(subtotal, 0, 'COMMA', 2, 'POINT')}">0đ</strong></div>
+            <div class="row"><span>Shipping fee</span><span th:text="${ '$' +#numbers.formatDecimal(shippingFee, 0, 'COMMA', 2, 'POINT')}">0đ</span></div>
             <hr/>
-            <div class="row total"><span>Total</span><span th:text="${#numbers.formatDecimal(total, 0, 'COMMA', 0, 'POINT')} + 'đ'">0đ</span></div>
+            <div class="row total"><span>Total</span><span th:text="${ '$' +#numbers.formatDecimal(total, 0, 'COMMA', 2, 'POINT')}">0đ</span></div>
             <div class="co-actions">
                 <a class="btn secondary" th:href="@{/cart}">Back</a>
                 <button class="btn" type="button" id="purchase-btn"><a th:href="@{/checkout/pay}" style="color:white">Place order</a></button>
