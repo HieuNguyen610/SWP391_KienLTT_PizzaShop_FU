@@ -1,7 +1,9 @@
 package com.swp.pizzashop.controller;
 
+import com.swp.pizzashop.dto.CartItemDto;
 import com.swp.pizzashop.model.Address;
 import com.swp.pizzashop.model.Cart;
+import com.swp.pizzashop.model.CartItem;
 import com.swp.pizzashop.model.User;
 import com.swp.pizzashop.repository.UserRepository;
 import com.swp.pizzashop.service.AddressService;
@@ -17,6 +19,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.math.BigDecimal;
 import java.util.UUID;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
@@ -89,11 +93,31 @@ public class CheckoutController {
                 .map(i -> i.getPrice().multiply(BigDecimal.valueOf(i.getQuantity())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
+        // Convert CartItem -> CartItemDto for JSON serialization in Thymeleaf inline JS
+        List<CartItemDto> cartDto = cart.getItems().stream().map(i -> {
+            CartItemDto dto = new CartItemDto();
+            CartItem ci = i;
+            // Prefer food name if available, otherwise fallback
+            dto.setName(ci.getFood() != null ? ci.getFood().getName() : ("Item-" + ci.getId()));
+            dto.setUnitPrice(ci.getPrice());
+            dto.setQuantity(ci.getQuantity());
+            // default currency; change if you support multi-currency
+            dto.setCurrency("vnd");
+            return dto;
+        }).collect(Collectors.toList());
+
+        model.addAttribute("cart", cartDto);
+        model.addAttribute("items", cart.getItems());
+        model.addAttribute("subtotal", subtotal);
+        model.addAttribute("shippingFee", BigDecimal.ZERO);
+        model.addAttribute("total", subtotal);
+        model.addAttribute("user", user);
+        model.addAttribute("address", addressService.findDefaultByUser(user));
+
         model.addAttribute("merchantName", "PIZZA SHOP");
         model.addAttribute("orderRef", UUID.randomUUID().toString().replace("-", "").substring(0, 12).toUpperCase());
-        model.addAttribute("total", subtotal);
-        model.addAttribute("userEmail", user.getEmail());
         model.addAttribute("stripePublishableKey", publishableKey);
         return "paygate";
     }
 }
+

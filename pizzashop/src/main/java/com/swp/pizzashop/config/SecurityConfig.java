@@ -25,6 +25,10 @@ import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
 
+import org.springframework.security.config.Customizer;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.Set;
@@ -76,33 +80,33 @@ public class SecurityConfig {
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/login?logout")
-                        .invalidateHttpSession(true) // Invalidate HTTP session
-                        .clearAuthentication(true)    // Clear authentication
-                        .deleteCookies("JSESSIONID", "remember-me")  // Delete JSESSIONID and remember-me cookies
+                        .invalidateHttpSession(true)
+                        .clearAuthentication(true)
+                        .deleteCookies("JSESSIONID", "remember-me")
                         .permitAll()
                 )
                 .csrf(csrf -> csrf
                         // Allow API requests and custom login/register endpoints without CSRF token
-                        .ignoringRequestMatchers("/api/**", "/do-login", "/register", "/forgot-password", "/reset-password")
+                        // Important: /payment/** is handled by JS and Stripe, so we exclude it here
+                        .ignoringRequestMatchers("/api/**", "/do-login", "/register", "/forgot-password", "/reset-password", "/payment/**")
                 )
-                // Redirect unauthenticated users to /login instead of sending 401 JSON
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login"))
                         .accessDeniedPage("/error/403")
                 )
-                // Use hash-based remember-me (TokenBasedRememberMeServices)
                 .rememberMe(rememberMe -> rememberMe
-                        .key("rememberMeSecretKey") //  secure key
-                        .rememberMeParameter("remember-me") // Matches login.html
+                        .key("rememberMeSecretKey")
+                        .rememberMeParameter("remember-me")
                         .rememberMeCookieName("remember-me")
-                        .tokenValiditySeconds(7 * 24 * 60 * 60) // 7 days
-                        // explicit userDetailsService required for hash-based remember-me to rebuild Authentication
+                        .tokenValiditySeconds(7 * 24 * 60 * 60)
                         .userDetailsService(userDetailsService)
                 )
                 .oauth2Login(oauth2 -> oauth2
                         .loginPage("/login")
                         .defaultSuccessUrl("/menu", true)
-                );
+                )
+                // enable CORS so frontend fetch calls are accepted if CORS is used
+                .cors(Customizer.withDefaults());
 
         return http.build();
     }
@@ -152,4 +156,21 @@ public class SecurityConfig {
                     .build();
         };
     }
+
+    // Provide a permissive CORS mapping for the small number of endpoints the frontend may call via fetch
+    @Bean
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                // Allow same-origin local dev and also explicit https local origin if used
+                registry.addMapping("/payment/**")
+                        .allowedOrigins("http://localhost:8080", "https://localhost:8080")
+                        .allowedMethods("GET", "POST", "OPTIONS")
+                        .allowCredentials(true)
+                        .allowedHeaders("*");
+            }
+        };
+    }
 }
+

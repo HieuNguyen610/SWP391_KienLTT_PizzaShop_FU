@@ -81,7 +81,6 @@ public class PaymentController {
     @GetMapping("/success")
     public String success(@RequestParam(value = "orderRef", required = false) String orderRef, Model model) {
         if (orderRef == null || orderRef.isBlank()) {
-            // Still render success, but with a placeholder
             orderRef = "UNKNOWN";
         }
         model.addAttribute("orderRef", orderRef);
@@ -98,7 +97,6 @@ public class PaymentController {
             return ResponseEntity.badRequest().body(Map.of("error", "Cart is empty"));
         }
 
-        // Build line items from the real cart
         SessionCreateParams.Builder builder = SessionCreateParams.builder()
                 .setMode(SessionCreateParams.Mode.PAYMENT)
                 .setSuccessUrl(successUrl)
@@ -112,7 +110,6 @@ public class PaymentController {
             String currency = StringUtils.hasText(item.getCurrency()) ? item.getCurrency().toLowerCase(Locale.ROOT) : "usd";
             BigDecimal price = item.getUnitPrice() != null ? item.getUnitPrice() : BigDecimal.ZERO;
 
-            // Convert to smallest currency unit (Stripe expects long)
             long unitAmount;
             if ("jpy".equals(currency) || "vnd".equals(currency)) {
                 unitAmount = price.setScale(0, RoundingMode.HALF_UP).longValueExact();
@@ -141,7 +138,6 @@ public class PaymentController {
             builder.addLineItem(lineItem);
         }
 
-        // Optional: attach metadata (e.g., order reference, user)
         Map<String, String> metadata = new HashMap<>();
         if (StringUtils.hasText(req.getOrderRef())) metadata.put("orderRef", req.getOrderRef());
         if (user != null && StringUtils.hasText(user.getUsername())) metadata.put("user", user.getUsername());
