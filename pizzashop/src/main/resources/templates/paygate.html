@@ -6,6 +6,15 @@
   <title>PayGate - Checkout</title>
   <link rel="stylesheet" href="/css/style.css" />
   <link rel="stylesheet" href="/css/paygate.css" />
+  <script src="https://js.stripe.com/v3"></script>
+  <style>
+    .stripe-btn { background:#635bff; color:#fff; border:none; padding:12px 20px; border-radius:8px; font-weight:600; cursor:pointer; }
+    .stripe-btn[disabled]{ opacity:.6; cursor:not-allowed; }
+    .pg-separator { text-align:center; margin:16px 0; position:relative; }
+    .pg-separator:before, .pg-separator:after { content:""; position:absolute; top:50%; width:40%; height:1px; background:#e5e7eb; }
+    .pg-separator:before { left:0; } .pg-separator:after { right:0; }
+    .pg-separator span { background:#fff; padding:0 12px; color:#6b7280; font-size:.85rem; }
+  </style>
 </head>
 <body>
 <div th:replace="~{fragments/header :: page_header}"></div>
@@ -16,7 +25,7 @@
     <section class="pg-card">
       <div class="pg-hdr">Select payment method</div>
       <div class="pg-body">
-        <!-- Credit / Debit card -->
+        <!-- Credit / Debit card (mock/manual form) -->
         <label class="pg-method">
           <input class="pg-radio" type="radio" name="method" checked />
           <span>Credit / Debit Card
@@ -26,26 +35,26 @@
         <div class="pg-body" style="padding-top:4px;">
           <div class="pg-field">
             <label>Card Number*</label>
-            <input type="text" placeholder="1234 5678 9101 1234" inputmode="numeric" />
+            <input type="text" placeholder="1234 5678 9101 1234" inputmode="numeric" disabled />
           </div>
           <div class="pg-inline">
             <div class="pg-field">
               <label>Expiration Date*</label>
-              <input type="text" placeholder="MM/YY" />
+              <input type="text" placeholder="MM/YY" disabled />
             </div>
             <div class="pg-field">
               <label>CSC*</label>
-              <input type="password" placeholder="123" />
+              <input type="password" placeholder="123" disabled />
             </div>
           </div>
           <div class="pg-inline">
             <div class="pg-field">
               <label>Name on card (no accent)*</label>
-              <input type="text" placeholder="NGUYEN VAN A" />
+              <input type="text" placeholder="NGUYEN VAN A" disabled />
             </div>
             <div class="pg-field">
               <label>Email*</label>
-              <input type="email" th:value="${userEmail}" placeholder="name@email.com" />
+              <input type="email" th:value="${userEmail}" placeholder="name@email.com" disabled />
             </div>
           </div>
           <div class="pg-row" style="margin:10px 0 4px;">
@@ -53,16 +62,17 @@
             <label for="agree" class="pg-note">I have read, understood and agree to OnePay's Personal Data Protection and Processing Policy</label>
           </div>
           <div class="pg-actions">
-            <!-- Submit via Thymeleaf form to server-side controller -->
+            <!-- Legacy internal payment confirm (fallback) -->
             <form th:action="@{/payment/confirm}" action="/payment/confirm" method="post" style="display:inline;">
               <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
               <input type="hidden" name="orderRef" th:value="${orderRef}" />
-              <button id="payNow" type="submit" class="pg-btn" disabled>Pay Now</button>
-              <button class="btn secondary">
-              <a th:href="@{/checkout}" href="/checkout">Cancel Transaction</a>
-              </button>
+              <button id="payNow" type="submit" class="pg-btn" >Internal Pay (Fallback)</button>
             </form>
+            <button id="stripePayBtn" class="stripe-btn" >Pay with Stripe</button>
+            <a class="btn secondary" th:href="@{/checkout}">Cancel</a>
           </div>
+          <div class="pg-separator"><span>or</span></div>
+          <p style="font-size:.8rem; color:#6b7280;">Stripe Checkout securely processes your card details. Internal form is disabled.</p>
         </div>
 
       </div>
@@ -84,14 +94,77 @@
 
 <div th:replace="~{fragments/header :: page_footer}"></div>
 
-<script>
-(function(){
-  var agree = document.getElementById('agree');
-  var btn = document.getElementById('payNow');
-  if(agree && btn){
-    agree.addEventListener('change', function(){ btn.disabled = !agree.checked; });
-  }
-})();
+<script th:inline="javascript">
+  (function(){
+    var agree = document.getElementById('agree');
+    var internalBtn = document.getElementById('payNow');
+    var stripeBtn = document.getElementById('stripePayBtn');
+    function sync(){
+      var enabled = agree && agree.checked;
+      if(internalBtn) internalBtn.disabled = !enabled;
+      if(stripeBtn) stripeBtn.disabled = !enabled;
+    }
+    if(agree){ agree.addEventListener('change', sync); }
+    sync();
+
+    // CSRF tokens and cart serialized by Thymeleaf into JS
+    var csrfHeaderName = /*[[${_csrf != null}]]*/ false ? /*[[${_csrf.headerName}]]*/ 'X-CSRF-TOKEN' : 'X-CSRF-TOKEN';
+    var csrfToken = /*[[${_csrf != null}]]*/ false ? /*[[${_csrf.token}]]*/ '' : '';
+    // server-side cart must be provided in model as `cart` (will be serialized to JSON)
+    var cart = /*[[${cart}]]*/ [];
+    // order reference available in model
+    var orderRef = /*[[${orderRef}]]*/ '';
+
+    // Stripe Checkout integration
+    var publishableKey = /*[[${stripePublishableKey}]]*/ '';
+    if(!publishableKey){ console.warn('Stripe publishable key missing'); return; }
+    var stripe = Stripe(publishableKey);
+    if(stripeBtn){
+      stripeBtn.addEventListener('click', function(){
+        if(stripeBtn.disabled) return;
+        stripeBtn.disabled = true;
+        stripeBtn.textContent = 'Creating session...';
+
+        var headers = {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest'
+        };
+        if(csrfHeaderName && csrfToken){
+          headers[csrfHeaderName] = csrfToken;
+        }
+
+        fetch('/payment/create-session', {
+          method: 'POST',
+          headers: headers,
+          credentials: 'same-origin', // ensure cookies (session) and CSRF cookie are sent
+          body: JSON.stringify({
+            cart: cart,
+            orderRef: orderRef
+          })
+        })
+                .then(function(r){
+                  if(!r.ok){
+                    return r.text().then(function(t){ throw new Error('Server error: ' + (t || r.status)); });
+                  }
+                  return r.json();
+                })
+                .then(function(data){
+                  if(!data || !data.id){ throw new Error('Invalid session response'); }
+                  return stripe.redirectToCheckout({ sessionId: data.id });
+                })
+                .then(function(result){
+                  if(result && result.error){ alert(result.error.message); }
+                })
+                .catch(function(err){
+                  console.error(err);
+                  alert('Failed to start Stripe Checkout: ' + err.message);
+                  stripeBtn.disabled = false;
+                  stripeBtn.textContent = 'Pay with Stripe';
+                });
+      });
+    }
+  })();
 </script>
 </body>
 </html>

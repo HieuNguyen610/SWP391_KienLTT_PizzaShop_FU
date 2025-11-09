@@ -8,6 +8,7 @@ import com.swp.pizzashop.service.AddressService;
 import com.swp.pizzashop.service.CartService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -25,6 +26,9 @@ public class CheckoutController {
     private final CartService cartService;
     private final UserRepository userRepository;
     private final AddressService addressService;
+
+    @Value("${stripe.publishable-key}")
+    private String publishableKey;
 
     @GetMapping("/checkout")
     public String checkout(Authentication authentication, Model model, RedirectAttributes ra) {
@@ -89,6 +93,7 @@ public class CheckoutController {
         model.addAttribute("orderRef", UUID.randomUUID().toString().replace("-", "").substring(0, 12).toUpperCase());
         model.addAttribute("total", subtotal);
         model.addAttribute("userEmail", user.getEmail());
+        model.addAttribute("stripePublishableKey", publishableKey);
         return "paygate";
     }
 }
