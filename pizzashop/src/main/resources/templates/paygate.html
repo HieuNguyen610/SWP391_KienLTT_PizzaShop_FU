@@ -1,170 +1,167 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PayGate - Checkout</title>
-  <link rel="stylesheet" href="/css/style.css" />
-  <link rel="stylesheet" href="/css/paygate.css" />
-  <script src="https://js.stripe.com/v3"></script>
-  <style>
-    .stripe-btn { background:#635bff; color:#fff; border:none; padding:12px 20px; border-radius:8px; font-weight:600; cursor:pointer; }
-    .stripe-btn[disabled]{ opacity:.6; cursor:not-allowed; }
-    .pg-separator { text-align:center; margin:16px 0; position:relative; }
-    .pg-separator:before, .pg-separator:after { content:""; position:absolute; top:50%; width:40%; height:1px; background:#e5e7eb; }
-    .pg-separator:before { left:0; } .pg-separator:after { right:0; }
-    .pg-separator span { background:#fff; padding:0 12px; color:#6b7280; font-size:.85rem; }
-  </style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PayGate - Checkout (Stripe)</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/paygate.css" />
+    <script src="https://js.stripe.com/v3"></script>
+    <!-- CSRF meta tags (safer access for JS) -->
+    <meta th:if="${_csrf != null}" name="_csrf_header" th:content="${_csrf.headerName}" />
+    <meta th:if="${_csrf != null}" name="_csrf" th:content="${_csrf.token}" />
+    <style>
+        .stripe-btn { background:#635bff; color:#fff; border:none; padding:12px 20px; border-radius:8px; font-weight:600; cursor:pointer; }
+        .stripe-btn[disabled]{ opacity:.6; cursor:not-allowed; }
+        .pg-separator { text-align:center; margin:16px 0; position:relative; }
+        .pg-separator:before, .pg-separator:after { content:""; position:absolute; top:50%; width:40%; height:1px; background:#e5e7eb; }
+        .pg-separator:before { left:0; } .pg-separator:after { right:0; }
+        .pg-separator span { background:#fff; padding:0 12px; color:#6b7280; font-size:.85rem; }
+    </style>
 </head>
 <body>
 <div th:replace="~{fragments/header :: page_header}"></div>
 
 <main class="pg-wrap">
-  <div class="pg-grid">
-    <!-- Left: Payment methods and card form -->
-    <section class="pg-card">
-      <div class="pg-hdr">Select payment method</div>
-      <div class="pg-body">
-        <!-- Credit / Debit card (mock/manual form) -->
-        <label class="pg-method">
-          <input class="pg-radio" type="radio" name="method" checked />
-          <span>Credit / Debit Card
-            <span style="margin-left:8px; opacity:.8;">VISA • MasterCard • JCB</span>
-          </span>
-        </label>
-        <div class="pg-body" style="padding-top:4px;">
-          <div class="pg-field">
-            <label>Card Number*</label>
-            <input type="text" placeholder="1234 5678 9101 1234" inputmode="numeric" disabled />
-          </div>
-          <div class="pg-inline">
-            <div class="pg-field">
-              <label>Expiration Date*</label>
-              <input type="text" placeholder="MM/YY" disabled />
+    <div class="pg-grid">
+        <!-- Left: Stripe & internal fallback -->
+        <section class="pg-card">
+            <div class="pg-hdr">Select payment method</div>
+            <div class="pg-body">
+                <label class="pg-method">
+                    <input class="pg-radio" type="radio" name="method" checked />
+                    <span>Card Payment <span style="margin-left:8px; opacity:.8;">VISA • MasterCard • JCB</span></span>
+                </label>
+                <div class="pg-body" style="padding-top:4px;">
+                    <div class="pg-row" style="margin:10px 0 12px;">
+                        <input id="agree" type="checkbox" />
+                        <label for="agree" class="pg-note">I agree to the Personal Data Protection Policy.</label>
+                    </div>
+                    <div class="pg-actions">
+                        <!-- Internal fallback form (server-side payment) -->
+                        <form th:action="@{/payment/confirm}" method="post" style="display:inline;">
+                            <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                            <input type="hidden" name="orderRef" th:value="${orderRef}" />
+                            <button id="payNow" type="submit" class="pg-btn">Internal Pay (Fallback)</button>
+                        </form>
+                        <button id="stripePayBtn" class="stripe-btn">Pay with Stripe</button>
+                        <a class="btn secondary" th:href="@{/checkout}">Cancel</a>
+                    </div>
+                    <div class="pg-separator"><span>or</span></div>
+                    <p style="font-size:.8rem; color:#6b7280;">Stripe Checkout securely processes your card details.</p>
+                </div>
             </div>
-            <div class="pg-field">
-              <label>CSC*</label>
-              <input type="password" placeholder="123" disabled />
-            </div>
-          </div>
-          <div class="pg-inline">
-            <div class="pg-field">
-              <label>Name on card (no accent)*</label>
-              <input type="text" placeholder="NGUYEN VAN A" disabled />
-            </div>
-            <div class="pg-field">
-              <label>Email*</label>
-              <input type="email" th:value="${userEmail}" placeholder="name@email.com" disabled />
-            </div>
-          </div>
-          <div class="pg-row" style="margin:10px 0 4px;">
-            <input id="agree" type="checkbox" />
-            <label for="agree" class="pg-note">I have read, understood and agree to OnePay's Personal Data Protection and Processing Policy</label>
-          </div>
-          <div class="pg-actions">
-            <!-- Legacy internal payment confirm (fallback) -->
-            <form th:action="@{/payment/confirm}" action="/payment/confirm" method="post" style="display:inline;">
-              <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-              <input type="hidden" name="orderRef" th:value="${orderRef}" />
-              <button id="payNow" type="submit" class="pg-btn" >Internal Pay (Fallback)</button>
-            </form>
-            <button id="stripePayBtn" class="stripe-btn" >Pay with Stripe</button>
-            <a class="btn secondary" th:href="@{/checkout}">Cancel</a>
-          </div>
-          <div class="pg-separator"><span>or</span></div>
-          <p style="font-size:.8rem; color:#6b7280;">Stripe Checkout securely processes your card details. Internal form is disabled.</p>
-        </div>
+        </section>
 
-      </div>
-    </section>
-
-    <!-- Right: Order information -->
-    <aside class="pg-card pg-order">
-      <div class="pg-hdr">Order Information <span style="float:right; font-weight:400; opacity:.7;">⏱ 26:20</span></div>
-      <div class="pg-body">
-        <ul>
-          <li><span>Merchant Name</span><strong th:text="${merchantName}">PIZZA SHOP</strong></li>
-          <li><span>Order Reference</span><strong th:text="${orderRef}">5X25D82701UB-NIW</strong></li>
-          <li class="total"><span>Total Amount</span><strong th:text="${ '$' +#numbers.formatDecimal(total, 0, 'COMMA', 2, 'POINT')}">39,000 VND</strong></li>
-        </ul>
-      </div>
-    </aside>
-  </div>
+        <!-- Right: Order summary -->
+        <aside class="pg-card pg-order">
+            <div class="pg-hdr">Order Information <span style="float:right; font-weight:400; opacity:.7;">⏱ 26:20</span></div>
+            <div class="pg-body">
+                <ul>
+                    <li><span>Merchant</span><strong th:text="${merchantName}">PIZZA SHOP</strong></li>
+                    <li><span>Order Reference</span><strong th:text="${orderRef}">ORDERREF</strong></li>
+                    <li class="total"><span>Total Amount</span><strong th:text="${'$' + #numbers.formatDecimal(total, 0, 'COMMA', 2, 'POINT')}">$0.00</strong></li>
+                </ul>
+            </div>
+        </aside>
+    </div>
 </main>
 
 <div th:replace="~{fragments/header :: page_footer}"></div>
 
 <script th:inline="javascript">
-  (function(){
-    var agree = document.getElementById('agree');
-    var internalBtn = document.getElementById('payNow');
-    var stripeBtn = document.getElementById('stripePayBtn');
-    function sync(){
-      var enabled = agree && agree.checked;
-      if(internalBtn) internalBtn.disabled = !enabled;
-      if(stripeBtn) stripeBtn.disabled = !enabled;
-    }
-    if(agree){ agree.addEventListener('change', sync); }
-    sync();
+    /*<![CDATA[*/
+    (function(){
+        const stripeBtn = document.getElementById('stripePayBtn');
+        const internalBtn = document.getElementById('payNow');
+        const agree = document.getElementById('agree');
 
-    // CSRF tokens and cart serialized by Thymeleaf into JS
-    var csrfHeaderName = /*[[${_csrf != null}]]*/ false ? /*[[${_csrf.headerName}]]*/ 'X-CSRF-TOKEN' : 'X-CSRF-TOKEN';
-    var csrfToken = /*[[${_csrf != null}]]*/ false ? /*[[${_csrf.token}]]*/ '' : '';
-    // server-side cart must be provided in model as `cart` (will be serialized to JSON)
-    var cart = /*[[${cart}]]*/ [];
-    // order reference available in model
-    var orderRef = /*[[${orderRef}]]*/ '';
+        // Thymeleaf-injected data
+        const publishableKey = /*[[${stripePublishableKey}]]*/ '';
+        const orderRef = /*[[${orderRef}]]*/ '';
+        const cart = /*[[${cart}]]*/ [];
 
-    // Stripe Checkout integration
-    var publishableKey = /*[[${stripePublishableKey}]]*/ '';
-    if(!publishableKey){ console.warn('Stripe publishable key missing'); return; }
-    var stripe = Stripe(publishableKey);
-    if(stripeBtn){
-      stripeBtn.addEventListener('click', function(){
-        if(stripeBtn.disabled) return;
-        stripeBtn.disabled = true;
-        stripeBtn.textContent = 'Creating session...';
+        function logStatus(){
+            console.log('[StripePay] publishableKey length:', publishableKey ? publishableKey.length : 0);
+            console.log('[StripePay] orderRef:', orderRef);
+            console.log('[StripePay] cart items:', Array.isArray(cart)? cart.length : 'not array');
+        }
+        logStatus();
 
-        var headers = {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'X-Requested-With': 'XMLHttpRequest'
-        };
-        if(csrfHeaderName && csrfToken){
-          headers[csrfHeaderName] = csrfToken;
+        function syncButtons(){
+            const enabled = agree && agree.checked;
+            if(internalBtn) internalBtn.disabled = !enabled;
+            if(stripeBtn) stripeBtn.disabled = !enabled;
+        }
+        if(agree){ agree.addEventListener('change', syncButtons); }
+        syncButtons();
+
+        if(!stripeBtn){ console.warn('[StripePay] stripePayBtn not found'); return; }
+
+        if(!publishableKey){
+            console.error('[StripePay] Missing publishable key. Define stripe.publishable-key in application.properties or env variable.');
+            stripeBtn.disabled = true;
+            stripeBtn.title = 'Missing Stripe publishable key';
+            return;
         }
 
-        fetch('/payment/create-session', {
-          method: 'POST',
-          headers: headers,
-          credentials: 'same-origin', // ensure cookies (session) and CSRF cookie are sent
-          body: JSON.stringify({
-            cart: cart,
-            orderRef: orderRef
-          })
-        })
-                .then(function(r){
-                  if(!r.ok){
-                    return r.text().then(function(t){ throw new Error('Server error: ' + (t || r.status)); });
-                  }
-                  return r.json();
+        let stripe;
+        try { stripe = Stripe(publishableKey); } catch(e){
+            console.error('[StripePay] Failed to initialize Stripe:', e);
+            stripeBtn.disabled = true;
+            return;
+        }
+
+        stripeBtn.addEventListener('click', function(){
+            if(stripeBtn.disabled) return;
+            if(!Array.isArray(cart) || cart.length === 0){
+                alert('Cart is empty or invalid.');
+                return;
+            }
+            stripeBtn.disabled = true;
+            const originalText = stripeBtn.textContent;
+            stripeBtn.textContent = 'Creating session...';
+
+            // CSRF handling
+            const csrfHeader = document.querySelector('meta[name=_csrf_header]');
+            const csrfToken = document.querySelector('meta[name=_csrf]');
+            const headers = {
+                'Content-Type':'application/json',
+                'Accept':'application/json',
+                'X-Requested-With':'XMLHttpRequest'
+            };
+            if(csrfHeader && csrfToken){ headers[csrfHeader.content] = csrfToken.content; }
+
+            // Minimal safe cart projection
+            const safeCart = cart.map(i => ({
+                name: i.name,
+                unitPrice: i.unitPrice,
+                quantity: i.quantity,
+                currency: i.currency || 'usd'
+            }));
+
+            fetch('/payment/create-session', {
+                method: 'POST',
+                headers: headers,
+                credentials: 'same-origin',
+                body: JSON.stringify({ cart: safeCart, orderRef: orderRef })
+            })
+                .then(r => { if(!r.ok) return r.text().then(t => { throw new Error('HTTP ' + r.status + ' ' + t); }); return r.json(); })
+                .then(data => {
+                    if(!data || !data.id){ throw new Error('Invalid session response'); }
+                    console.log('[StripePay] Session created:', data.id);
+                    return stripe.redirectToCheckout({ sessionId: data.id });
                 })
-                .then(function(data){
-                  if(!data || !data.id){ throw new Error('Invalid session response'); }
-                  return stripe.redirectToCheckout({ sessionId: data.id });
-                })
-                .then(function(result){
-                  if(result && result.error){ alert(result.error.message); }
-                })
-                .catch(function(err){
-                  console.error(err);
-                  alert('Failed to start Stripe Checkout: ' + err.message);
-                  stripeBtn.disabled = false;
-                  stripeBtn.textContent = 'Pay with Stripe';
+                .then(result => { if(result && result.error){ throw result.error; } })
+                .catch(err => {
+                    console.error('[StripePay] Error:', err);
+                    alert('Failed to initiate Stripe payment: ' + err.message);
+                    stripeBtn.disabled = false;
+                    stripeBtn.textContent = originalText;
                 });
-      });
-    }
-  })();
+        });
+    })();
+    /*]]>*/
 </script>
 </body>
 </html>
