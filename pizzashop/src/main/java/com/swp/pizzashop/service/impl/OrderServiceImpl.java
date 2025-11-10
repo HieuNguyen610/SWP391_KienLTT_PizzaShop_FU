@@ -1,5 +1,6 @@
 package com.swp.pizzashop.service.impl;
 
+import com.swp.pizzashop.dto.OrderDetailDTO;
 import com.swp.pizzashop.dto.OrderSummaryDTO;
 import com.swp.pizzashop.model.Order;
 import com.swp.pizzashop.repository.OrderRepository;
@@ -23,6 +24,7 @@ import java.util.stream.Collectors;
 public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final PaymentRepository paymentRepository;
+
     @Override
     public long countAll() {
         return orderRepository.countActive();
@@ -73,6 +75,11 @@ public class OrderServiceImpl implements OrderService {
         }
 
         return fullYearData;
+    }
+
+    @Override
+    public Page<OrderDetailDTO> getOrdersByCustomer(Long userId, Pageable pageable) {
+        return orderRepository.findAllOrderByUserId(userId, pageable);
     }
 
 

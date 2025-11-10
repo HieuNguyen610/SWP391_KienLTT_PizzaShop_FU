@@ -1,6 +1,7 @@
 package com.swp.pizzashop.service;
 
 
+import com.swp.pizzashop.dto.OrderDetailDTO;
 import com.swp.pizzashop.dto.OrderSummaryDTO;
 import com.swp.pizzashop.model.Order;
 import org.springframework.data.domain.Page;
@@ -18,4 +19,5 @@ public interface OrderService {
     Page<OrderSummaryDTO> getOrdersByStatus(String status, Pageable pageable);
     Page<OrderSummaryDTO> searchOrders(String keyword, Pageable pageable);
     List<Map<String, Object>> getMonthlySalesSummary();
+    Page<OrderDetailDTO> getOrdersByCustomer(Long userId, Pageable pageable);
 }

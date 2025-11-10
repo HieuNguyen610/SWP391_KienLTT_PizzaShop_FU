@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Profile</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="/css/style.css"/>
+    <link rel="stylesheet" th:href="@{/css/profile.css}" href="/css/profile.css"/>
+
+    <link th:href="@{/css2/bootstrap.min.css}" rel="stylesheet" type="text/css" id="bootstrap-stylesheet" />
+
+
+</head>
+
+<body>
+<div th:replace="~{fragments/header :: page_header}"></div>
+
+<main class="profile-page">
+    <div class="profile-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="card account-box">
+                <div class="account-caption">Account of</div>
+                <div class="account-name"
+                     th:text="${user != null ? user.firstname + ' ' + user.lastname : 'Your Name'}">Your Name
+                </div>
+            </div>
+
+            <div class="card">
+                <ul class="menu">
+                    <li><a th:href="@{/profile}" href="/profile">Customer information</a></li>
+                    <li><a th:href="@{/address}" href="/address">Delivery Address Book</a></li>
+                    <li><a class="active" th:href="@{/user/orders}" href="/orders">Order</a></li>
+                    <li><a th:href="@{/vouchers}" href="/vouchers">My voucher</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- Content Customer Orders-->
+        <section>
+            <div class="card section">
+                <div class="card-header">
+                    <h2 class="section-title" style="display:flex; align-items:center; gap:10px;">
+                        Your Orders
+                    </h2>
+                </div>
+
+                <div class="card-body">
+                    <div class=" table-responsive mt-4">
+                        <table id="datatable-buttons"
+                               class="table table-striped table-bordered dt-responsive nowrap"
+                               style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                            <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Amount</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Payment Status</th>
+                                <th>Rating</th>
+                            </tr>
+                            </thead>
+
+                            <tbody>
+                            <tr th:if="${#lists.isEmpty(ordersPage.content)}">
+                                <td colspan="7" style="text-align:center;">No orders found</td>
+                            </tr>
+
+                            <tr th:each="order : ${ordersPage.content}">
+                                <td th:text="'#' + ${order.id}"></td>
+                                <td th:text="${#numbers.formatDecimal(order.totalPrice, 0, 'COMMA', 2, 'POINT')} + ' ₫'"></td>
+
+                                <td th:text="${#temporals.format(order.orderTime, 'yyyy-MM-dd HH:mm')}"></td>
+
+                                <!-- Status tag -->
+                                <td>
+                                    <span th:text="${order.status}"
+                                          th:style="${order.status == 'COMPLETED'} ?
+                                                         'background-color:#eaf6ed;color:#28a745;padding:5px 15px;border-radius:20px;font-weight:bold;' :
+                                                         (order.status == 'DELIVERING' ?
+                                                         'background-color:#fff5eb;color:#f5a623;padding:5px 15px;border-radius:20px;font-weight:bold;' :
+                                                         (order.status == 'CANCELLED' ?
+                                                         'background-color:#fdeaea;color:#dc3545;padding:5px 15px;border-radius:20px;font-weight:bold;' :
+                                                         'background-color:#e7f3fe;color:#007bff;padding:5px 15px;border-radius:20px;font-weight:bold;'))">
+                                    </span>
+                                </td>
+
+                                <!-- Payment Status -->
+                                <td>
+                                                <span th:text="${order.paymentMethod}"
+                                                      th:style="${order.paymentMethod == 'PAID'} ?
+                                                        'color:#28a745;font-weight:bold;' :
+                                                        'color:#ff9800;font-weight:bold;'"></span>
+                                </td>
+
+                                <td>
+                                    <button type="button" class="btn btn-sm btn-primary"
+                                            data-bs-toggle="modal"
+                                            th:attr="data-bs-target='#rateModal__' + ${order.id}">
+                                        Rate
+                                    </button>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+
+                        <div class="d-flex justify-content-center mt-4" th:if="${ordersPage.totalPages > 1}">
+                            <nav>
+                                <ul class="pagination">
+                                    <li class="page-item" th:classappend="${ordersPage.first} ? 'disabled'">
+                                        <a class="page-link" th:href="@{'/admin/orders'(page=${ordersPage.number - 1}, q=${query}, status=${statusFilter})}">Prev</a>
+                                    </li>
+                                    <li class="page-item"
+                                        th:each="i : ${#numbers.sequence(0, ordersPage.totalPages - 1)}"
+                                        th:classappend="${i == ordersPage.number} ? 'active'">
+                                        <a class="page-link"
+                                           th:text="${i + 1}"
+                                           th:href="@{'/admin/orders'(page=${i}, q=${query}, status=${statusFilter})}"></a>
+                                    </li>
+                                    <li class="page-item" th:classappend="${ordersPage.last} ? 'disabled'">
+                                        <a class="page-link" th:href="@{'/admin/orders'(page=${ordersPage.number + 1}, q=${query}, status=${statusFilter})}">Next</a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+</main>
+
+<div th:replace="~{fragments/header :: page_footer}"></div>
+</body>

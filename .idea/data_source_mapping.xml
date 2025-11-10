@@ -4,7 +4,8 @@
     <file url="das://8b92e9b6-3e37-4bec-b285-54410281d49a/schema/pizza_shop/table/discounts.sql" value="8b92e9b6-3e37-4bec-b285-54410281d49a" />
     <file url="das://8b92e9b6-3e37-4bec-b285-54410281d49a/schema/pizza_shop/table/orders.sql" value="8b92e9b6-3e37-4bec-b285-54410281d49a" />
     <file url="das://8b92e9b6-3e37-4bec-b285-54410281d49a/schema/pizza_shop/table/payments.sql" value="8b92e9b6-3e37-4bec-b285-54410281d49a" />
+    <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/8b92e9b6-3e37-4bec-b285-54410281d49a/console.sql" value="8b92e9b6-3e37-4bec-b285-54410281d49a" />
     <file url="file://$PROJECT_DIR$/00-create-pizza-shop.sql" value="a4ad0d8d-e794-4777-aad7-bc3e7d860a2c" />
-    <file url="file://$PROJECT_DIR$/01-test-data-pizza-shop.sql" value="a4ad0d8d-e794-4777-aad7-bc3e7d860a2c" />
+    <file url="file://$PROJECT_DIR$/01-test-data-pizza-shop.sql" value="8b92e9b6-3e37-4bec-b285-54410281d49a" />
   </component>
 </project>

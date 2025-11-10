@@ -40,12 +40,9 @@ INSERT INTO foods (name, description, base_price, image_url, category_id) VALUES
 
 -- Food Sizes
 INSERT INTO food_sizes (food_id, size, price) VALUES
-(3, 'S', 5.00), (1, 'M', 7.00), (1, 'L', 9.00),
-(4, 'S', 6.50), (2, 'M', 8.50), (2, 'L', 10.50),
-(5, 'S', 6.00), (3, 'M', 8.00), (3, 'L', 10.00),
-(6, 'M', 7.50),
-(7, 'M', 2.00),
-(8, 'ONE', 4.50);
+(1, 'S', 5.00), (1, 'M', 7.00), (1, 'L', 9.00),
+(2, 'S', 6.50), (2, 'M', 8.50), (2, 'L', 10.50)
+;
 
 -- Toppings
 INSERT INTO toppings (name, price) VALUES

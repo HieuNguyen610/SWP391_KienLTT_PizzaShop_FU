@@ -1,5 +1,6 @@
 package com.swp.pizzashop.repository;
 
+import com.swp.pizzashop.dto.OrderDetailDTO;
 import com.swp.pizzashop.dto.OrderSummaryDTO;
 import com.swp.pizzashop.model.Order;
 import org.springframework.data.domain.Page;
@@ -89,5 +90,29 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     ORDER BY FUNCTION('MONTH', o.createdAt) ASC
 """)
     List<Map<String, Object>> findMonthlySalesSummary(@Param("year") int year);
+
+    @Query("""
+            SELECT new com.swp.pizzashop.dto.OrderDetailDTO(
+                   o.id,
+                   o.user.email,
+                   o.orderTime,
+                   o.status,
+                   o.totalPrice,
+                   o.paymentMethod,
+                   CONCAT(
+                       COALESCE(a.addressLine, ''), ' ',
+                       COALESCE(a.district, ''), ' ',
+                       COALESCE(a.city, '')
+                   ),
+                   a.phone,
+                   o.discountId,
+                   o.createdAt
+               )
+               FROM Order o
+               JOIN o.deliveryAddress a
+               WHERE o.user.id = :userId
+               ORDER BY o.createdAt DESC
+            """)
+    Page<OrderDetailDTO> findAllOrderByUserId(Long userId, Pageable pageable);
 
 }
