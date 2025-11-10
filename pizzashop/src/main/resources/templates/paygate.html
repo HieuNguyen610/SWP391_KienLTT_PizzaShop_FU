@@ -42,7 +42,7 @@
                         <form th:action="@{/payment/confirm}" method="post" style="display:inline;">
                             <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                             <input type="hidden" name="orderRef" th:value="${orderRef}" />
-                            <button id="payNow" type="submit" class="pg-btn">Pay with Card</button>
+                            <button id="payNow" type="submit" class="pg-btn">Pay with Cash</button>
                         </form>
                         <button id="stripePayBtn" class="stripe-btn">Pay with Stripe</button>
                         <a class="btn secondary" th:href="@{/checkout}">Cancel</a>
