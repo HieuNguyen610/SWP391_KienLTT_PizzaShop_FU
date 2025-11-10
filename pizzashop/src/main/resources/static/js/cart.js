@@ -5,19 +5,19 @@ document.addEventListener('DOMContentLoaded', function() {
     var priceLabel = document.querySelector('.fd-price'); // top price display
     var btnPriceSpan = addBtn ? addBtn.querySelector('span') : null; // price text inside button
 
-    function parsePriceVnd(text) {
+    function parsePriceVnd(text) { // renamed behavior: parse USD
       if (!text) return 0;
-      // remove any non-digit
-      var digits = ('' + text).replace(/[^0-9]/g, '');
-      if (!digits) return 0;
-      return parseInt(digits, 10);
+      var cleaned = ('' + text).replace(/[^0-9.]/g, '');
+      if (!cleaned) return 0;
+      var val = parseFloat(cleaned);
+      return isNaN(val) ? 0 : val;
     }
 
-    function formatVnd(amount) {
+    function formatVnd(amount) { // now format USD
       try {
-        return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') + 'đ';
+        return '$' + (Number(amount)||0).toFixed(2);
       } catch (e) {
-        return amount + 'đ';
+        return '$' + amount;
       }
     }
 
@@ -67,7 +67,9 @@ document.addEventListener('DOMContentLoaded', function() {
             qty = Number.isFinite(v) && v > 0 ? v : 1;
           }
           var foodId = addBtn.getAttribute('data-foodid');
-          var sizeId = 1; // default until FoodSize is wired in UI
+          var notesEl = document.getElementById('notes');
+          var notesVal = notesEl ? notesEl.value.trim() : '';
+          var sizeId = 1; // internal default size
           if (!foodId) {
             console.debug('Add to cart: missing foodId');
             return;
@@ -75,6 +77,9 @@ document.addEventListener('DOMContentLoaded', function() {
           var url = '/cart/add?foodId=' + encodeURIComponent(foodId)
                   + '&sizeId=' + encodeURIComponent(sizeId)
                   + '&quantity=' + encodeURIComponent(qty);
+          if (notesVal) {
+            url += '&notes=' + encodeURIComponent(notesVal);
+          }
           window.location.assign(url);
         });
       }

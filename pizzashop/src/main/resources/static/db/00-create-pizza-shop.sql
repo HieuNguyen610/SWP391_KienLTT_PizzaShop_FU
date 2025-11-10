@@ -19,6 +19,11 @@ CREATE TABLE IF NOT EXISTS users (
     is_deleted BOOLEAN DEFAULT FALSE          -- Soft delete flag
 );
 
+-- Add is_verified flag to users
+ALTER TABLE users
+    ADD COLUMN is_verified BOOLEAN NOT NULL DEFAULT FALSE AFTER email;
+
+
 -- Table for user roles
 CREATE TABLE IF NOT EXISTS roles (
     id BIGINT PRIMARY KEY AUTO_INCREMENT, -- Unique role ID

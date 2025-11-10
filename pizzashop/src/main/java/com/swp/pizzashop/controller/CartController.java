@@ -39,7 +39,7 @@ public class CartController {
                            RedirectAttributes ra,
                            Model model) {
         if (authentication == null || !authentication.isAuthenticated()) {
-            ra.addFlashAttribute("error", "Vui lòng đăng nhập để xem giỏ hàng");
+            ra.addFlashAttribute("error", "Please log in");
             return "redirect:/login";
         }
         String email = authentication.getName();
@@ -75,7 +75,7 @@ public class CartController {
         String redirectTo = "/cart";
 
         if (authentication == null || !authentication.isAuthenticated()) {
-            ra.addFlashAttribute("error", "Vui lòng đăng nhập để thêm vào giỏ hàng");
+            ra.addFlashAttribute("error", "Please log in");
             return "redirect:/login";
         }
         try {
@@ -91,13 +91,13 @@ public class CartController {
             form.setQuantity(quantity != null && quantity > 0 ? quantity : 1);
             form.setNotes(notes);
             cartService.addToCart(user.getId(), form);
-            ra.addFlashAttribute("success", "Đã thêm vào giỏ hàng");
+            ra.addFlashAttribute("success", "Added to cart");
         } catch (ResponseStatusException ex) {
             log.debug("Add to cart (GET) failed: status={}, reason={}", ex.getStatusCode(), ex.getReason());
-            ra.addFlashAttribute("error", ex.getReason() != null ? ex.getReason() : "Không thể thêm vào giỏ hàng");
+            ra.addFlashAttribute("error", ex.getReason() != null ? ex.getReason() : "Cannot add to cart");
         } catch (Exception ex) {
             log.error("Unexpected error adding to cart (GET)", ex);
-            ra.addFlashAttribute("error", "Có lỗi xảy ra khi thêm vào giỏ hàng");
+            ra.addFlashAttribute("error", "An error occurred while adding to cart");
         }
         return "redirect:" + redirectTo;
     }
@@ -113,14 +113,14 @@ public class CartController {
         String redirectTo = "/cart";
 
         if (authentication == null || !authentication.isAuthenticated()) {
-            ra.addFlashAttribute("error", "Vui lòng đăng nhập để thêm vào giỏ hàng");
+            ra.addFlashAttribute("error", "Please log in");
             return "redirect:/login";
         }
 
         if (bindingResult.hasErrors()) {
             ra.addFlashAttribute("error", bindingResult.getAllErrors().stream()
-                    .findFirst().map(e -> e.getDefaultMessage() != null ? e.getDefaultMessage() : "Yêu cầu không hợp lệ")
-                    .orElse("Yêu cầu không hợp lệ"));
+                    .findFirst().map(e -> e.getDefaultMessage() != null ? e.getDefaultMessage() : "Invalid request")
+                    .orElse("Invalid request"));
             return "redirect:" + redirectTo;
         }
 
@@ -133,14 +133,14 @@ public class CartController {
             }
 
             cartService.addToCart(user.getId(), form);
-            ra.addFlashAttribute("success", "Đã thêm vào giỏ hàng");
+            ra.addFlashAttribute("success", "Added to cart");
         } catch (ResponseStatusException ex) {
             HttpStatus status = (HttpStatus) ex.getStatusCode();
             log.debug("Add to cart failed: status={}, reason={}", status, ex.getReason());
-            ra.addFlashAttribute("error", ex.getReason() != null ? ex.getReason() : "Không thể thêm vào giỏ hàng");
+            ra.addFlashAttribute("error", ex.getReason() != null ? ex.getReason() : "Cannot add to cart");
         } catch (Exception ex) {
             log.error("Unexpected error adding to cart", ex);
-            ra.addFlashAttribute("error", "Có lỗi xảy ra khi thêm vào giỏ hàng");
+            ra.addFlashAttribute("error", "An error occurred while adding to cart");
         }
 
         return "redirect:" + redirectTo;

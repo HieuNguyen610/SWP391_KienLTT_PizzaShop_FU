@@ -24,6 +24,7 @@
                     <button type="submit" class="btn">Search</button>
                     <a th:if="${q != null && !#strings.isEmpty(q)}" class="btn secondary" th:href="@{/admin/foods(sort=${sort}, dir=${dir})}">Clear</a>
                 </form>
+
                 <a class="btn" th:href="@{/admin/foods/create}">Add</a>
             </div>
 
@@ -73,6 +74,11 @@
                     </span>
                     <a th:if="${!pageData.last}" th:href="@{/admin/foods(page=${pageData.number + 1}, q=${q}, sort=${sort}, dir=${dir})}">Next</a>
                 </div>
+            </div>
+
+            <div class="right mt-12">
+                <span>Total: </span><strong th:text="${pageData != null ? pageData.totalElements : 0}">0</strong>
+                <span class="muted ml-8">(10 per page)</span>
             </div>
         </div>
     </main>

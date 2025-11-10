@@ -4,26 +4,13 @@
     <meta charset="UTF-8" />
     <title>Edit Category</title>
     <link rel="stylesheet" th:href="@{/css/dashboard.css}" href="/css/dashboard.css" />
-    <style>
-        .layout { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
-        .container { max-width: 720px; margin: 24px auto; padding: 0 16px; }
-        .card { background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 16px; }
-        label { display:block; font-weight:600; margin-bottom:6px; }
-        input[type=text], textarea { width:100%; padding:9px 10px; border:1px solid #d1d5db; border-radius:6px; }
-        textarea { min-height:100px; }
-        .actions { display:flex; gap:8px; justify-content:flex-end; }
-        .btn { background:#2563eb; color:#fff; border:none; border-radius:6px; padding:8px 14px; cursor:pointer; text-decoration:none; }
-        .btn.secondary { background:#6b7280; }
-        .status-pill { display:inline-block; padding:4px 8px; border-radius:12px; font-size:0.875rem; }
-        .status-active { background-color:#d1fae5; color:#065f46; }
-        .status-deleted { background-color:#fee2e2; color:#991b1b; }
-    </style>
+    <link rel="stylesheet" th:href="@{/css/admin-style.css}" href="/css/admin-style.css" />
 </head>
 <body>
 <div class="layout">
     <aside th:replace="fragments/admin-sidebar :: sidebar"></aside>
     <main>
-        <div class="container">
+        <div class="admin-container">
             <h1 style="margin:0 0 16px">Edit Category</h1>
             <div class="card">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
