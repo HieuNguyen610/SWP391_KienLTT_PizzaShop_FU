@@ -102,7 +102,7 @@ public class CheckoutController {
             dto.setUnitPrice(ci.getPrice());
             dto.setQuantity(ci.getQuantity());
             // default currency; change if you support multi-currency
-            dto.setCurrency("vnd");
+            dto.setCurrency("usd");
             return dto;
         }).collect(Collectors.toList());
 

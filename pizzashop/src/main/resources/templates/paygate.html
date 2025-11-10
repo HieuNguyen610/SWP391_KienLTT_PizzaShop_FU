@@ -42,7 +42,7 @@
                         <form th:action="@{/payment/confirm}" method="post" style="display:inline;">
                             <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                             <input type="hidden" name="orderRef" th:value="${orderRef}" />
-                            <button id="payNow" type="submit" class="pg-btn">Internal Pay (Fallback)</button>
+                            <button id="payNow" type="submit" class="pg-btn">Pay with Card</button>
                         </form>
                         <button id="stripePayBtn" class="stripe-btn">Pay with Stripe</button>
                         <a class="btn secondary" th:href="@{/checkout}">Cancel</a>
@@ -80,11 +80,14 @@
         const publishableKey = /*[[${stripePublishableKey}]]*/ '';
         const orderRef = /*[[${orderRef}]]*/ '';
         const cart = /*[[${cart}]]*/ [];
+        // Correct REST endpoint for creating Stripe session (uses @RestController mapped at /api/payment)
+        const createSessionUrl = /*[[@{/api/payment/create-session}]]*/ '/api/payment/create-session';
 
         function logStatus(){
             console.log('[StripePay] publishableKey length:', publishableKey ? publishableKey.length : 0);
             console.log('[StripePay] orderRef:', orderRef);
             console.log('[StripePay] cart items:', Array.isArray(cart)? cart.length : 'not array');
+            console.log('[StripePay] createSessionUrl:', createSessionUrl);
         }
         logStatus();
 
@@ -140,7 +143,7 @@
                 currency: i.currency || 'usd'
             }));
 
-            fetch('/payment/create-session', {
+            fetch(createSessionUrl, {
                 method: 'POST',
                 headers: headers,
                 credentials: 'same-origin',
