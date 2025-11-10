@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit item</title>
+    <title> Edit item</title>
     <link rel="stylesheet" href="/css/style.css" />
     <link rel="stylesheet" href="/css/food-detail.css" />
 </head>
@@ -11,7 +11,7 @@
 
 <div th:replace="~{fragments/header :: page_header}"></div>
 
-<main class="fd-container" th:with="priceText=${#numbers.formatDecimal(item != null ? item.price : 0, 0, 'COMMA', 0, 'POINT')} + 'đ'">
+<main class="fd-container" th:with="priceText=${'$' +#numbers.formatDecimal(item.price, 0, 'COMMA', 2, 'POINT')}">
     <!-- Breadcrumb -->
     <nav class="fd-breadcrumb" th:if="${item != null}">
         <a th:href="@{/}">Home</a>
@@ -52,16 +52,6 @@
                             <input id="quantity" name="quantity" type="number" th:value="${item.quantity}" min="1" />
                             <button type="button" class="fd-btn fd-qty-inc" aria-label="Increase">+</button>
                         </div>
-                    </div>
-
-                    <div class="fd-qty" style="margin-top:12px;">
-                        <label for="sizeId">Size</label>
-                        <select id="sizeId" name="sizeId">
-                            <option th:each="s : ${sizes}"
-                                    th:value="${s.id}"
-                                    th:selected="${s.id} == ${item.sizeId}"
-                                    th:text="${s.size} + ' - ' + ${#numbers.formatDecimal(s.price, 0, 'COMMA', 0, 'POINT')} + 'đ'">Size</option>
-                        </select>
                     </div>
 
                     <div class="fd-qty" style="margin-top:12px;">
