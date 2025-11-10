@@ -19,27 +19,22 @@
             <div th:if="${success}" class="card alert-success" th:text="${success}"></div>
             <div th:if="${error}" class="card alert-error" th:text="${error}"></div>
 
-            <div class="mb-12 text-right">
+            <div class="toolbar">
+                <div class="left">
+                    <form th:action="@{/admin/categories}" method="get" class="inline-form">
+                        <label for="q" class="visually-hidden">Search by name</label>
+                        <input id="q" type="text" name="q" th:value="${q}" placeholder="Search by name..." />
+                        <!-- preserve sort/dir when searching -->
+                        <input type="hidden" name="sort" th:value="${sort}" />
+                        <input type="hidden" name="dir" th:value="${dir}" />
+                        <button type="submit" class="btn">Search</button>
+                    </form>
+                </div>
+
                 <a class="btn" th:href="@{/admin/categories/create}">Add</a>
             </div>
 
             <div class="card">
-                <div class="toolbar">
-                    <div class="left">
-                        <form th:action="@{/admin/categories}" method="get" class="inline-form">
-                            <label for="q" class="visually-hidden">Search by name</label>
-                            <input id="q" type="text" name="q" th:value="${q}" placeholder="Search by name..." />
-                            <!-- preserve sort/dir when searching -->
-                            <input type="hidden" name="sort" th:value="${sort}" />
-                            <input type="hidden" name="dir" th:value="${dir}" />
-                            <button type="submit" class="btn secondary">Search</button>
-                        </form>
-                    </div>
-                    <div class="right">
-                        <span>Total: </span><strong th:text="${pageData != null ? pageData.totalElements : 0}">0</strong>
-                        <span class="muted ml-8">(10 per page)</span>
-                    </div>
-                </div>
 
                 <div th:if="${#lists.isEmpty(categories)}" class="muted">No categories found.</div>
                 <table class="table-fixed" th:if="${!#lists.isEmpty(categories)}">
@@ -115,6 +110,11 @@
                     </span>
                     <a th:if="${!pageData.last}" th:href="@{/admin/categories(page=${pageData.number + 1}, q=${q}, sort=${sort}, dir=${dir})}">Next</a>
                 </div>
+            </div>
+
+            <div class="right mt-12">
+                <span>Total: </span><strong th:text="${pageData != null ? pageData.totalElements : 0}">0</strong>
+                <span class="muted ml-8">(10 per page)</span>
             </div>
         </div>
     </main>

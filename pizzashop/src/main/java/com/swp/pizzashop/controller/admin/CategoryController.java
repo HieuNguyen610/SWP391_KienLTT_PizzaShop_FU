@@ -41,16 +41,10 @@ public class CategoryController {
         int pageIndex = Math.max(page, 0);
 
         // sanitize sort field and direction
-        String sortField;
-        switch (sort) {
-            case "id":
-            case "name":
-            case "description":
-                sortField = sort;
-                break;
-            default:
-                sortField = "id";
-        }
+        String sortField = switch (sort) {
+            case "id", "name", "description" -> sort;
+            default -> "id";
+        };
         String safeDir = (dir != null && dir.equalsIgnoreCase("desc")) ? "desc" : "asc";
         Sort.Direction direction = safeDir.equals("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
 
