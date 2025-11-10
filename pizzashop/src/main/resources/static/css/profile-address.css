@@ -1,18 +1,26 @@
 /* Delivery Address Book styles */
+/* Make the profile page a bit wider on the address page only */
+.profile-page { max-width: 1360px; }
+
 .profile-page .address-form input[type="text"],
 .profile-page .address-form input[type="tel"] {
-  width: 100%;
-  max-width: 520px; /* make inputs shorter on desktop */
+  width: 90%;
+  max-width: 100%; /* allow inputs to take full available width on desktop */
   padding: 10px 12px;
   border: 1px solid #d1d5db;
   border-radius: 6px;
   outline: none;
   transition: border-color .15s ease, box-shadow .15s ease;
 }
+
+.card .section {
+  width: 720px;
+}
+
 @media (max-width: 700px) {
   .profile-page .address-form input[type="text"],
   .profile-page .address-form input[type="tel"] {
-    max-width: 100%; /* allow full-width on small screens */
+    max-width: 100%; /* keep full-width on small screens */
   }
 }
 .profile-page .address-form input:focus {
@@ -39,7 +47,7 @@
 .profile-page .address-form .btn-primary { min-width: 120px; height: 40px; font-weight: 600; }
 
 /* Address list styling */
-.profile-page .address-list { display: grid; gap: 12px; }
+.profile-page .address-list { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); }
 .profile-page .address-item { border: 1px solid #e5e7eb; border-radius: 10px; padding: 16px; background: #fff; }
 .profile-page .address-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
 .profile-page .address-top strong { color: #111827; font-size: 16px; }
@@ -58,4 +66,3 @@
 .profile-page .address-body .value { color:#111827; }
 .profile-page .address-top .edit-link { color:#2563eb; }
 .profile-page .address-top .edit-link::before { content:'✎'; margin-right:6px; }
-
