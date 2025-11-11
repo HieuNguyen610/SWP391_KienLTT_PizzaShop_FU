@@ -31,7 +31,6 @@
                     <li><a th:href="@{/profile}" href="/profile">Customer information</a></li>
                     <li><a th:href="@{/address}" href="/address">Delivery Address Book</a></li>
                     <li><a class="active" th:href="@{/user/orders}" href="/orders">Order</a></li>
-                    <li><a th:href="@{/vouchers}" href="/vouchers">My voucher</a></li>
                 </ul>
             </div>
         </aside>
@@ -108,17 +107,17 @@
                             <nav>
                                 <ul class="pagination">
                                     <li class="page-item" th:classappend="${ordersPage.first} ? 'disabled'">
-                                        <a class="page-link" th:href="@{'/admin/orders'(page=${ordersPage.number - 1}, q=${query}, status=${statusFilter})}">Prev</a>
+                                        <a class="page-link" th:href="@{'/user/orders'(page=${ordersPage.number - 1}, q=${query}, status=${statusFilter})}">Prev</a>
                                     </li>
                                     <li class="page-item"
                                         th:each="i : ${#numbers.sequence(0, ordersPage.totalPages - 1)}"
                                         th:classappend="${i == ordersPage.number} ? 'active'">
                                         <a class="page-link"
                                            th:text="${i + 1}"
-                                           th:href="@{'/admin/orders'(page=${i}, q=${query}, status=${statusFilter})}"></a>
+                                           th:href="@{'/user/orders'(page=${i}, q=${query}, status=${statusFilter})}"></a>
                                     </li>
                                     <li class="page-item" th:classappend="${ordersPage.last} ? 'disabled'">
-                                        <a class="page-link" th:href="@{'/admin/orders'(page=${ordersPage.number + 1}, q=${query}, status=${statusFilter})}">Next</a>
+                                        <a class="page-link" th:href="@{'/user/orders'(page=${ordersPage.number + 1}, q=${query}, status=${statusFilter})}">Next</a>
                                     </li>
                                 </ul>
                             </nav>
