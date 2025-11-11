@@ -12,7 +12,7 @@
         <div class="logo">
             <a th:href="@{/}"><img th:src="@{/images/logo.png}" src="/images/logo.png" alt="Logo Pizza Shop" style="height: 60px;"></a>
         </div>
-        <div class="order-options">
+        <div class="order-options" sec:authorize="isAuthenticated()">
             <button><a th:href="@{/menu}" href="/menu" class="menu-link">Menu</a></button>
             <button><a th:href="@{/profile}" href="/profile" class="menu-link">Profile</a></button>
             <button><a th:href="@{/address}" href="/address" class="menu-link">Address</a></button>
