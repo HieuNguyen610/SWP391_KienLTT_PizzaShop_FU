@@ -1,0 +1,220 @@
+Delivery Address Management – Manual Test Scenarios (Plain Text)
+
+Test Case ID: TC-ADDR-001
+Test Case Description: View Delivery Address Book (list + counters)
+Test Case Procedure:
+  1. Login as a test user.
+  2. Navigate to http://localhost:8080/address.
+  3. Observe saved address list and the usage counter ("X/Y used").
+Expected Results:
+  - Page loads without errors and shows the user's saved addresses (or empty state if none).
+  - Usage counter reflects AddressService.countActiveByUser() and getMaxAddressesPerUser().
+  - Default address, if any, shows a "Default address" badge.
+Pre-conditions (manual):
+  - Server running; test user exists; at least 0..N addresses in DB for that user.
+
+Test Case ID: TC-ADDR-002
+Test Case Description: Add a new address (valid data)
+Test Case Procedure:
+  1. Navigate to /address as an authenticated user.
+  2. In the Add form, enter: Province/City, District, Street Name, Number (optional), valid Phone, optionally check "Set as default address".
+  3. Click Add.
+Expected Results:
+  - Redirect back to /address.
+  - Flash message "Address added successfully." (addrSuccess) is shown.
+  - New address appears in the list with full formatted address and phone.
+  - If "Set as default" was checked, the new address displays the default badge.
+Pre-conditions (manual):
+  - User is logged in; current address count < max allowed.
+
+Test Case ID: TC-ADDR-003
+Test Case Description: Add address with missing required fields
+Test Case Procedure:
+  1. Open /address.
+  2. Leave required fields (Province/City, District, Street Name) blank.
+  3. Click Add.
+Expected Results:
+  - Redirect back to /address.
+  - Flash error (addrError) with a validation message is shown.
+  - Address is not created.
+Pre-conditions (manual):
+  - Logged in; ensure form can be submitted (addrUsed < addrMax), CSRF token present.
+
+Test Case ID: TC-ADDR-004
+Test Case Description: Phone validation on add
+Test Case Procedure:
+  1. Open /address.
+  2. Fill valid address fields but enter an invalid phone (e.g., letters or >20 chars).
+  3. Click Add.
+Expected Results:
+  - Redirect back to /address.
+  - Flash error (addrError) appears due to pattern/length constraints.
+  - Address is not created.
+Pre-conditions (manual):
+  - Logged in; addrUsed < addrMax.
+
+Test Case ID: TC-ADDR-005
+Test Case Description: Max addresses limit (UI disabled)
+Test Case Procedure:
+  1. Ensure the user already has addrMax addresses.
+  2. Open /address.
+Expected Results:
+  - Add form fields and Add button are disabled (th:disabled when addrUsed >= addrMax).
+  - An error panel is shown: "You've reached the maximum number of saved addresses (Y)."
+Pre-conditions (manual):
+  - Logged in; seed the account with exactly getMaxAddressesPerUser() active addresses.
+
+Test Case ID: TC-ADDR-006
+Test Case Description: Max addresses limit (backend enforcement)
+Test Case Procedure:
+  1. With addrUsed == addrMax, attempt to submit POST /create-address (e.g., via dev tools forcing enabled fields).
+  2. Provide otherwise valid data.
+Expected Results:
+  - Redirect back to /address.
+  - Flash error (addrError) indicates the limit has been reached (from AddressService validation).
+  - No new address is added.
+Pre-conditions (manual):
+  - Logged in; addrUsed == addrMax.
+
+Test Case ID: TC-ADDR-007
+Test Case Description: Edit address form (valid id)
+Test Case Procedure:
+  1. On /address, click Edit for an existing address or go to /address/{id}/edit.
+  2. Verify prefilled fields match the existing address.
+Expected Results:
+  - Edit page loads (profile-address-edit.html) with fields prefilled (province=city, district, street, number, phone, setDefault state).
+  - CSRF token present in the form.
+Pre-conditions (manual):
+  - Logged in; user owns the address id.
+
+Test Case ID: TC-ADDR-008
+Test Case Description: Update address (valid data)
+Test Case Procedure:
+  1. From /address/{id}/edit, modify district, street, number, phone, and toggle default checkbox as desired.
+  2. Click Save.
+Expected Results:
+  - Redirect to /address.
+  - Flash message "Address updated successfully." is shown.
+  - Address list reflects updated details and default badge state.
+Pre-conditions (manual):
+  - Logged in; valid address id owned by user.
+
+Test Case ID: TC-ADDR-009
+Test Case Description: Update address with invalid data
+Test Case Procedure:
+  1. Open /address/{id}/edit.
+  2. Clear required fields (province/district/street) or enter invalid phone pattern.
+  3. Click Save.
+Expected Results:
+  - Redirects back to /address/{id}/edit.
+  - Flash error (addrError) is displayed with validation message.
+  - Address remains unchanged in list.
+Pre-conditions (manual):
+  - Logged in; valid address id.
+
+Test Case ID: TC-ADDR-010
+Test Case Description: Edit address not found or unauthorized
+Test Case Procedure:
+  1. Attempt to open /address/{otherUserId}/edit where the id does not belong to the logged-in user.
+  2. Or use a non-existent id.
+Expected Results:
+  - Redirect to /address.
+  - Flash error "Address not found or access denied." is displayed.
+Pre-conditions (manual):
+  - Logged in; ensure target id is invalid or owned by another user.
+
+Test Case ID: TC-ADDR-011
+Test Case Description: Delete address (owned by user)
+Test Case Procedure:
+  1. On /address, click Delete for an existing address and confirm in the prompt.
+  2. Or POST to /address/{id}/delete with CSRF.
+Expected Results:
+  - Redirect back to /address.
+  - Flash "Address deleted." (addrSuccess) is shown.
+  - Address no longer appears in the list.
+Pre-conditions (manual):
+  - Logged in; user owns the address id; address is active.
+
+Test Case ID: TC-ADDR-012
+Test Case Description: Delete address not found or unauthorized
+Test Case Procedure:
+  1. Attempt to delete /address/{id}/delete where id is invalid or not owned by user.
+Expected Results:
+  - Redirect to /address.
+  - Flash error (addrError) indicates not found or access denied from service layer.
+  - No other addresses are affected.
+Pre-conditions (manual):
+  - Logged in; invalid id or belongs to another user.
+
+Test Case ID: TC-ADDR-013
+Test Case Description: CSRF protection on create/update/delete
+Test Case Procedure:
+  1. Try submitting /create-address, /address/{id}/edit, or /address/{id}/delete without CSRF token (e.g., via tool or removing hidden input).
+Expected Results:
+  - Request is rejected by Spring Security (HTTP 403) or redirected to error/denied page.
+  - No changes are persisted.
+Pre-conditions (manual):
+  - Logged in; able to intercept/edit requests.
+
+Test Case ID: TC-ADDR-014
+Test Case Description: Unauthenticated access redirects to login
+Test Case Procedure:
+  1. In a fresh incognito window (no session), open /address.
+  2. Try POST /create-address, GET /address/{id}/edit, POST /address/{id}/edit, POST /address/{id}/delete.
+Expected Results:
+  - Each request redirects to /login (since controller checks currentUser / auth).
+  - After login, user can return to /address and proceed.
+Pre-conditions (manual):
+  - No active login session in the browser.
+
+Test Case ID: TC-ADDR-015
+Test Case Description: Default address display and toggle
+Test Case Procedure:
+  1. On /address, add an address with "Set as default address" checked.
+  2. Add or edit another address and set it as default as well.
+Expected Results:
+  - The address marked as default displays a "Default address" badge.
+  - If your service enforces a single default, the latest set default should be the only one with the badge (verify actual behavior in your build).
+Pre-conditions (manual):
+  - Logged in; at least two addresses present or to be created.
+
+Test Case ID: TC-ADDR-016
+Test Case Description: Limit state UX (disabled form messaging)
+Test Case Procedure:
+  1. With addrUsed >= addrMax, visit /address.
+Expected Results:
+  - Add form fields and button are disabled.
+  - A visible message explains the limit and suggests removing an address.
+Pre-conditions (manual):
+  - Logged in; user has reached the configured maximum addresses.
+
+Test Case ID: TC-ADDR-017
+Test Case Description: Checkout integration – change address link
+Test Case Procedure:
+  1. Ensure user has items in cart.
+  2. Navigate to /checkout and click "Change address".
+  3. On /address, add or edit an address, then return to /checkout.
+Expected Results:
+  - Navigation from checkout to address book works.
+  - /checkout displays the updated default address.
+Pre-conditions (manual):
+  - Logged in; cart has items; at least one address exists or will be created.
+
+General Manual Pre-conditions (apply to all cases):
+  1. Application server is running (e.g., http://localhost:8080).
+  2. A valid test user account exists with known credentials.
+  3. Database seeded with minimal required data; user may have 0..N addresses.
+  4. Browser supports the app's JS/CSS; CSRF and cookies enabled.
+  5. Access to application logs for troubleshooting.
+
+Notes / Code References (compatibility with current code base):
+  - Controller: src/main/java/com/swp/pizzashop/controller/AddressController.java
+    • GET /address (alias /address-book) -> view "profile-address" with user, addresses, addrUsed, addrMax
+    • POST /create-address -> create via AddressService.createAddress(user, form)
+    • GET /address/{addressId}/edit -> view "profile-address-edit" with prefilled fields
+    • POST /address/{addressId}/edit -> update via AddressService.updateAddress
+    • POST /address/{addressId}/delete -> soft delete via AddressService.deleteAddress
+  - Service: src/main/java/com/swp/pizzashop/service/AddressService.java (limits, defaults, queries)
+  - Templates: src/main/resources/templates/profile-address.html, profile-address-edit.html
+  - Security: CSRF tokens included in forms; unauthenticated users redirected to /login.
+

@@ -1,0 +1,141 @@
+Browse Menu – Manual Test Scenarios (Plain Text)
+
+Test Case ID: TC-MENU-001
+Test Case Description: View Menu (default listing)
+Test Case Procedure:
+  1. Start the application and open a browser.
+  2. Navigate to http://localhost:8080/menu.
+  3. Observe the menu list and pagination controls.
+Expected Results:
+  - The page loads without errors and shows the first page of menu items.
+  - Items are populated from the database via model attribute "pizzas".
+  - Categories (from FoodCategoryService.findByIsDeletedFalse()) are visible.
+  - Default sorting is by id DESC (latest items appear first).
+Pre-conditions (manual):
+  - Application server is running.
+  - Database contains at least 1 Food record.
+
+Test Case ID: TC-MENU-002
+Test Case Description: Search menu by keyword (query "q")
+Test Case Procedure:
+  1. Open /menu.
+  2. Enter a keyword in the search box or navigate to /menu?q=pepperoni.
+  3. Verify the items shown match the search term.
+Expected Results:
+  - Only items whose name/description match the query are shown.
+  - The query value is preserved in the search input and the model.
+Pre-conditions (manual):
+  - App running and DB seeded with searchable items containing the test keyword.
+
+Test Case ID: TC-MENU-003
+Test Case Description: Filter by category (categoryId)
+Test Case Procedure:
+  1. Open /menu.
+  2. Click a category filter in the UI or navigate to /menu?categoryId=<id>.
+  3. Verify only items in that category are displayed.
+Expected Results:
+  - The list shows only items for the selected categoryId.
+  - The selected category state is reflected in the UI and model.
+Pre-conditions (manual):
+  - App running; DB has categories and foods mapped to those categories.
+  - The chosen categoryId exists and is not deleted.
+
+Test Case ID: TC-MENU-004
+Test Case Description: Pagination behavior (page & size params)
+Test Case Procedure:
+  1. Open /menu?page=1&size=5.
+  2. Use pagination controls to move to next/previous pages.
+Expected Results:
+  - Page 1 (the second page, zero-based) shows up to 5 items.
+  - The pagination model attribute (Page<Food>) reflects the current page.
+  - No errors when switching pages.
+Pre-conditions (manual):
+  - App running; DB contains more items than 5 to exercise pagination.
+
+Test Case ID: TC-MENU-005
+Test Case Description: Page/Size parameter bounds (invalid values)
+Test Case Procedure:
+  1. Open /menu?page=-1&size=1000.
+  2. Observe the page; verify it still loads and shows items.
+Expected Results:
+  - The controller normalizes inputs: page < 0 becomes 0; size is clamped to [1, 50].
+  - No exceptions are thrown; page loads normally.
+Pre-conditions (manual):
+  - App running; DB may contain any number of items.
+
+Test Case ID: TC-MENU-006
+Test Case Description: No results handling (search returns nothing)
+Test Case Procedure:
+  1. Open /menu?q=string-that-matches-none.
+  2. Observe the list and any empty-state messaging.
+Expected Results:
+  - The page shows an empty list with no crashes.
+  - Pagination reflects zero or disabled state as applicable.
+Pre-conditions (manual):
+  - App running; ensure no DB items match the test query.
+
+Test Case ID: TC-MENU-007
+Test Case Description: View Food Detail (valid id)
+Test Case Procedure:
+  1. From /menu, click a product card or navigate to /menu/food/{id} for an existing id.
+  2. Verify details shown (name, description, price, sizes, categories).
+Expected Results:
+  - The food-detail page loads with model attribute "food" populated.
+  - Page renders product information and any Add to Cart controls present in template.
+Pre-conditions (manual):
+  - App running; DB contains a Food record with the target id.
+
+Test Case ID: TC-MENU-008
+Test Case Description: View Food Detail (invalid id)
+Test Case Procedure:
+  1. Navigate to /menu/food/9999999 (non-existent id).
+  2. Observe the resulting page.
+Expected Results:
+  - The controller returns the "error" view (friendly error/404 page).
+  - No stack traces or sensitive details are shown to the end user.
+Pre-conditions (manual):
+  - App running; chosen id does not exist in DB.
+
+Test Case ID: TC-MENU-009
+Test Case Description: Categories listing and selection UI
+Test Case Procedure:
+  1. Open /menu.
+  2. Review the categories list/tabs (from FoodCategoryService.findByIsDeletedFalse()).
+  3. Click a category and verify the list refreshes with that category.
+Expected Results:
+  - Categories are displayed and selectable.
+  - Selecting a category updates the results and reflects the selected state.
+Pre-conditions (manual):
+  - App running; categories exist and are not marked deleted.
+
+Test Case ID: TC-MENU-010
+Test Case Description: Navigate from home to menu and to food detail
+Test Case Procedure:
+  1. Open / (home page).
+  2. Confirm the home page displays items from model attribute "pizzas".
+  3. Click a product link to navigate to /menu/food/{id}.
+Expected Results:
+  - Home page renders (index.html) with products loaded via foodService.findAll().
+  - Clicking a product navigates to food detail and displays details.
+Pre-conditions (manual):
+  - App running; DB seeded with Food records visible on home.
+
+General Manual Pre-conditions (apply to all cases):
+  1. Application server is running locally (e.g., http://localhost:8080) or accessible in test environment.
+  2. Database contains seeded data for Food and FoodCategory (enough items to test pagination and filters).
+  3. Tester uses a modern browser; client-side blockers do not break JS if templates use it.
+  4. For flows requiring auth (not typical for browsing menu), a test user exists.
+  5. Application logs are accessible for troubleshooting.
+
+Notes / Code References (compatibility with current code base):
+  - Controller: src/main/java/com/swp/pizzashop/controller/MenuController.java
+    • GET /menu -> returns view "view-menu" with model: pizzas (list), page (Page<Food>), q, categoryId, categories
+    • GET /menu/food/{id} -> returns view "food-detail" or "error"
+    • GET / -> returns view "index" with model: pizzas (list)
+  - Templates: src/main/resources/templates/view-menu.html, index.html, food-detail.html
+  - Services used by controller:
+    • FoodService.findPage(q, categoryId, pageable)
+    • FoodService.findAll()
+    • FoodService.findById(id)
+    • FoodCategoryService.findByIsDeletedFalse()
+  - Sorting: MenuController uses Sort.by(DESC, "id") for default ordering on /menu.
