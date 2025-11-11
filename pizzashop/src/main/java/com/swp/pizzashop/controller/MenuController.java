@@ -65,6 +65,6 @@ public class MenuController {
                     model.addAttribute("categories", categoryService.findAll());
                     return "food-detail";
                 })
-                .orElse("error");
+                .orElse("/error/404");
     }
 }
