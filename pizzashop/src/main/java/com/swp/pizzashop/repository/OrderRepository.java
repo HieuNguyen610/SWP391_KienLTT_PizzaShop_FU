@@ -109,7 +109,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
                    o.createdAt
                )
                FROM Order o
-               JOIN o.deliveryAddress a
+               LEFT JOIN o.deliveryAddress a
                WHERE o.user.id = :userId
                ORDER BY o.createdAt DESC
             """)

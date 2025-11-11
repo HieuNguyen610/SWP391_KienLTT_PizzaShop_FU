@@ -57,7 +57,7 @@
                                 <th>Date</th>
                                 <th>Status</th>
                                 <th>Payment Status</th>
-                                <th>Rating</th>
+
                             </tr>
                             </thead>
 
@@ -93,13 +93,7 @@
                                                         'color:#ff9800;font-weight:bold;'"></span>
                                 </td>
 
-                                <td>
-                                    <button type="button" class="btn btn-sm btn-primary"
-                                            data-bs-toggle="modal"
-                                            th:attr="data-bs-target='#rateModal__' + ${order.id}">
-                                        Rate
-                                    </button>
-                                </td>
+
                             </tr>
                             </tbody>
                         </table>
@@ -108,17 +102,17 @@
                             <nav>
                                 <ul class="pagination">
                                     <li class="page-item" th:classappend="${ordersPage.first} ? 'disabled'">
-                                        <a class="page-link" th:href="@{'/admin/orders'(page=${ordersPage.number - 1}, q=${query}, status=${statusFilter})}">Prev</a>
+                                        <a class="page-link" th:href="@{'/user/orders'(page=${ordersPage.number - 1}, q=${query}, status=${statusFilter})}">Prev</a>
                                     </li>
                                     <li class="page-item"
                                         th:each="i : ${#numbers.sequence(0, ordersPage.totalPages - 1)}"
                                         th:classappend="${i == ordersPage.number} ? 'active'">
                                         <a class="page-link"
                                            th:text="${i + 1}"
-                                           th:href="@{'/admin/orders'(page=${i}, q=${query}, status=${statusFilter})}"></a>
+                                           th:href="@{'/user/orders'(page=${i}, q=${query}, status=${statusFilter})}"></a>
                                     </li>
                                     <li class="page-item" th:classappend="${ordersPage.last} ? 'disabled'">
-                                        <a class="page-link" th:href="@{'/admin/orders'(page=${ordersPage.number + 1}, q=${query}, status=${statusFilter})}">Next</a>
+                                        <a class="page-link" th:href="@{'/user/orders'(page=${ordersPage.number + 1}, q=${query}, status=${statusFilter})}">Next</a>
                                     </li>
                                 </ul>
                             </nav>

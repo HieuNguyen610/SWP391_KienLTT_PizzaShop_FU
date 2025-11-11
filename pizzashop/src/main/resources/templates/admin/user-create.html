@@ -59,7 +59,7 @@
 
 <div class="container">
     <div class="card create-user-card p-4">
-        <h3><i class="fa fa-user-plus me-2"></i> Thêm người dùng mới</h3>
+        <h3><i class="fa fa-user-plus me-2"></i> Create New Account</h3>
 
         <!-- Hiển thị thông báo -->
         <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
@@ -69,11 +69,11 @@
 
             <div class="row mb-3">
                 <div class="col-md-6">
-                    <label class="form-label">Họ</label>
+                    <label class="form-label">First Name</label>
                     <input type="text" th:field="*{firstname}" class="form-control" required>
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label">Tên</label>
+                    <label class="form-label">Last Name</label>
                     <input type="text" th:field="*{lastname}" class="form-control" required>
                 </div>
             </div>
@@ -84,24 +84,24 @@
             </div>
 
             <div class="mb-3">
-                <label class="form-label">Vai trò</label>
+                <label class="form-label">Role</label>
                 <select th:field="*{roles}" class="form-select" required>
-                    <option value="" disabled selected>-- Chọn vai trò --</option>
+                    <option value="" disabled selected>-- Choose the role --</option>
                     <option th:each="r : ${roles}" th:value="${r.id}" th:text="${r.name}"></option>
                 </select>
                 <div class="alert alert-info mt-2 p-2">
-                    Mật khẩu mặc định sẽ được đặt là <strong>Staff1234@</strong> <br>
-                    Sau khi tạo, hệ thống sẽ tự động gửi email thông báo đến người dùng. <br>
-                     <strong>Không chia sẻ thông tin đăng nhập này cho bất kỳ ai.</strong>
+                    The default password will be set to <strong>Staff1234@</strong> <br>
+                    After creation, the system will automatically send a notification email to the user. <br>
+                    <strong>Do not share this login information with anyone.</strong>
                 </div>
             </div>
 
             <div class="text-end">
                 <a th:href="@{/admin/users}" class="btn btn-outline-secondary">
-                    <i class="fa fa-arrow-left me-1"></i> Quay lại
+                    <i class="fa fa-arrow-left me-1"></i> Back
                 </a>
                 <button type="submit" class="btn btn-success">
-                    <i class="fa fa-save me-1"></i> Tạo người dùng
+                    <i class="fa fa-save me-1"></i> Create
                 </button>
             </div>
         </form>
