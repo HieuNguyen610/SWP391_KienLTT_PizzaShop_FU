@@ -8,13 +8,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import java.util.List;
 
 @Controller
 @RequestMapping("/admin/users")
@@ -52,14 +49,14 @@ public class UserController {
         try {
             if (userService.findByEmail(user.getEmail()) != null) {
                 redirectAttributes.addFlashAttribute("errorMessage",
-                        "Email này đã được đăng ký cho một tài khoản khác!");
+                        "This email has already registered.");
                 return "redirect:/admin/users/create";
             }
             userService.createUserWithRole(user);
             redirectAttributes.addFlashAttribute("successMessage",
-                    "Tạo người dùng thành công! Email thông tin tài khoản đã được gửi.");
+                    "Registration successful! Please check your email to get your account.");
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", "Error: " + e.getMessage());
         }
         return "redirect:/admin/users";
     }
@@ -69,7 +66,7 @@ public class UserController {
                                @RequestParam("status") String status,
                                RedirectAttributes redirectAttributes) {
         userService.toggleUserStatus(id, status);
-        redirectAttributes.addFlashAttribute("successMessage", "Trạng thái đã được cập nhật!");
+        redirectAttributes.addFlashAttribute("successMessage", "The status has been updated successfully.");
         return "redirect:/admin/users";
     }
 
