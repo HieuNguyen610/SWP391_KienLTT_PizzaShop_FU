@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.UUID;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -58,13 +59,13 @@ public class CheckoutController {
                 .map(i -> i.getPrice().multiply(BigDecimal.valueOf(i.getQuantity())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        BigDecimal shippingFee = BigDecimal.ZERO;     // placeholder for shipping
-        BigDecimal total = subtotal.add(shippingFee);
+        BigDecimal vat = subtotal.divide(BigDecimal.valueOf(10), 2, RoundingMode.HALF_UP);   // placeholder for shipping
+        BigDecimal total = subtotal.add(vat);
 
         model.addAttribute("cart", cart);
         model.addAttribute("items", cart.getItems());
         model.addAttribute("subtotal", subtotal);
-        model.addAttribute("shippingFee", shippingFee);
+        model.addAttribute("vat", vat);
         model.addAttribute("total", total);
         model.addAttribute("user", user);
         model.addAttribute("address", address);
@@ -106,11 +107,14 @@ public class CheckoutController {
             return dto;
         }).collect(Collectors.toList());
 
+        BigDecimal vat = subtotal.divide(BigDecimal.valueOf(10), 2, RoundingMode.HALF_UP);   // placeholder for shipping
+        BigDecimal total = subtotal.add(vat);
+
         model.addAttribute("cart", cartDto);
         model.addAttribute("items", cart.getItems());
         model.addAttribute("subtotal", subtotal);
-        model.addAttribute("shippingFee", BigDecimal.ZERO);
-        model.addAttribute("total", subtotal);
+        model.addAttribute("vat", vat);
+        model.addAttribute("total", total);
         model.addAttribute("user", user);
         model.addAttribute("address", addressService.findDefaultByUser(user));
 

@@ -57,11 +57,21 @@ public class PaymentSessionController {
                 .addPaymentMethodType(SessionCreateParams.PaymentMethodType.CARD);
 
         int added = 0;
+        String sessionCurrency = null; // enforce single currency per session
+        long totalSmallestUnit = 0L;   // accumulate in smallest unit (cents or zero-decimal units)
+
         for (CartItemDto item : req.getCart()) {
             if (item == null || !StringUtils.hasText(item.getName()) || item.getQuantity() == null || item.getQuantity() < 1) {
                 continue;
             }
             String currency = StringUtils.hasText(item.getCurrency()) ? item.getCurrency().toLowerCase(Locale.ROOT) : "usd";
+            if (sessionCurrency == null) {
+                sessionCurrency = currency;
+            } else if (!sessionCurrency.equals(currency)) {
+                log.warn("[StripeSession] Mixed currencies in cart are not supported: {} vs {}", sessionCurrency, currency);
+                return ResponseEntity.badRequest().body(Map.of("error", "All items must use the same currency"));
+            }
+
             BigDecimal price = item.getUnitPrice() != null ? item.getUnitPrice() : BigDecimal.ZERO;
             long unitAmount = ("jpy".equals(currency) || "vnd".equals(currency))
                     ? price.setScale(0, RoundingMode.HALF_UP).longValueExact()
@@ -86,6 +96,7 @@ public class PaymentSessionController {
                             .build();
 
             builder.addLineItem(lineItem);
+            totalSmallestUnit += unitAmount * item.getQuantity();
             added++;
         }
 
@@ -94,10 +105,37 @@ public class PaymentSessionController {
             return ResponseEntity.badRequest().body(Map.of("error", "No valid items"));
         }
 
+        // Add VAT (10%) as a separate line item so Stripe collects the added value
+        long vatSmallestUnit = BigDecimal.valueOf(totalSmallestUnit)
+                .divide(BigDecimal.TEN, 0, RoundingMode.HALF_UP) // 10% with HALF_UP
+                .longValueExact();
+        if (vatSmallestUnit > 0) {
+            SessionCreateParams.LineItem.PriceData.ProductData vatProduct =
+                    SessionCreateParams.LineItem.PriceData.ProductData.builder()
+                            .setName("VAT (10%)")
+                            .build();
+
+            SessionCreateParams.LineItem.PriceData vatPrice =
+                    SessionCreateParams.LineItem.PriceData.builder()
+                            .setCurrency(sessionCurrency != null ? sessionCurrency : "usd")
+                            .setUnitAmount(vatSmallestUnit)
+                            .setProductData(vatProduct)
+                            .build();
+
+            SessionCreateParams.LineItem vatLine =
+                    SessionCreateParams.LineItem.builder()
+                            .setQuantity(1L)
+                            .setPriceData(vatPrice)
+                            .build();
+            builder.addLineItem(vatLine);
+            added++;
+        }
+
         Map<String, String> metadata = new HashMap<>();
         if (req.getOrderRef() != null && !req.getOrderRef().isBlank()) metadata.put("orderRef", req.getOrderRef());
         if (user != null && StringUtils.hasText(user.getUsername())) metadata.put("user", user.getUsername());
-        if (!metadata.isEmpty()) builder.putAllMetadata(metadata);
+        metadata.put("vat_percent", "10");
+        builder.putAllMetadata(metadata);
 
         Session session = Session.create(builder.build());
         log.info("[StripeSession] Created session id={} for orderRef={} items={} user={}",
@@ -105,5 +143,4 @@ public class PaymentSessionController {
         return ResponseEntity.ok(Map.of("id", session.getId()));
     }
 }
-
 
