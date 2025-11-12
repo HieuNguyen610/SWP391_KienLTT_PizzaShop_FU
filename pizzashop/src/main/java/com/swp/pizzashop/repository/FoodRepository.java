@@ -25,18 +25,27 @@ public interface FoodRepository extends JpaRepository<Food, Long> {
     Page<Food> findByIsDeletedFalse(Pageable pageable);
 
     @EntityGraph(attributePaths = "category")
-    Page<Food> findByIsDeletedFalseAndNameContainingIgnoreCase(String name, Pageable pageable);
+    Page<Food> findByIsActiveTrueAndIsDeletedFalseAndNameContainingIgnoreCase(String name, Pageable pageable);
 
     @EntityGraph(attributePaths = "category")
-    Page<Food> findByIsDeletedFalseAndCategoryId(Long categoryId, Pageable pageable);
+    Page<Food> findByIsActiveTrueAndIsDeletedFalseAndCategoryId(Long categoryId, Pageable pageable);
 
     @EntityGraph(attributePaths = "category")
-    Page<Food> findByIsDeletedFalseAndCategoryIdAndNameContainingIgnoreCase(Long categoryId, String name, Pageable pageable);
+    Page<Food> findByIsActiveTrueAndIsDeletedFalseAndCategoryIdAndNameContainingIgnoreCase(Long categoryId, String name, Pageable pageable);
 
     List<Food> findByCategoryAndIsDeletedFalse(FoodCategory category);
 
     List<Food> findByCategoryAndIsDeletedTrue(FoodCategory cat);
 
     Optional<Food> findByIdAndIsActiveTrueAndIsDeletedFalse(Long id);
+
+    @EntityGraph(attributePaths = "category")
+    Page<Food> findByCategoryIdAndNameContainingIgnoreCase(Long categoryId, String query, Pageable sortedPageable);
+
+    @EntityGraph(attributePaths = "category")
+    Page<Food> findByCategoryId(Long categoryId, Pageable sortedPageable);
+
+    @EntityGraph(attributePaths = "category")
+    Page<Food> findByNameContainingIgnoreCase(String query, Pageable sortedPageable);
 }
 

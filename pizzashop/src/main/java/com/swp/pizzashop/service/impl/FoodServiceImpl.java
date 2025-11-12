@@ -110,15 +110,37 @@ public class FoodServiceImpl implements FoodService {
         boolean hasCat = categoryId != null;
 
         if (hasCat && hasQ) {
-            return foodRepository.findByIsDeletedFalseAndCategoryIdAndNameContainingIgnoreCase(categoryId, query, sortedPageable);
+            return foodRepository.findByIsActiveTrueAndIsDeletedFalseAndCategoryIdAndNameContainingIgnoreCase(categoryId, query, sortedPageable);
         }
         if (hasCat) {
-            return foodRepository.findByIsDeletedFalseAndCategoryId(categoryId, sortedPageable);
+            return foodRepository.findByIsActiveTrueAndIsDeletedFalseAndCategoryId(categoryId, sortedPageable);
         }
         if (hasQ) {
-            return foodRepository.findByIsDeletedFalseAndNameContainingIgnoreCase(query, sortedPageable);
+            return foodRepository.findByIsActiveTrueAndIsDeletedFalseAndNameContainingIgnoreCase(query, sortedPageable);
         }
         return foodRepository.findByIsDeletedFalse(sortedPageable);
+    }
+
+    public Page<Food> findAdminPage(String q, Pageable pageable) {
+        return findAdminPage(q, null, pageable);
+    }
+
+    public Page<Food> findAdminPage(String q, Long categoryId, Pageable pageable) {
+        Pageable sortedPageable = ensureCategorySort(pageable);
+        String query = (q == null) ? null : q.trim();
+        boolean hasQ = query != null && !query.isEmpty();
+        boolean hasCat = categoryId != null;
+
+        if (hasCat && hasQ) {
+            return foodRepository.findByCategoryIdAndNameContainingIgnoreCase(categoryId, query, sortedPageable);
+        }
+        if (hasCat) {
+            return foodRepository.findByCategoryId(categoryId, sortedPageable);
+        }
+        if (hasQ) {
+            return foodRepository.findByNameContainingIgnoreCase(query, sortedPageable);
+        }
+        return foodRepository.findAll(sortedPageable);
     }
 
     private Pageable ensureCategorySort(Pageable pageable) {
@@ -139,8 +161,7 @@ public class FoodServiceImpl implements FoodService {
     @Override
     @Transactional(readOnly = true)
     public Optional<Food> findById(Long id) {
-        return foodRepository.findById(id)
-                .filter(f -> f.getIsDeleted() == null || !f.getIsDeleted());
+        return foodRepository.findById(id);
     }
 
     @Override

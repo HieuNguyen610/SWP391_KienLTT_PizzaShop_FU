@@ -52,7 +52,7 @@ public class FoodController {
         Sort.Direction direction = safeDir.equals("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
         Pageable pageable = PageRequest.of(pageIndex, 10, Sort.by(direction, sortField));
 
-        Page<Food> pageData = foodService.findPage(q, pageable);
+        Page<Food> pageData = foodService.findAdminPage(q, pageable);
         model.addAttribute("q", q);
         model.addAttribute("sort", sort);
         model.addAttribute("dir", safeDir);
