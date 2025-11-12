@@ -152,12 +152,11 @@ public class OrderServiceImpl implements OrderService {
         Order order = getOrderById(orderId);
         String current = order.getStatus();
 
-        // ⛔ RULE: chỉ cho hủy khi còn pending
-        if (newStatus.equals("CANCELLED") && !current.equals("PENDING")) {
-            throw new IllegalStateException("Order can only be cancelled at PENDING stage.");
+
+        if (newStatus.equals("CANCELLED") && !current.equals("PAID")) {
+            throw new IllegalStateException("Order can only be cancelled at PAID stage.");
         }
 
-        // ⛔ RULE: kiểm soát flow hợp lệ
         boolean valid =
                 (current.equals("PAID") && newStatus.equals("COOKING")) ||
                         (current.equals("COOKING") && newStatus.equals("DELIVERING")) ||
