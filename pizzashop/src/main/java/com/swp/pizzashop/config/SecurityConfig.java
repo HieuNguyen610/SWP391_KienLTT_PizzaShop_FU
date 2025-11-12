@@ -73,7 +73,7 @@ public class SecurityConfig {
                         .loginProcessingUrl("/do-login")
                         .usernameParameter("email")
                         .passwordParameter("password")
-                        .defaultSuccessUrl("/menu", true)
+                        .successHandler(new CustomAuthenticationSuccessHandler())
                         .failureHandler(authenticationFailureHandler) // use custom handler
                         .permitAll()
                 )
