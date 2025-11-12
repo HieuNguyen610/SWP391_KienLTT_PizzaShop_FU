@@ -22,7 +22,7 @@ public interface OrderService {
     List<Map<String, Object>> getMonthlySalesSummary();
     Page<OrderDetailDTO> getOrdersByCustomer(Long userId, Pageable pageable);
     Page<Order> searchTodayOrders(String keyword, String paymentMethod, int page, int size);
-    Page<OrderSummaryDTO> searchOrdersByDate(String payment, String keyword, LocalDate date, Pageable pageable);
+    Page<OrderSummaryDTO> searchOrdersByDate(String payment, String keyword, LocalDate date, String status, Pageable pageable);
     List<Map<String, Object>> getHourlySummary(LocalDate date);
     void updateStatus(Long orderId, String newStatus);
 

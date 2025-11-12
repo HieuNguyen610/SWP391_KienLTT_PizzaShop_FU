@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.swp.pizzashop.dto.OrderSummaryDTO;
 import com.swp.pizzashop.model.Order;
 import com.swp.pizzashop.service.OrderService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -34,7 +35,8 @@ public class OrderController {
                              @RequestParam(required = false) String payment,
                              @RequestParam(required = false) String q,
                              @RequestParam(required = false) String date,
-                             @RequestParam(required = false) Integer year) {
+                             @RequestParam(required = false) Integer year,
+                             @RequestParam(required = false) String status) {
 
         Pageable pageable = PageRequest.of(page, size);
 
@@ -47,7 +49,7 @@ public class OrderController {
         }
 
         Page<OrderSummaryDTO> orderPage =
-                orderService.searchOrdersByDate(payment, q, targetDate, pageable);
+                orderService.searchOrdersByDate(payment, q, targetDate, status, pageable);
 
         // Gửi dữ liệu sang view
         model.addAttribute("orderPage", orderPage);
@@ -56,6 +58,7 @@ public class OrderController {
         model.addAttribute("paymentFilter", payment);
         model.addAttribute("query", q);
         model.addAttribute("dateFilter", date);  // giữ lại giá trị user chọn
+        model.addAttribute("statusFilter", (status == null || status.isBlank()) ? "" : status);
 
         // Monthly chart giữ nguyên
         int currentYear = (year != null) ? year : Year.now().getValue();
@@ -79,19 +82,34 @@ public class OrderController {
     @PostMapping("/{orderId}/update-status")
     public String updateOrderStatus(
             @PathVariable Long orderId,
-            @RequestParam("newStatus") String newStatus
+            @RequestParam("newStatus") String newStatus,
+            HttpServletRequest request
     ) {
         orderService.updateStatus(orderId, newStatus);
-        return "redirect:/admin/orders";
+        return "redirect:/admin/orders" + buildQueryParams(request);
     }
 
     @PostMapping("/{orderId}/cancel")
-    public String cancelOrder(@PathVariable Long orderId) {
+    public String cancelOrder(@PathVariable Long orderId, HttpServletRequest request) {
         orderService.cancelOrder(orderId);
-        return "redirect:/admin/orders";
+        return "redirect:/admin/orders" + buildQueryParams(request);
     }
 
 
 
 
+    private String buildQueryParams(HttpServletRequest request) {
+        StringBuilder sb = new StringBuilder("?");
+
+        String[] params = {"q", "payment", "date", "status", "page"};
+
+        for (String p : params) {
+            String value = request.getParameter(p);
+            if (value != null && !value.isBlank()) {
+                sb.append(p).append("=").append(value).append("&");
+            }
+        }
+
+        return sb.toString();
+    }
 }

@@ -188,6 +188,8 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     WHERE o.isDeleted = false
       AND DATE(o.createdAt) = :date
       AND o.id = :orderId
+      AND (:status IS NULL OR :status = '' OR o.status = :status)
+      
     ORDER BY o.createdAt DESC
 """)
     List<OrderSummaryDTO> findOrdersByIdAndDate(
@@ -210,5 +212,68 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 """)
     List<Map<String, Object>> findHourlySummary(@Param("targetDate") LocalDate targetDate);
 
+    @Query("""
+SELECT new com.swp.pizzashop.dto.OrderSummaryDTO(
+    o.id, o.user.email, o.totalPrice, o.status,
+    COALESCE(p.status, 'UNPAID'),
+    COALESCE(p.paymentType, 'CASH'),
+    o.orderTime
+)
+FROM Order o
+LEFT JOIN o.payments p
+WHERE o.isDeleted = false
+  AND DATE(o.createdAt) = :date
+  AND o.id = :orderId
+  AND (:status IS NULL OR :status = '' OR o.status = :status)
+ORDER BY o.createdAt DESC
+""")
+    List<OrderSummaryDTO> findOrdersByIdAndDateAndStatus(
+            @Param("orderId") Long orderId,
+            @Param("date") LocalDate date,
+            @Param("status") String status);
+
+
+    @Query("""
+SELECT new com.swp.pizzashop.dto.OrderSummaryDTO(
+    o.id, o.user.email, o.totalPrice, o.status,
+    COALESCE(p.status, 'UNPAID'),
+    COALESCE(p.paymentType, 'CASH'),
+    o.orderTime
+)
+FROM Order o
+LEFT JOIN o.payments p
+WHERE o.isDeleted = false
+  AND DATE(o.createdAt) = :date
+  AND o.paymentMethod = :payment
+  AND (:status IS NULL OR :status = '' OR o.status = :status)
+                                             
+ORDER BY o.createdAt DESC
+""")
+    Page<OrderSummaryDTO> findOrdersByPaymentDateStatus(
+            @Param("payment") String payment,
+            @Param("date") LocalDate date,
+            @Param("status") String status,
+            Pageable pageable);
+
+
+    @Query("""
+SELECT new com.swp.pizzashop.dto.OrderSummaryDTO(
+    o.id, o.user.email, o.totalPrice, o.status,
+    COALESCE(p.status, 'UNPAID'),
+    COALESCE(p.paymentType, 'CASH'),
+    o.orderTime
+)
+FROM Order o
+LEFT JOIN o.payments p
+WHERE o.isDeleted = false
+  AND DATE(o.createdAt) = :date
+  AND (:status IS NULL OR :status = '' OR o.status = :status)
+                                             
+ORDER BY o.createdAt DESC
+""")
+    Page<OrderSummaryDTO> findOrdersByDateAndStatus(
+            @Param("date") LocalDate date,
+            @Param("status") String status,
+            Pageable pageable);
 
 }

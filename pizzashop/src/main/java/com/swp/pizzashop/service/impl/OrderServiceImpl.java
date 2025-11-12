@@ -107,23 +107,35 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Page<OrderSummaryDTO> searchOrdersByDate(String payment, String keyword, LocalDate date, Pageable pageable) {
+    public Page<OrderSummaryDTO> searchOrdersByDate(
+            String payment,
+            String keyword,
+            LocalDate date,
+            String status,
+            Pageable pageable
+    ) {
+
+        // Nếu search bằng ID
         if (keyword != null && !keyword.isBlank()) {
             try {
                 Long id = Long.parseLong(keyword);
-                List<OrderSummaryDTO> result = orderRepository.findOrdersByIdAndDate(id, date);
+                List<OrderSummaryDTO> result =
+                        orderRepository.findOrdersByIdAndDateAndStatus(id, date, status);
                 return new PageImpl<>(result, pageable, result.size());
             } catch (NumberFormatException e) {
                 return Page.empty(pageable);
             }
         }
 
+        // Nếu lọc Payment
         if (payment != null && !payment.isBlank()) {
-            return orderRepository.findOrdersByPaymentAndDate(payment, date, pageable);
+            return orderRepository.findOrdersByPaymentDateStatus(payment, date, status, pageable);
         }
 
-        return orderRepository.findOrdersByDate(date, pageable);
+        // Lọc theo ngày + status
+        return orderRepository.findOrdersByDateAndStatus(date, status, pageable);
     }
+
 
     @Override
     public List<Map<String, Object>> getHourlySummary(LocalDate date) {
