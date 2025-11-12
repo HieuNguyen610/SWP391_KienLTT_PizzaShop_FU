@@ -8,11 +8,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @Controller
 @RequiredArgsConstructor
@@ -56,8 +58,9 @@ public class MenuController {
     }
 
     @GetMapping("/menu/food/{id}")
-    public String foodDetail(@PathVariable("id") Long id, Model model) {
-        Food food =  foodService.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid food Id:" + id));
+    public String foodDetail(@PathVariable("id") Long id, Model model) throws NoResourceFoundException {
+        Food food =  foodService.findByIdAndIsActiveTrueAndIsDeletedFalse(id)
+                .orElseThrow(() -> new NoResourceFoundException(HttpMethod.GET, "Food " + id + " not found"));
         model.addAttribute("food", food);
         return "food-detail";
     }

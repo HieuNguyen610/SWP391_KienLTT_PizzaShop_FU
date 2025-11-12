@@ -156,4 +156,9 @@ public class FoodServiceImpl implements FoodService {
         foodRepository.save(food);
         log.info("Soft-deleted food id={}", id);
     }
+
+    @Override
+    public Optional<Food> findByIdAndIsActiveTrueAndIsDeletedFalse(Long id) {
+        return foodRepository.findByIdAndIsActiveTrueAndIsDeletedFalse(id);
+    }
 }

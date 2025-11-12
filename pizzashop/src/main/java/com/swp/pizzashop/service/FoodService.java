@@ -27,4 +27,6 @@ public interface FoodService {
     Optional<Food> findById(Long id);
 
     void softDelete(Long id);
+
+    Optional<Food> findByIdAndIsActiveTrueAndIsDeletedFalse(Long id);
 }

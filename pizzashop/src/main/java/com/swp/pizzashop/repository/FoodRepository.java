@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface FoodRepository extends JpaRepository<Food, Long> {
@@ -35,5 +36,7 @@ public interface FoodRepository extends JpaRepository<Food, Long> {
     List<Food> findByCategoryAndIsDeletedFalse(FoodCategory category);
 
     List<Food> findByCategoryAndIsDeletedTrue(FoodCategory cat);
+
+    Optional<Food> findByIdAndIsActiveTrueAndIsDeletedFalse(Long id);
 }
 
