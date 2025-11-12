@@ -1,24 +1,32 @@
 package com.swp.pizzashop.service.impl;
 
+import com.swp.pizzashop.model.Food;
 import com.swp.pizzashop.model.FoodCategory;
 import com.swp.pizzashop.repository.FoodCategoryRepository;
 import com.swp.pizzashop.repository.FoodRepository;
 import com.swp.pizzashop.service.FoodCategoryService;
 import com.swp.pizzashop.dto.CategorySummary;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class FoodCategoryServiceImpl implements FoodCategoryService {
     private final FoodCategoryRepository categoryRepository;
     private final FoodRepository foodRepository;
+    @PersistenceContext
+    private EntityManager em;
 
     @Override
     public List<FoodCategory> findAll() {
@@ -72,13 +80,34 @@ public class FoodCategoryServiceImpl implements FoodCategoryService {
     }
 
     @Override
+    @Transactional
     public void softDelete(Long id) {
-        FoodCategory cat = categoryRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Category not found"));
-        boolean deleted = cat.getIsDeleted() != null ? cat.getIsDeleted() : false;
-        if (!deleted) {
-            cat.setIsDeleted(true);
-            categoryRepository.save(cat);
+        FoodCategory cat = categoryRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Category not found"));
+
+        if (Boolean.TRUE.equals(cat.getIsDeleted())) {
+            log.info("Category id={} already soft-deleted", id);
+            return;
         }
+
+        // Mark category as deleted
+        cat.setIsDeleted(true);
+        categoryRepository.save(cat);
+
+        // Repository-based update for foods: load, mutate flags, and save
+        List<Food> foods = foodRepository.findByCategoryAndIsDeletedFalse(cat);
+        int affected = 0;
+        for (Food f : foods) {
+            // Only touch non-deleted foods
+            if (f.getIsDeleted() == null || !f.getIsDeleted()) {
+                f.setIsDeleted(true);      // soft delete food
+                affected++;
+            }
+        }
+        if (!foods.isEmpty()) {
+            foodRepository.saveAll(foods);
+        }
+        log.info("Soft-deleted and deactivated {} foods under category id={}", affected, id);
     }
 
     @Override
@@ -88,5 +117,20 @@ public class FoodCategoryServiceImpl implements FoodCategoryService {
             cat.setIsDeleted(false);
             categoryRepository.save(cat);
         }
+
+        // Repository-based update for foods: load, mutate flags, and save
+        List<Food> foods = foodRepository.findByCategoryAndIsDeletedTrue(cat);
+        int affected = 0;
+        for (Food f : foods) {
+            // Only touch deleted foods
+            if (f.getIsDeleted()) {
+                f.setIsDeleted(false);      // remove soft delete food
+                affected++;
+            }
+        }
+        if (!foods.isEmpty()) {
+            foodRepository.saveAll(foods);
+        }
+        log.info("Activated {} foods under category id={}", affected, id);
     }
 }

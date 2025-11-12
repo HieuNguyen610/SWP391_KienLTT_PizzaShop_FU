@@ -1,0 +1,99 @@
+Checkout Flow Documentation (Pizza Shop)
+
+1. Overview
+The checkout process converts the active shopping cart into a paid order. It supports two payment paths:
+  - Direct card payment (internal) via POST /payment/confirm
+  - Stripe Checkout session flow via /checkout/pay and /api/payment/create-session then /payment/stripe-success
+Core components:
+  - CheckoutController (/checkout, /checkout/pay)
+  - PaymentSessionController (/api/payment/create-session)
+  - PaymentController (/payment/confirm, /payment/stripe-success, /payment/success)
+  - PaymentServiceImpl (confirmPayment, confirmStripeSession)
+  - CartServiceImpl (cart retrieval, item aggregation)
+  - AddressServiceImpl (default delivery address resolution)
+
+2. Entry Points
+A. /checkout (GET)
+  Purpose: Display order summary before payment.
+  Preconditions: Authenticated user; cart has ≥1 items.
+  Data loaded: cart items, subtotal, shippingFee (currently 0), total, user, default address.
+  Failure redirects:
+    - Not authenticated -> /login (flash error)
+    - Empty cart -> /cart (flash error)
+B. /checkout/pay (GET)
+  Purpose: Display payment gateway page (paygate.html) with serialized cart for Stripe or internal payment.
+  Adds: merchantName, orderRef (random 12 char uppercase), stripePublishableKey.
+
+3. Order Reference Generation
+  - Internal card flow: orderRef parameter (optional). If not supplied, system generates random 12-char uppercase UUID fragment inside PaymentServiceImpl.confirmPayment and stores as transactionId.
+  - Stripe flow: CheckoutController generates a preliminary orderRef for the session metadata (optional). Final transactionId captured from Stripe paymentIntent (session.getPaymentIntent()) or fallback to session id.
+  Result: Stripe transactionId usually differs from internally generated orderRef because it uses Stripe's payment intent id rather than the client-provided reference.
+
+4. Payment Flows
+A. Internal Card Payment
+  1. User reviews /checkout/pay.
+  2. User submits form to POST /payment/confirm (orderRef optional).
+  3. PaymentServiceImpl.confirmPayment validates auth, cart, computes total, creates Order(status=PAID, paymentMethod=CARD), persists OrderItems.
+  4. Creates Payment(paymentType=CARD, status=SUCCESS, transactionId=txnRef) where txnRef = provided orderRef or generated UUID fragment.
+  5. Empties cart items (deleteAll + clear list).
+  6. Redirect -> /payment/success?orderRef=<txnRef>.
+B. Stripe Payment
+  1. User at /checkout/pay; JS builds CreateSessionRequest with cart DTO and orderRef.
+  2. POST /api/payment/create-session builds Stripe Session, line items, sets successUrl & cancelUrl.
+  3. Browser redirects to Stripe hosted checkout.
+  4. On success: Stripe redirects to /payment/stripe-success?session_id=... (configured successUrl).
+  5. PaymentServiceImpl.confirmStripeSession retrieves session, validates status & paymentStatus, creates Order(paymentMethod=STRIPE), OrderItems, Payment(paymentType=STRIPE, transactionId=paymentIntent or session id), empties cart.
+  6. Redirect -> /payment/success?orderRef=<transactionId>.
+
+5. Models & Calculations
+  Subtotal = sum(item.price * item.quantity) across cart items.
+  ShippingFee = 0 (placeholder for future logic).
+  Total = Subtotal + ShippingFee.
+  Each CartItem price acts as unit price; total per line computed ad-hoc when summing.
+
+6. Error Handling
+  - Missing auth or empty cart -> failure (flash error) and redirect to appropriate page.
+  - Stripe session creation validation: rejects empty or invalid line items.
+  - Stripe confirmation: ensures status=complete or paymentStatus=paid.
+  - Any StripeException -> Result.fail("Stripe error: ...").
+
+7. Address Integration
+  - Default delivery address fetched via AddressService.findDefaultByUser(user) for both payment methods.
+  - If absent, Order will contain null deliveryAddress (improve by enforcing address before checkout).
+
+8. Post-Payment State
+  - Cart items removed (deleteAll + clear list) to avoid duplicate charges.
+  - Payment-success view displays orderRef (transaction id) for user confirmation.
+  - Order status initialized as PAID; consider workflow for PREPARING, DELIVERING, COMPLETED.
+
+9. Security & Redirect Logic
+  - /checkout and /checkout/pay require authentication.
+  - If user attempted /checkout without login, SavedRequest can be leveraged (role-based success handler) to send them back post-login.
+  - CSRF ignored for /payment/** endpoints due to Stripe JS interactions.
+
+10. Differences Between Internal and Stripe References
+  - Internal flow uses generated/random UUID fragment unless caller passes orderRef.
+  - Stripe flow uses Stripe paymentIntent id ensuring traceability in Stripe dashboard; thus references differ.
+
+11. Empty / Lost Session Scenario
+  - If cookies/session deleted mid-checkout, cart retrieval returns empty -> user redirected to /cart.
+  - To restore flow after re-login, provide a next=/checkout parameter or rely on SavedRequest; if cookies gone, SavedRequest lost.
+  - Enhancement: include ?next=/checkout on login redirect when hitting protected checkout unauthenticated.
+
+12. Future Enhancements
+  - Implement shipping fee logic.
+  - Validate presence of default address before allowing payment.
+  - Persist preliminary order record before Stripe redirect (mark PENDING) then update to PAID.
+  - Support additional payment methods (Cash on Delivery: paymentMethod=CASH, status=PENDING until fulfillment).
+
+13. View Responsibilities
+  checkout.html: Display summary, totals, address, proceed to payment button.
+  paygate.html: Provides serialized cart data for JS; triggers internal confirm or Stripe session creation.
+  payment-success.html: Shows final orderRef (transaction/confirmation identifier).
+
+14. SecurityConfig Enhancement
+  - Role-based AuthenticationSuccessHandler redirects Admin to /admin, others to /menu (or role landing) and preserves /checkout intent when authenticated after a protected access attempt.
+
+Field Reference (from cart & checkout views)
+  Item Name, Size, Quantity, Unit Price, Line Total (implicit), Notes, Subtotal, ShippingFee, Total, Default Address, orderRef (payment stage), stripePublishableKey.
+

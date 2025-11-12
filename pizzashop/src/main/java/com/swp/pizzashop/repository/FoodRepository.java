@@ -25,5 +25,9 @@ public interface FoodRepository extends JpaRepository<Food, Long> {
     Page<Food> findByIsDeletedFalseAndCategoryId(Long categoryId, Pageable pageable);
 
     Page<Food> findByIsDeletedFalseAndCategoryIdAndNameContainingIgnoreCase(Long categoryId, String name, Pageable pageable);
+
+    List<Food> findByCategoryAndIsDeletedFalse(FoodCategory category);
+
+    List<Food> findByCategoryAndIsDeletedTrue(FoodCategory cat);
 }
 
