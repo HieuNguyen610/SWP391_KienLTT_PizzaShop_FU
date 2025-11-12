@@ -23,9 +23,8 @@ public class MenuController {
 
     @GetMapping("/")
     public String home(Model model) {
-        // Lấy toàn bộ sản phẩm từ database và đưa vào model để view có thể sử dụng
         model.addAttribute("pizzas", foodService.findAll());
-        return "index"; // Trả về file templates/index.html
+        return "index";
     }
 
     @GetMapping("/menu")
@@ -53,18 +52,13 @@ public class MenuController {
 
         // categories for filter select/tabs
         model.addAttribute("categories", categoryService.findByIsDeletedFalse());
-//        model.addAttribute("categorySummaries", categoryService.getCategorySummaries());
         return "view-menu";
     }
 
     @GetMapping("/menu/food/{id}")
     public String foodDetail(@PathVariable("id") Long id, Model model) {
-        return foodService.findById(id)
-                .map(food -> {
-                    model.addAttribute("food", food);
-                    model.addAttribute("categories", categoryService.findAll());
-                    return "food-detail";
-                })
-                .orElse("/error/404");
+        Food food =  foodService.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid food Id:" + id));
+        model.addAttribute("food", food);
+        return "food-detail";
     }
 }
