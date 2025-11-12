@@ -22,7 +22,7 @@ public interface FoodRepository extends JpaRepository<Food, Long> {
     long countByCategoryAndIsActiveTrueAndIsDeletedFalse(FoodCategory category);
 
     @EntityGraph(attributePaths = "category")
-    Page<Food> findByIsDeletedFalse(Pageable pageable);
+    Page<Food> findByIsActiveTrueAndIsDeletedFalse(Pageable pageable);
 
     @EntityGraph(attributePaths = "category")
     Page<Food> findByIsActiveTrueAndIsDeletedFalseAndNameContainingIgnoreCase(String name, Pageable pageable);

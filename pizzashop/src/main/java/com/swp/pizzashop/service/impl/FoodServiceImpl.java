@@ -118,7 +118,7 @@ public class FoodServiceImpl implements FoodService {
         if (hasQ) {
             return foodRepository.findByIsActiveTrueAndIsDeletedFalseAndNameContainingIgnoreCase(query, sortedPageable);
         }
-        return foodRepository.findByIsDeletedFalse(sortedPageable);
+        return foodRepository.findByIsActiveTrueAndIsDeletedFalse(sortedPageable);
     }
 
     public Page<Food> findAdminPage(String q, Pageable pageable) {

@@ -2,14 +2,14 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Page Not Found</title>
+    <title>Not Found</title>
     <link rel="stylesheet" th:href="@{/css/style.css}" href="/css/style.css"/>
 </head>
 <body>
 <div th:replace="~{fragments/header :: page_header}"></div>
 <main style="max-width: 860px; margin: 40px auto; padding: 0 16px;">
-    <h1>404 - Page Not Found</h1>
-    <p>The page you’re looking for doesn’t exist or may have been moved.</p>
+    <h1>404 - Not Found</h1>
+    <p>The content you’re looking for doesn’t exist or may have been moved.</p>
     <p th:if="${message}" th:text="${message}"></p>
     <img th:src="@{/images/error_img.png}" src="/images/error_img.png" alt="404 Error"
          style="max-width:100%; height:auto; margin:20px 0;"/>
