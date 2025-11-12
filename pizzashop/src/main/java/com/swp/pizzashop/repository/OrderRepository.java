@@ -3,6 +3,7 @@ package com.swp.pizzashop.repository;
 import com.swp.pizzashop.dto.OrderDetailDTO;
 import com.swp.pizzashop.dto.OrderSummaryDTO;
 import com.swp.pizzashop.model.Order;
+import org.antlr.v4.runtime.atn.SemanticContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,6 +12,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -114,5 +116,99 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
                ORDER BY o.createdAt DESC
             """)
     Page<OrderDetailDTO> findAllOrderByUserId(Long userId, Pageable pageable);
+
+    @Query("""
+       SELECT o FROM Order o
+       WHERE DATE(o.createdAt) = CURRENT_DATE
+       ORDER BY o.createdAt DESC
+       """)
+    Page<Order> findTodayOrders(Pageable pageable);
+
+    @Query("""
+       SELECT o FROM Order o
+       WHERE DATE(o.createdAt) = CURRENT_DATE
+       AND o.paymentMethod = :paymentMethod
+       ORDER BY o.createdAt DESC
+       """)
+    Page<Order> findTodayOrdersByPayment(
+            @Param("paymentMethod") String paymentMethod,
+            Pageable pageable);
+
+    @Query("""
+       SELECT o FROM Order o
+       WHERE DATE(o.createdAt) = CURRENT_DATE
+       AND o.id = :orderId
+       ORDER BY o.createdAt DESC
+       """)
+    List<Order> findTodayOrdersById(@Param("orderId") Long orderId);
+
+    @Query("""
+    SELECT new com.swp.pizzashop.dto.OrderSummaryDTO(
+        o.id, o.user.email, o.totalPrice, o.status,
+        COALESCE(p.status, 'UNPAID'),
+        COALESCE(p.paymentType, 'CASH'),
+        o.orderTime
+    )
+    FROM Order o
+    LEFT JOIN o.payments p
+    WHERE o.isDeleted = false
+      AND DATE(o.createdAt) = :date
+    ORDER BY o.createdAt DESC
+""")
+    Page<OrderSummaryDTO> findOrdersByDate(@Param("date") LocalDate date, Pageable pageable);
+
+    @Query("""
+    SELECT new com.swp.pizzashop.dto.OrderSummaryDTO(
+        o.id, o.user.email, o.totalPrice, o.status,
+        COALESCE(p.status, 'UNPAID'),
+        COALESCE(p.paymentType, 'CASH'),
+        o.orderTime
+    )
+    FROM Order o
+    LEFT JOIN o.payments p
+    WHERE o.isDeleted = false
+      AND DATE(o.createdAt) = :date
+      AND o.paymentMethod = :paymentMethod
+    ORDER BY o.createdAt DESC
+""")
+    Page<OrderSummaryDTO> findOrdersByPaymentAndDate(
+            @Param("paymentMethod") String paymentMethod,
+            @Param("date") LocalDate date,
+            Pageable pageable);
+
+    @Query("""
+    SELECT new com.swp.pizzashop.dto.OrderSummaryDTO(
+        o.id, o.user.email, o.totalPrice, o.status,
+        COALESCE(p.status, 'UNPAID'),
+        COALESCE(p.paymentType, 'CASH'),
+        o.orderTime
+    )
+    FROM Order o
+    LEFT JOIN o.payments p
+    WHERE o.isDeleted = false
+      AND DATE(o.createdAt) = :date
+      AND o.id = :orderId
+    ORDER BY o.createdAt DESC
+""")
+    List<OrderSummaryDTO> findOrdersByIdAndDate(
+            @Param("orderId") Long orderId,
+            @Param("date") LocalDate date);
+
+
+
+    @Query("""
+    SELECT new map(
+        FUNCTION('HOUR', o.createdAt) as hour,
+        COUNT(CASE WHEN o.status = 'COMPLETED' THEN 1 END) as completed,
+        COUNT(CASE WHEN o.status = 'CANCELLED' THEN 1 END) as cancelled
+    )
+    FROM Order o
+    WHERE DATE(o.createdAt) = :targetDate
+      AND o.isDeleted = false
+    GROUP BY FUNCTION('HOUR', o.createdAt)
+    ORDER BY FUNCTION('HOUR', o.createdAt)
+""")
+    List<Map<String, Object>> findHourlySummary(@Param("targetDate") LocalDate targetDate);
+
 
 }

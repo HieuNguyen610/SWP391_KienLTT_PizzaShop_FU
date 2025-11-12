@@ -8,10 +8,13 @@ import com.swp.pizzashop.repository.PaymentRepository;
 import com.swp.pizzashop.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.Year;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -80,6 +83,105 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Page<OrderDetailDTO> getOrdersByCustomer(Long userId, Pageable pageable) {
         return orderRepository.findAllOrderByUserId(userId, pageable);
+    }
+
+    @Override
+    public Page<Order> searchTodayOrders(String keyword, String paymentMethod, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        if (keyword != null && !keyword.isEmpty()) {
+            try {
+                Long id = Long.parseLong(keyword);
+                List<Order> list = orderRepository.findTodayOrdersById(id);
+                return new PageImpl<>(list, pageable, list.size());
+            } catch (NumberFormatException e) {
+                return Page.empty(pageable);
+            }
+        }
+
+        if (paymentMethod != null && !paymentMethod.isEmpty()) {
+            return orderRepository.findTodayOrdersByPayment(paymentMethod, pageable);
+        }
+
+        return orderRepository.findTodayOrders(pageable);
+    }
+
+    @Override
+    public Page<OrderSummaryDTO> searchOrdersByDate(String payment, String keyword, LocalDate date, Pageable pageable) {
+        if (keyword != null && !keyword.isBlank()) {
+            try {
+                Long id = Long.parseLong(keyword);
+                List<OrderSummaryDTO> result = orderRepository.findOrdersByIdAndDate(id, date);
+                return new PageImpl<>(result, pageable, result.size());
+            } catch (NumberFormatException e) {
+                return Page.empty(pageable);
+            }
+        }
+
+        if (payment != null && !payment.isBlank()) {
+            return orderRepository.findOrdersByPaymentAndDate(payment, date, pageable);
+        }
+
+        return orderRepository.findOrdersByDate(date, pageable);
+    }
+
+    @Override
+    public List<Map<String, Object>> getHourlySummary(LocalDate date) {
+        List<Map<String, Object>> raw = orderRepository.findHourlySummary(date);
+
+        Map<Integer, Map<String, Object>> map = new HashMap<>();
+        for (Map<String, Object> row : raw) {
+            Integer hour = ((Number) row.get("hour")).intValue();
+            map.put(hour, row);
+        }
+
+        List<Map<String, Object>> full = new ArrayList<>();
+        for (int h = 0; h < 24; h++) {
+            Map<String, Object> item = new HashMap<>();
+            item.put("hour", String.format("%02d:00", h));
+            item.put("completed", map.get(h) != null ? map.get(h).get("completed") : 0);
+            item.put("cancelled", map.get(h) != null ? map.get(h).get("cancelled") : 0);
+            full.add(item);
+        }
+
+        return full;
+    }
+
+    @Override
+    public void updateStatus(Long orderId, String newStatus) {
+        Order order = getOrderById(orderId);
+        String current = order.getStatus();
+
+        // ⛔ RULE: chỉ cho hủy khi còn pending
+        if (newStatus.equals("CANCELLED") && !current.equals("PENDING")) {
+            throw new IllegalStateException("Order can only be cancelled at PENDING stage.");
+        }
+
+        // ⛔ RULE: kiểm soát flow hợp lệ
+        boolean valid =
+                (current.equals("PAID") && newStatus.equals("COOKING")) ||
+                        (current.equals("COOKING") && newStatus.equals("DELIVERING")) ||
+                        (current.equals("DELIVERING") && newStatus.equals("COMPLETED")) ||
+                        (newStatus.equals("CANCELLED"));
+
+        if (!valid) {
+            throw new IllegalStateException("Invalid status transition: " + current + " → " + newStatus);
+        }
+
+        // ✔ set status + save DB
+        order.setStatus(newStatus);
+        orderRepository.save(order);
+    }
+
+    @Override
+    public void cancelOrder(Long orderId) {
+        updateStatus(orderId, "CANCELLED");
+    }
+
+    @Override
+    public Order getOrderById(Long orderId) {
+        return orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found"));
     }
 
 
