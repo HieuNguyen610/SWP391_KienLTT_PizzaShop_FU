@@ -11,7 +11,7 @@
     <meta th:if="${_csrf != null}" name="_csrf_header" th:content="${_csrf.headerName}" />
     <meta th:if="${_csrf != null}" name="_csrf" th:content="${_csrf.token}" />
     <style>
-        .stripe-btn { background:#635bff; color:#fff; border:none; padding:12px 20px; border-radius:8px; font-weight:600; cursor:pointer; }
+        .stripe-btn { background:#635bff; color:#fff; border:none; padding:10px 10px; border-radius:8px; font-weight:600; cursor:pointer; }
         .stripe-btn[disabled]{ opacity:.6; cursor:not-allowed; }
         .pg-separator { text-align:center; margin:16px 0; position:relative; }
         .pg-separator:before, .pg-separator:after { content:""; position:absolute; top:50%; width:40%; height:1px; background:#e5e7eb; }
@@ -29,8 +29,7 @@
             <div class="pg-hdr">Select payment method</div>
             <div class="pg-body">
                 <label class="pg-method">
-                    <input class="pg-radio" type="radio" name="method" checked />
-                    <span>Card Payment <span style="margin-left:8px; opacity:.8;">VISA • MasterCard • JCB</span></span>
+                    <span><span style="margin-left:8px; opacity:.8;">VISA • MasterCard • JCB or Cash</span></span>
                 </label>
                 <div class="pg-body" style="padding-top:4px;">
                     <div class="pg-row" style="margin:10px 0 12px;">
@@ -47,8 +46,6 @@
                         <button id="stripePayBtn" class="stripe-btn">Pay with Stripe</button>
                         <a class="btn secondary" th:href="@{/checkout}">Cancel</a>
                     </div>
-                    <div class="pg-separator"><span>or</span></div>
-                    <p style="font-size:.8rem; color:#6b7280;">Stripe Checkout securely processes your card details.</p>
                 </div>
             </div>
         </section>
@@ -72,15 +69,15 @@
                         <tr th:each="i : ${items}">
                             <td style="padding:6px 8px; border-bottom:1px solid #f1f5f9;" th:text="${i.food != null ? i.food.name : 'Item-' + i.id}">Item name</td>
                             <td style="text-align:center; padding:6px 8px; border-bottom:1px solid #f1f5f9;" th:text="${i.quantity}">1</td>
-                            <td style="text-align:right; padding:6px 8px; border-bottom:1px solid #f1f5f9;" th:text="${'$' + #numbers.formatDecimal(i.price, 0, 'COMMA', 2, 'POINT')}">$0.00</td>
+                            <td style="text-align:right; padding:6px 8px; border-bottom:1px solid #f1f5f9;" th:text="${'$' + #numbers.formatDecimal(i.price, 1, 'COMMA', 2, 'POINT')}">$0.00</td>
                             <td style="text-align:right; padding:6px 8px; border-bottom:1px solid #f1f5f9;"
-                                th:text="${'$' + #numbers.formatDecimal(i.price.multiply((i.quantity)), 0, 'COMMA', 2, 'POINT')}">$0.00</td>
+                                th:text="${'$' + #numbers.formatDecimal(i.price.multiply((i.quantity)), 1, 'COMMA', 2, 'POINT')}">$0.00</td>
                         </tr>
                         </tbody>
                     </table>
-                    <li class="row"><span>Subtotal</span><strong th:text="${ '$' +#numbers.formatDecimal(subtotal, 0, 'COMMA', 2, 'POINT')}">0đ</strong></li>
-                    <li class="row"><span>VAT(10%)</span><span th:text="${ '$' +#numbers.formatDecimal(vat, 0, 'COMMA', 2, 'POINT')}">0đ</span></li>
-                    <li class="total"><span>Total</span><strong th:text="${'$' + #numbers.formatDecimal(total, 0, 'COMMA', 2, 'POINT')}">$0.00</strong></li>
+                    <li class="row"><span>Subtotal</span><strong th:text="${ '$' +#numbers.formatDecimal(subtotal, 1, 'COMMA', 2, 'POINT')}">0đ</strong></li>
+                    <li class="row"><span>VAT(10%)</span><span th:text="${ '$' +#numbers.formatDecimal(vat, 1, 'COMMA', 2, 'POINT')}">0đ</span></li>
+                    <li class="total"><span>Total</span><strong th:text="${'$' + #numbers.formatDecimal(total, 1, 'COMMA', 2, 'POINT')}">$0.00</strong></li>
                 </ul>
             </div>
         </aside>

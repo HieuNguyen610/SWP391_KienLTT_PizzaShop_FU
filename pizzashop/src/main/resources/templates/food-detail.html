@@ -30,7 +30,7 @@
             </div>
             <div class="fd-basic">
                 <h1 class="fd-title" th:text="${food.name}">Food name</h1>
-                <div class="fd-price" th:text="${'$' +#numbers.formatDecimal(food.basePrice, 0, 'COMMA', 2, 'POINT')} ">0đ</div>
+                <div class="fd-price" th:text="${'$' +#numbers.formatDecimal(food.basePrice, 1, 'COMMA', 2, 'POINT')} ">0đ</div>
             </div>
             <div class="fd-desc" th:if="${food.description}">
                 <h3>Description</h3>

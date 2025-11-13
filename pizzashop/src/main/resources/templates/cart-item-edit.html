@@ -11,7 +11,7 @@
 
 <div th:replace="~{fragments/header :: page_header}"></div>
 
-<main class="fd-container" th:with="priceText=${'$' +#numbers.formatDecimal(item.price, 0, 'COMMA', 2, 'POINT')}">
+<main class="fd-container" th:with="priceText=${'$' +#numbers.formatDecimal(item.price, 1, 'COMMA', 2, 'POINT')}">
     <!-- Breadcrumb -->
     <nav class="fd-breadcrumb" th:if="${item != null}">
         <a th:href="@{/}">Home</a>

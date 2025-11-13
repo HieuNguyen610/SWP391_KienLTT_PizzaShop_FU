@@ -139,7 +139,7 @@
                     <tr th:each="order : ${orderPage.content}">
                         <td th:text="'#' + ${order.id}"></td>
                         <td th:text="${order.customerName}"></td>
-                        <td th:text="${#numbers.formatDecimal(order.totalPrice, 0, 'COMMA', 2, 'POINT')} + ' ₫'"></td>
+                        <td th:text="${#numbers.formatDecimal(order.totalPrice, 1, 'COMMA', 2, 'POINT')} + ' ₫'"></td>
                         <td th:text="${#temporals.format(order.orderTime, 'yyyy-MM-dd HH:mm')}"></td>
 
                         <!-- Status tag -->

@@ -22,7 +22,7 @@
                 <h3 class="product-name" th:text="${pizza.name}">Seafood Pizza Cocktail</h3>
                 <p class="product-description" th:text="${pizza.description}">Shrimp, crab, ham and Thousand Island dressing.</p>
                 <p class="product-price">Price from only</p>
-                <p class="product-price-value" th:text="${'$' + #numbers.formatDecimal(pizza.basePrice, 0, 'COMMA', 2, 'POINT')}">154,000đ</p>
+                <p class="product-price-value" th:text="${'$' + #numbers.formatDecimal(pizza.basePrice, 1, 'COMMA', 2, 'POINT')}">154,000đ</p>
                 <a class="buy-now-btn" th:href="@{/menu/food/{id}(id=${pizza.id})}">Buy Now</a>
             </div>
 
