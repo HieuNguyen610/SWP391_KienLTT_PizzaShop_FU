@@ -43,7 +43,6 @@
                 <h3>Delivery address</h3>
                 <div th:if="${address != null}">
                     <div class="muted" th:text="${address.fullAddress}">123 Street, Ward, City</div>
-                    <div class="muted" th:if="${address.phone != null && !#strings.isEmpty(address.phone)}" th:text="${'Phone: ' + address.phone}">Phone: 0123456789</div>
                     <div class="co-field" style="margin-top:20px; margin-bottom: 20px">
                         <a class="btn secondary" th:href="@{/address}">Change address</a>
                     </div>
@@ -69,6 +68,9 @@
                 <div class="co-field">
                     <label for="co-email">Email</label>
                     <input id="co-email" disabled type="email" th:value="${user != null ? user.email : ''}" placeholder="Enter email" />
+                </div>
+                <div class="co-field" style="margin-top:20px; margin-bottom: 20px">
+                    <a class="btn secondary" th:href="@{/profile}">Change personal information</a>
                 </div>
             </div>
 
