@@ -55,12 +55,32 @@
 
         <!-- Right: Order summary -->
         <aside class="pg-card pg-order">
-            <div class="pg-hdr">Order Information <span style="float:right; font-weight:400; opacity:.7;">⏱ 26:20</span></div>
+            <div class="pg-hdr">Order Information <span style="float:right; font-weight:400; opacity:.7;"></span></div>
             <div class="pg-body">
                 <ul>
                     <li><span>Merchant</span><strong th:text="${merchantName}">PIZZA SHOP</strong></li>
-                    <li><span>Order Reference</span><strong th:text="${orderRef}">ORDERREF</strong></li>
-                    <li class="total"><span>Total Amount</span><strong th:text="${'$' + #numbers.formatDecimal(total, 0, 'COMMA', 2, 'POINT')}">$0.00</strong></li>
+                    <table style="width:100%; border-collapse:collapse; margin:8px 0 12px;" th:if="${items != null && !items.isEmpty()}">
+                        <thead>
+                        <tr>
+                            <th style="text-align:left; padding:6px 8px; border-bottom:1px solid #eee;">Item</th>
+                            <th style="text-align:center; padding:6px 8px; border-bottom:1px solid #eee; width:60px;">Qty</th>
+                            <th style="text-align:right; padding:6px 8px; border-bottom:1px solid #eee; white-space:nowrap;">Item price</th>
+                            <th style="text-align:right; padding:6px 8px; border-bottom:1px solid #eee; white-space:nowrap;">Price</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="i : ${items}">
+                            <td style="padding:6px 8px; border-bottom:1px solid #f1f5f9;" th:text="${i.food != null ? i.food.name : 'Item-' + i.id}">Item name</td>
+                            <td style="text-align:center; padding:6px 8px; border-bottom:1px solid #f1f5f9;" th:text="${i.quantity}">1</td>
+                            <td style="text-align:right; padding:6px 8px; border-bottom:1px solid #f1f5f9;" th:text="${'$' + #numbers.formatDecimal(i.price, 0, 'COMMA', 2, 'POINT')}">$0.00</td>
+                            <td style="text-align:right; padding:6px 8px; border-bottom:1px solid #f1f5f9;"
+                                th:text="${'$' + #numbers.formatDecimal(i.price.multiply((i.quantity)), 0, 'COMMA', 2, 'POINT')}">$0.00</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <li class="row"><span>Subtotal</span><strong th:text="${ '$' +#numbers.formatDecimal(subtotal, 0, 'COMMA', 2, 'POINT')}">0đ</strong></li>
+                    <li class="row"><span>VAT(10%)</span><span th:text="${ '$' +#numbers.formatDecimal(vat, 0, 'COMMA', 2, 'POINT')}">0đ</span></li>
+                    <li class="total"><span>Total</span><strong th:text="${'$' + #numbers.formatDecimal(total, 0, 'COMMA', 2, 'POINT')}">$0.00</strong></li>
                 </ul>
             </div>
         </aside>

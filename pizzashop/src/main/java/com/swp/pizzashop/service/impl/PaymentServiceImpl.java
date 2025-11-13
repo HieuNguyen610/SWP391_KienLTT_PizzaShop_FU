@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -49,9 +50,11 @@ public class PaymentServiceImpl implements PaymentService {
             return Result.fail("Cart is empty");
         }
 
-        BigDecimal total = cart.getItems().stream()
+        BigDecimal subtotal = cart.getItems().stream()
                 .map(i -> i.getPrice().multiply(BigDecimal.valueOf(i.getQuantity())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal vat = subtotal.multiply(BigDecimal.valueOf(0.10)).setScale(2, RoundingMode.HALF_UP);
+        BigDecimal total = subtotal.add(vat);
 
         Order newOrder = Order.builder()
                 .user(user)
@@ -120,9 +123,20 @@ public class PaymentServiceImpl implements PaymentService {
             if (!"complete".equalsIgnoreCase(session.getStatus()) && !"paid".equalsIgnoreCase(session.getPaymentStatus())) {
                 return Result.fail("Payment not completed");
             }
-            BigDecimal total = cart.getItems().stream()
-                    .map(i -> i.getPrice().multiply(BigDecimal.valueOf(i.getQuantity())))
-                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+            BigDecimal total;
+            Long amountTotal = session.getAmountTotal(); // in smallest unit
+            String currency = session.getCurrency();
+            boolean zeroDecimal = currency != null && (currency.equalsIgnoreCase("jpy") || currency.equalsIgnoreCase("vnd"));
+            if (amountTotal != null) {
+                total = zeroDecimal ? BigDecimal.valueOf(amountTotal) : BigDecimal.valueOf(amountTotal, 2);
+            } else {
+                BigDecimal subtotal = cart.getItems().stream()
+                        .map(i -> i.getPrice().multiply(BigDecimal.valueOf(i.getQuantity())))
+                        .reduce(BigDecimal.ZERO, BigDecimal::add);
+                BigDecimal vat = subtotal.multiply(BigDecimal.valueOf(0.10)).setScale(2, RoundingMode.HALF_UP);
+                total = subtotal.add(vat);
+            }
 
             Order newOrder = Order.builder()
                     .user(user)

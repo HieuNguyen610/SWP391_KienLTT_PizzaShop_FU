@@ -22,7 +22,12 @@
         .co-summary .total { font-size: 1.4rem; font-weight:800; }
         .muted { color:#6b7280; }
         .warning { background:#fff7ed; border:1px solid #fdba74; color:#7c2d12; padding:10px; border-radius:8px; }
+        .co-items { width:100%; border-collapse:collapse; margin:8px 0 12px; }
+        .co-items th, .co-items td { padding:6px 8px; border-bottom:1px solid #eee; text-align:left; }
+        .co-items th.qty, .co-items td.qty { width:60px; text-align:center; }
+        .co-items th.price, .co-items td.price, .co-items th.total, .co-items td.total { text-align:right; white-space:nowrap; }
         @media (max-width: 960px){ .co-container{ grid-template-columns: 1fr; } .co-summary{ position: static; } }
+
     </style>
 </head>
 <body>
@@ -78,8 +83,29 @@
             <h3>My cart</h3>
             <div class="muted" th:text="${'You have ' + (items != null ? items.size() : 0) + ' items in your cart'}">You have 0 items in your cart</div>
             <hr/>
+            <table class="co-items" th:if="${items != null && !items.isEmpty()}">
+                <thead>
+                <tr>
+                    <th>Item</th>
+                    <th class="qty">Qty</th>
+                    <th class="price">Price</th>
+                    <th class="price">Amount</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="i : ${items}">
+                    <td th:text="${i.food != null ? i.food.name : 'Item-' + i.id}">Item name</td>
+                    <td class="qty" th:text="${i.quantity}">1</td>
+                    <td class="price" th:text="${'$' + #numbers.formatDecimal(i.price, 0, 'COMMA', 2, 'POINT')}">$0.00</td>
+                    <td class="price"
+                        th:text="${'$' + #numbers.formatDecimal((i.price.multiply(i.quantity)), 0, 'COMMA', 2, 'POINT')}">
+                        $0.00
+                    </td>
+                </tr>
+                </tbody>
+            </table>
             <div class="row"><span>Subtotal</span><strong th:text="${ '$' +#numbers.formatDecimal(subtotal, 0, 'COMMA', 2, 'POINT')}">0đ</strong></div>
-            <div class="row"><span>VAT</span><span th:text="${ '$' +#numbers.formatDecimal(vat, 0, 'COMMA', 2, 'POINT')}">0đ</span></div>
+            <div class="row"><span>VAT(10%)</span><span th:text="${ '$' +#numbers.formatDecimal(vat, 0, 'COMMA', 2, 'POINT')}">0đ</span></div>
             <hr/>
             <div class="row total"><span>Total</span><span th:text="${ '$' +#numbers.formatDecimal(total, 0, 'COMMA', 2, 'POINT')}">0đ</span></div>
             <div class="co-actions">
