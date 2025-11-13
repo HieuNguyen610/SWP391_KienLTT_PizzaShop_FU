@@ -51,7 +51,7 @@ public class CheckoutController {
 
         Cart cart = cartService.getOrCreateActiveCart(user.getId());
         if (cart == null || cart.getItems() == null || cart.getItems().isEmpty()) {
-            ra.addFlashAttribute("error", "Giỏ hàng trống");
+            ra.addFlashAttribute("error", "The cart is empty");
             return "redirect:/cart";
         }
 
@@ -76,7 +76,7 @@ public class CheckoutController {
     @GetMapping("/checkout/pay")
     public String paygate(Authentication authentication, Model model, RedirectAttributes ra) {
         if (authentication == null || !authentication.isAuthenticated()) {
-            ra.addFlashAttribute("error", "Vui lòng đăng nhập để thanh toán");
+            ra.addFlashAttribute("error", "Please login to proceed to payment");
             return "redirect:/login";
         }
         String email = authentication.getName();
@@ -87,7 +87,7 @@ public class CheckoutController {
         }
         Cart cart = cartService.getOrCreateActiveCart(user.getId());
         if (cart == null || cart.getItems() == null || cart.getItems().isEmpty()) {
-            ra.addFlashAttribute("error", "Giỏ hàng trống");
+            ra.addFlashAttribute("error", "The cart is empty");
             return "redirect:/cart";
         }
         BigDecimal subtotal = cart.getItems().stream()
