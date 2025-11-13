@@ -89,7 +89,8 @@
                     <option value="" disabled selected>-- Choose the role --</option>
                     <option th:each="r : ${roles}" th:value="${r.id}" th:text="${r.name}"></option>
                 </select>
-                <div class="alert alert-info mt-2 p-2">The default password will be set to <strong>Staff1234@</strong> <br>
+                <div class="alert alert-info mt-2 p-2">
+                    The default password will be set to <strong>Staff1234@</strong> <br>
                     After creation, the system will automatically send a notification email to the user. <br>
                     <strong>Do not share this login information with anyone.</strong>
                 </div>
