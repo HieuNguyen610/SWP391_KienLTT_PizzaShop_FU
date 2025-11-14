@@ -14,6 +14,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import com.swp.pizzashop.model.OrderItem;
+import com.swp.pizzashop.repository.OrderItemRepository;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 import java.time.LocalDate;
 import java.time.Year;
@@ -26,6 +31,7 @@ import java.util.Map;
 @Slf4j
 public class OrderController {
     private final OrderService orderService;
+    private final OrderItemRepository orderItemRepository;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @GetMapping
@@ -93,6 +99,39 @@ public class OrderController {
     public String cancelOrder(@PathVariable Long orderId, HttpServletRequest request) {
         orderService.cancelOrder(orderId);
         return "redirect:/admin/orders" + buildQueryParams(request);
+    }
+
+    @GetMapping("/{orderId}")
+    public String viewOrderDetails(@PathVariable Long orderId, Model model, RedirectAttributes ra) {
+        Order order = orderService.getOrderById(orderId);
+        if (order == null) {
+            ra.addAttribute("err", "Order id = " + orderId + " not found");
+            return "redirect:/admin/orders";
+        }
+
+        // Load order items explicitly (Order entity in this project doesn't expose items list)
+        List<OrderItem> items = orderItemRepository.findByOrderId(orderId);
+
+        // Compute subtotal = sum(item.price * quantity)
+        BigDecimal subtotal = items.stream()
+                .map(it -> it.getPrice().multiply(BigDecimal.valueOf(it.getQuantity())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        // VAT 10% (rounded to 2 decimals)
+        BigDecimal vat = subtotal.multiply(BigDecimal.valueOf(0.1)).setScale(2, RoundingMode.HALF_UP);
+
+        // If the order has stored totalPrice, use it; otherwise compute subtotal + vat
+        BigDecimal total = order.getTotalPrice() != null ? order.getTotalPrice() : subtotal.add(vat);
+
+        model.addAttribute("order", order);
+        model.addAttribute("items", items);
+        model.addAttribute("subtotal", subtotal);
+        model.addAttribute("vat", vat);
+        model.addAttribute("total", total);
+        model.addAttribute("payments", order.getPayments());
+        model.addAttribute("activeSection", "orders");
+
+        return "admin/order-details";
     }
 
 

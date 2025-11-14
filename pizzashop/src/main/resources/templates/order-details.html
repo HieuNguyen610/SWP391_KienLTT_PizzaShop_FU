@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Order Details</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="/css/style.css"/>
+    <link rel="stylesheet" th:href="@{/css/profile.css}" href="/css/profile.css"/>
+</head>
+<body>
+<div th:replace="~{fragments/header :: page_header}"></div>
+
+<main class="od-container">
+    <div class="od-card">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div>
+                <div class="od-title">Order Details</div>
+                <div class="muted">Order ID:
+                    <strong th:text="${order != null ? ('#' + order.id) : '-'}">#123</strong>
+                </div>
+                <div class="muted"
+                     th:text="${order != null ? #temporals.format(order.orderTime, 'yyyy-MM-dd HH:mm') : ''}">2025-11-14
+                    12:00
+                </div>
+            </div>
+            <div style="text-align:right;">
+                <div>Status: <span th:text="${order != null ? order.status : '-'}">PENDING</span></div>
+                <div>Payment: <span th:text="${order != null ? order.paymentMethod : '-'}">UNPAID</span></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Prepare safe fallback variables: itemsVar, subtotalVar, vatVar, totalVar -->
+    <div class="od-card" th:if="${order != null}"
+         th:with="itemsVar=${items != null ? items : T(java.util.Collections).emptyList()},
+                  subtotalVar=${subtotal != null ? subtotal : T(java.math.BigDecimal).ZERO},
+                  vatVar=${vat != null ? vat : subtotalVar.multiply(T(java.math.BigDecimal).valueOf(0.1))},
+                  totalVar=${total != null ? total : subtotalVar.add(vatVar)}">
+        <div style="display:grid;grid-template-columns:1fr 360px;gap:16px;align-items:start;">
+            <div>
+                <h3 class="od-title">Customer & Shipping</h3>
+
+                <div class="muted">Name:
+                    <strong th:text="${order.user != null ? (order.user.firstname + ' ' + order.user.lastname) : (order.fullName != null ? order.fullName : '-')}">John
+                        Doe</strong>
+                </div>
+
+                <div class="muted">Phone:
+                    <strong th:text="${order.user.phone != null ? order.user.phone : (order.user != null ? order.user.phone : '-') }">0123456789</strong>
+                </div>
+
+                <div class="muted">Email:
+                    <strong th:text="${order.user != null ? order.user.email : order.email }">john@example.com</strong>
+                </div>
+
+                <div style="margin-top:12px">
+                    <div class="muted">Delivery address</div>
+                    <div th:text="${order.deliveryAddress != null ? order.deliveryAddress.fullAddress : (order.fullAddress != null ? order.fullAddress : '-') }"
+                         class="muted">123 Street, Ward, City
+                    </div>
+                </div>
+
+            </div>
+
+            <aside>
+                <h3 class="od-title">Summary</h3>
+                <div class="row"><span>Subtotal</span>
+                    <span th:text="${ '$' + #numbers.formatDecimal(subtotalVar, 1, 'COMMA', 2, 'POINT')}">$0.00</span>
+                </div>
+
+                <div class="row"><span>VAT (10%)</span>
+                    <span th:text="${ '$' + #numbers.formatDecimal(vatVar, 1, 'COMMA', 2, 'POINT')}">$0.00</span></div>
+
+                <hr/>
+                <div class="row total"><span>Total</span>
+                    <span th:text="${ '$' + #numbers.formatDecimal(totalVar, 1, 'COMMA', 2, 'POINT')}">$0.00</span>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <div class="od-card" th:if="${order != null}"
+         th:with="itemsVar=${items != null ? items : T(java.util.Collections).emptyList()}">
+        <h3 class="od-title">Items</h3>
+        <table class="od-items">
+            <thead>
+            <tr>
+                <th>Item</th>
+                <th class="qty">Qty</th>
+                <th class="price">Price</th>
+                <th class="amount">Amount</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="it : ${itemsVar}">
+                <td th:text="${it.food != null ? it.food.name : (it.name != null ? it.name : 'Item-' + it.id)}">Food
+                    name
+                </td>
+                <td class="qty" th:text="${it.quantity}">1</td>
+                <td class="price"
+                    th:text="${ '$' + #numbers.formatDecimal(it.price != null ? it.price : T(java.math.BigDecimal).ZERO, 1, 'COMMA', 2, 'POINT')}">
+                    $0.00
+                </td>
+                <td class="amount"
+                    th:text="${ '$' + #numbers.formatDecimal((it.price != null ? it.price : T(java.math.BigDecimal).ZERO).multiply(it.quantity), 1, 'COMMA', 2, 'POINT')}">
+                    $0.00
+                </td>
+            </tr>
+
+            <tr th:if="${#lists.isEmpty(itemsVar)}">
+                <td colspan="4" style="text-align:center;">No items</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- payments (optional) -->
+    <div class="od-card" th:if="${payments != null && !#lists.isEmpty(payments)}">
+        <h3 class="od-title">Payments</h3>
+        <table class="od-items">
+            <thead>
+            <tr>
+                <th>Payment ID</th>
+                <th>Type</th>
+                <th>Status</th>
+                <th class="price">Amount</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="p : ${payments}">
+                <td th:text="${p.id}">1</td>
+                <td th:text="${p.paymentType}">STRIPE</td>
+                <td th:text="${p.status}">PAID</td>
+                <td class="price"
+                    th:text="${ '$' + #numbers.formatDecimal(p.amount != null ? p.amount : T(java.math.BigDecimal).ZERO, 1, 'COMMA', 2, 'POINT')}">
+                    $0.00
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div style="margin:16px 0; display:flex; justify-content:flex-end; gap:8px;">
+        <a class="btn secondary" th:href="@{/user/orders}">Back</a>
+    </div>
+
+</main>
+
+<div th:replace="~{fragments/header :: page_footer}"></div>
+</body>
+</html>
