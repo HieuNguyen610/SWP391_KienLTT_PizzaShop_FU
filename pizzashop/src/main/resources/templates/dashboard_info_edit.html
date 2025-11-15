@@ -1,76 +1,74 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Edit Profile</title>
-
-    <!-- CSS -->
-
-    <link rel="stylesheet" th:href="@{/css/style.css}">
-    <link rel="stylesheet" th:href="@{/css/editform.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+    <link rel="stylesheet" th:href="@{/css/profile.css}" />
 </head>
 <body>
-
 <div th:replace="~{fragments/header :: page_header}"></div>
 
 <main class="profile-page">
     <div class="profile-layout">
-        <section class="dashboard_profile_info_edit card section">
-            <h2>Edit Information <a th:href="@{/profile}">Cancel</a></h2>
+        <!-- Sidebar (same as profile.html) -->
+        <aside class="sidebar">
+            <div class="card account-box">
+                <div class="account-caption">Account of</div>
+                <div class="account-name" th:text="${user != null ? user.firstname + ' ' + user.lastname : 'Your Name'}">Your Name</div>
+            </div>
+            <div class="card">
+                <ul class="menu">
+                    <li><a th:href="@{/profile}" class="active">Customer information</a></li>
+                    <li><a th:href="@{/address}">Delivery Address Book</a></li>
+                    <li><a th:href="@{/user/orders}">Order</a></li>
+                </ul>
+            </div>
+        </aside>
 
-            <!-- Form -->
-            <div class="form-container">
-
+        <!-- Edit form content -->
+        <section>
+            <div class="card section">
+                <div class="card-header">
+                    <h2 class="section-title">Edit profile information</h2>
+                </div>
                 <div class="card-body">
-                    <form th:action="@{/profile/edit}" th:object="${editProfileForm}" method="post" class="info_edit_form">
-                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                    <form th:action="@{/profile/edit}" th:object="${editProfileForm}" method="post" class="form-grid">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
 
-                        <div class="row">
-                            <!-- First Name -->
-                            <div class="col-md-6 form-group"
-                                 th:classappend="${#fields.hasErrors('firstName')} ? 'has-error'">
-                                <label for="firstName">First Name</label>
-                                <input id="firstName" type="text" th:field="*{firstName}"
-                                       placeholder="First Name" class="form-control"
-                                       pattern="[A-Za-zÀ-ỹ\s]+" title="Only letters and spaces allowed"
-                                       data-original="[[${editProfileForm.firstName}]]"/>
-                                <div class="error" th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"></div>
-                            </div>
+                        <label for="firstName" class="required">First name:</label>
+                        <div>
+                            <input id="firstName" type="text" th:field="*{firstName}" placeholder="First Name"
+                                   pattern="[A-Za-zÀ-ỹ\\s]+" title="Only letters and spaces allowed" />
+                            <div class="error" th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"></div>
+                        </div>
 
-                            <!-- Last Name -->
-                            <div class="col-md-6 form-group"
-                                 th:classappend="${#fields.hasErrors('lastName')} ? 'has-error'">
-                                <label for="lastName">Last Name</label>
-                                <input id="lastName" type="text" th:field="*{lastName}"
-                                       placeholder="Last Name" class="form-control"
-                                       data-original="[[${editProfileForm.lastName}]]"
-                                       pattern="[A-Za-zÀ-ỹ\s]+" title="Only letters and spaces allowed"/>
-                                <div class="error" th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"></div>
-                            </div>
+                        <label for="lastName" class="required">Last name:</label>
+                        <div>
+                            <input id="lastName" type="text" th:field="*{lastName}" placeholder="Last Name"
+                                   pattern="[A-Za-zÀ-ỹ\\s]+" title="Only letters and spaces allowed" />
+                            <div class="error" th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"></div>
+                        </div>
 
-                            <!-- Email -->
-                            <div class="col-md-6 form-group">
-                                <label for="email">Email</label>
-                                <input id="email" type="email" th:field="*{email}" placeholder="Email"
-                                       readonly style="color: gray;" class="form-control"/>
-                            </div>
+                        <label for="email">Email:</label>
+                        <div>
+                            <input id="email" type="email" th:field="*{email}" readonly style="color:gray;" />
+                        </div>
 
-                            <!-- Phone -->
-                            <div class="col-md-6 form-group"
-                                 th:classappend="${#fields.hasErrors('phone')} ? 'has-error'">
-                                <label for="phone">Phone</label>
-                                <input id="phone" type="text" th:field="*{phone}"
-                                       placeholder="Phone number" class="form-control"
-                                       data-original="[[${editProfileForm.phone}]]"
-                                       pattern="[0-9]{9,11}" title="Only numbers, 9–11 digits"/>
-                                <div class="error" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></div>
-                            </div>
+                        <label for="phone" class="required">Phone:</label>
+                        <div>
+                            <input id="phone" type="text" th:field="*{phone}" placeholder="Phone number"
+                                   pattern="[0-9]{9,11}" title="Only numbers, 9–11 digits" />
+                            <div class="error" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></div>
+                        </div>
 
-                            <!-- Submit -->
-                            <div class="col-md-12">
-                                <button type="submit" class="common_btn">Save Profile</button>
-                            </div>
+                        <div></div>
+                        <div style="display:flex; gap:10px;">
+                            <button type="submit" class="btn-primary">Save</button>
+                            <button class="btn-secondary">
+                                <a th:href="@{/profile}" >Cancel</a>
+                            </button>
                         </div>
                     </form>
                 </div>
@@ -80,6 +78,5 @@
 </main>
 
 <div th:replace="~{fragments/header :: page_footer}"></div>
-<script th:src="@{/js/editform.js}"></script>
 </body>
 </html>
