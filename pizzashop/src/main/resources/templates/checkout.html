@@ -108,8 +108,12 @@
             <div class="row total"><span>Total</span><span th:text="${ '$' +#numbers.formatDecimal(total, 1, 'COMMA', 2, 'POINT')}">0đ</span></div>
             <div class="co-actions">
                 <a class="btn secondary" th:href="@{/cart}">Back</a>
-                <button class="btn" type="button" id="purchase-btn"><a th:href="@{/checkout/pay}" style="color:white">Place order</a></button>
+                <!-- Enabled when address exists -->
+                <a class="btn" th:if="${address != null}" th:href="@{/checkout/pay}" id="purchase-btn">Place order</a>
+                <!-- Disabled when no address -->
+                <button class="btn disabled" th:if="${address == null}" type="button" disabled aria-disabled="true" title="Please add a delivery address to place your order" style="opacity: 0.5">Place order</button>
             </div>
+            <div th:if="${address == null}" class="muted" style="margin-top:6px;">Please add a delivery address to place your order.</div>
         </aside>
     </div>
 </main>
@@ -117,3 +121,4 @@
 <div th:replace="~{fragments/header :: page_footer}"></div>
 </body>
 </html>
+
