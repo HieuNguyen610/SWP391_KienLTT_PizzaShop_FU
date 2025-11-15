@@ -94,7 +94,7 @@ public class OrderController {
             HttpServletRequest request
     ) {
         orderService.updateStatus(orderId, newStatus);
-        return "redirect:/admin/orders" + buildQueryParams(request);
+        return "redirect:/cashier/orders" + buildQueryParams(request);
     }
 
     @PostMapping("/{orderId}/cancel")

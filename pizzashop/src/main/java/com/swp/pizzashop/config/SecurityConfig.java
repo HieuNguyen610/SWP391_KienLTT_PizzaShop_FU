@@ -63,7 +63,6 @@ public class SecurityConfig {
                                 "/css/**", "/js/**", "/images/**", "/static/**", "/favicon.ico",
                                 "/uploads/**", "/do-register", "/verify-otp", "/menu/**").permitAll()
                         .requestMatchers("/admin/**").hasRole("Admin")
-                        .requestMatchers("/user/**").hasRole("Customer")
                         .requestMatchers("/cashier/**").hasRole("Cashier")
                         .anyRequest().authenticated()
                 )

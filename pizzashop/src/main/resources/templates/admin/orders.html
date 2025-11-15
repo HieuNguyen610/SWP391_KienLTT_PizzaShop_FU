@@ -139,7 +139,7 @@
                     <tr th:each="order : ${orderPage.content}">
                         <td th:text="'#' + ${order.id}"></td>
                         <td th:text="${order.customerName}"></td>
-                        <td th:text="${#numbers.formatDecimal(order.totalPrice, 1, 'COMMA', 2, 'POINT')} + ' ₫'"></td>
+                        <td th:text="${'$' + #numbers.formatDecimal(order.totalPrice, 1, 'COMMA', 2, 'POINT')}"></td>
                         <td th:text="${#temporals.format(order.orderTime, 'yyyy-MM-dd HH:mm')}"></td>
 
                         <!-- Status tag -->
@@ -167,13 +167,13 @@
                         <td>
 
                             <!-- Details -->
-                            <a th:href="@{'/admin/orders/' + ${order.id}}" class="btn btn-primary btn-sm">
+                            <a th:href="@{'/cashier/orders/' + ${order.id}}" class="btn btn-primary btn-sm">
                                 Details
                             </a>
 
                             <!-- PAID → COOKING -->
                             <form th:if="${order.status == 'PAID'}"
-                                  th:action="@{'/admin/orders/' + ${order.id} + '/update-status'}"
+                                  th:action="@{'/cashier/orders/' + ${order.id} + '/update-status'}"
                                   method="post" class="d-inline">
 
                                 <input type="hidden" name="q" th:value="${query}">
@@ -189,7 +189,7 @@
 
                             <!-- COOKING → DELIVERING -->
                             <form th:if="${order.status == 'COOKING'}"
-                                  th:action="@{'/admin/orders/' + ${order.id} + '/update-status'}"
+                                  th:action="@{'/cashier/orders/' + ${order.id} + '/update-status'}"
                                   method="post" class="d-inline">
 
                                 <input type="hidden" name="q" th:value="${query}">
@@ -205,7 +205,7 @@
 
                             <!-- DELIVERING → COMPLETED -->
                             <form th:if="${order.status == 'DELIVERING'}"
-                                  th:action="@{'/admin/orders/' + ${order.id} + '/update-status'}"
+                                  th:action="@{'/cashier/orders/' + ${order.id} + '/update-status'}"
                                   method="post" class="d-inline">
 
                                 <input type="hidden" name="q" th:value="${query}">
@@ -221,7 +221,7 @@
 
                             <!-- CANCEL (PAID only) -->
                             <form th:if="${order.status == 'PAID'}"
-                                  th:action="@{'/admin/orders/' + ${order.id} + '/cancel'}"
+                                  th:action="@{'/cashier/orders/' + ${order.id} + '/cancel'}"
                                   method="post" class="d-inline">
 
                                 <input type="hidden" name="q" th:value="${query}">
@@ -255,7 +255,7 @@
 
                             <li class="page-item" th:classappend="${orderPage.first} ? 'disabled'">
                                 <a class="page-link"
-                                   th:href="@{'/admin/orders'(
+                                   th:href="@{'/cashier/orders'(
                         page=${orderPage.number - 1},
                         q=${query},
                         payment=${paymentFilter},
@@ -271,7 +271,7 @@
                                 th:classappend="${i == orderPage.number} ? 'active'">
                                 <a class="page-link"
                                    th:text="${i + 1}"
-                                   th:href="@{'/admin/orders'(
+                                   th:href="@{'/cashier/orders'(
                         page=${i},
                         q=${query},
                         payment=${paymentFilter},
@@ -283,7 +283,7 @@
 
                             <li class="page-item" th:classappend="${orderPage.last} ? 'disabled'">
                                 <a class="page-link"
-                                   th:href="@{'/admin/orders'(
+                                   th:href="@{'/cashier/orders'(
                         page=${orderPage.number + 1},
                         q=${query},
                         payment=${paymentFilter},
