@@ -269,7 +269,7 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("Have no permition to create user with role");
         }
 
-        String defaultPassword = "Staff1234@";
+        String defaultPassword = "123a123@A";
         user.setPassword(passwordEncoder.encode(defaultPassword));
         user.setStatus("ACTIVE");
         user.setCreatedAt(LocalDateTime.now());
@@ -289,7 +289,7 @@ user.setVerified(true);
                     Your account has been created successfully.
 
                     📨 Email: %s
-                    🔑 Password: Staff1234@
+                    🔑 Password: 123a123@A
 
                     ⚠️ Please change your password immediately. Don't share your password with anyone.
 
