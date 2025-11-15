@@ -61,7 +61,7 @@ public class PaymentServiceImpl implements PaymentService {
                 .orderTime(LocalDateTime.now())
                 .status("PAID")
                 .totalPrice(total)
-                .paymentMethod("CARD")
+                .paymentMethod("CASH")
                 .deliveryAddress(addressService.findDefaultByUser(user))
                 .build();
         final Order savedOrder = orderRepository.save(newOrder);
@@ -84,7 +84,7 @@ public class PaymentServiceImpl implements PaymentService {
 
         Payment payment = Payment.builder()
                 .order(savedOrder)
-                .paymentType("CARD")
+                .paymentType("CASH")
                 .amount(total)
                 .status("SUCCESS")
                 .transactionId(txnRef)
