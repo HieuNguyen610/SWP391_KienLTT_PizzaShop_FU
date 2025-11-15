@@ -82,8 +82,7 @@
                 <select name="payment" class="form-select">
                     <option value="">All Payments</option>
                     <option value="CASH" th:selected="${paymentFilter == 'CASH'}">CASH</option>
-                    <option value="CARD" th:selected="${paymentFilter == 'CARD'}">CARD</option>
-                    <option value="QRCODE" th:selected="${paymentFilter == 'QRCODE'}">QRCode</option>
+                    <option value="STRIPE" th:selected="${paymentFilter == 'STRIPE'}">STRIPE</option>
                 </select>
             </div>
 
