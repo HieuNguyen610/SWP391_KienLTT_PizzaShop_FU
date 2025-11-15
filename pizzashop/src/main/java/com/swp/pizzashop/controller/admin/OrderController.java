@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 @Controller
-@RequestMapping("/admin/orders")
+@RequestMapping("/cashier/orders")
 @RequiredArgsConstructor
 @Slf4j
 @PreAuthorize("hasRole('Cashier')")
@@ -100,7 +100,7 @@ public class OrderController {
     @PostMapping("/{orderId}/cancel")
     public String cancelOrder(@PathVariable Long orderId, HttpServletRequest request) {
         orderService.cancelOrder(orderId);
-        return "redirect:/admin/orders" + buildQueryParams(request);
+        return "redirect:/cashier/orders" + buildQueryParams(request);
     }
 
     @GetMapping("/{orderId}")
@@ -108,7 +108,7 @@ public class OrderController {
         Order order = orderService.getOrderById(orderId);
         if (order == null) {
             ra.addAttribute("err", "Order id = " + orderId + " not found");
-            return "redirect:/admin/orders";
+            return "redirect:/cashier/orders";
         }
 
         // Load order items explicitly (Order entity in this project doesn't expose items list)

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml" lang="en">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/extras/spring-security" lang="en">
 <body>
 <!-- admin sidebar fragment -->
 <div th:fragment="sidebar">
@@ -14,37 +14,42 @@
         </div>
 
         <ul class="menu">
-            <li>
+            <!-- Admin-only links -->
+            <li sec:authorize="hasRole('Admin')">
                 <a th:classappend="${activeSection}=='dashboard' ? ' active'"
                    th:href="@{/admin}">
                     Dashboard
                 </a>
             </li>
-            <li>
+            <li sec:authorize="hasRole('Admin')">
                 <a th:classappend="${activeSection}=='categories' ? ' active'"
                    th:href="@{/admin/categories}">
                     Categories
                 </a>
             </li>
-            <li>
+            <li sec:authorize="hasRole('Admin')">
                 <a th:classappend="${activeSection}=='foods' ? ' active'"
                    th:href="@{/admin/foods}">
                     Foods
                 </a>
             </li>
-            <li>
-                <a th:classappend="${activeSection}=='toppings' ? ' active'"
-                   th:href="@{/admin/toppings}">
-                    Toppings
-                </a>
-            </li>
-            <li>
+            <!--            <li>-->
+            <!--                <a th:classappend="${activeSection}=='toppings' ? ' active'"-->
+            <!--                   th:href="@{/admin/toppings}">-->
+            <!--                    Toppings-->
+            <!--                </a>-->
+            <!--            </li>-->
+
+            <!-- Cashier-only links -->
+            <li sec:authorize="hasRole('Cashier')">
                 <a th:classappend="${activeSection}=='orders' ? ' active'"
-                   th:href="@{/admin/orders}">
+                   th:href="@{/cashier/orders}">
                     Orders
                 </a>
             </li>
-            <li>
+
+            <!-- Admin-only -->
+            <li sec:authorize="hasRole('Admin')">
                 <a th:classappend="${activeSection}=='users' ? ' active'"
                    th:href="@{/admin/users}">
                     Users

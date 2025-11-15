@@ -17,7 +17,6 @@ import java.util.List;
 @Controller
 @RequestMapping("/admin")
 @RequiredArgsConstructor
-@PreAuthorize("hasRole('Admin')")
 @Slf4j
 public class AdminController {
 
