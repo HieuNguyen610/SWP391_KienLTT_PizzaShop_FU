@@ -33,10 +33,13 @@ public interface FoodRepository extends JpaRepository<Food, Long> {
     @EntityGraph(attributePaths = "category")
     Page<Food> findByIsActiveTrueAndIsDeletedFalseAndCategoryIdAndNameContainingIgnoreCase(Long categoryId, String name, Pageable pageable);
 
+    @EntityGraph(attributePaths = "category")
     List<Food> findByCategoryAndIsDeletedFalse(FoodCategory category);
 
+    @EntityGraph(attributePaths = "category")
     List<Food> findByCategoryAndIsDeletedTrue(FoodCategory cat);
 
+    @EntityGraph(attributePaths = "category")
     Optional<Food> findByIdAndIsActiveTrueAndIsDeletedFalse(Long id);
 
     @EntityGraph(attributePaths = "category")
@@ -47,5 +50,9 @@ public interface FoodRepository extends JpaRepository<Food, Long> {
 
     @EntityGraph(attributePaths = "category")
     Page<Food> findByNameContainingIgnoreCase(String query, Pageable sortedPageable);
+
+    @Override
+    @EntityGraph(attributePaths = "category")
+    Page<Food> findAll(Pageable pageable);
 }
 

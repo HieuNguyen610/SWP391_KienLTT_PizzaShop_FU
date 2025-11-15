@@ -32,7 +32,7 @@ public class Food extends BaseEntity {
     @Column(name = "is_active")
     private boolean isActive = true;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "category_id", nullable = false)
     private FoodCategory category;
 }
