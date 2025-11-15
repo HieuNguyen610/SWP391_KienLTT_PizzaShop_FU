@@ -11,11 +11,12 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    User findByEmailAndPassword(String email, String password);
     User findByEmail(String email);
-    User findByPhone(String phone);
+
     long countByStatusAndIsDeletedFalse(String active);
+
     long countByIsDeletedFalse();
+
     Page<User> findAll(Pageable pageable);
     @Query("SELECT u FROM User u WHERE u.isDeleted = false AND " +
             "(LOWER(u.firstname) LIKE LOWER(CONCAT('%', :keyword, '%')) " +

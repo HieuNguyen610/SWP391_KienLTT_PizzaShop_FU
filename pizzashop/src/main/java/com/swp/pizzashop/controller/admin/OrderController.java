@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -29,6 +30,7 @@ import java.util.Map;
 @RequestMapping("/admin/orders")
 @RequiredArgsConstructor
 @Slf4j
+@PreAuthorize("hasRole('Cashier')")
 public class OrderController {
     private final OrderService orderService;
     private final OrderItemRepository orderItemRepository;

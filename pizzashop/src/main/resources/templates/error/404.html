@@ -9,14 +9,12 @@
 <div th:replace="~{fragments/header :: page_header}"></div>
 <main style="max-width: 860px; margin: 40px auto; padding: 0 16px;">
     <h1>404 - Not Found</h1>
-    <p>The content you’re looking for doesn’t exist or may have been moved.</p>
+    <p th:if="${message == null}">The content you’re looking for doesn’t exist or may have been moved.</p>
     <p th:if="${message}" th:text="${message}"></p>
     <img th:src="@{/images/error_img.png}" src="/images/error_img.png" alt="404 Error"
          style="max-width:100%; height:auto; margin:20px 0;"/>
     <div>
-        <button class="btn btn-secondary">
-            <a th:href="@{/}" href="/">Back to Home</a>
-        </button>
+        <button class="btn primary" onclick="window.history.back()"style=" max-width:100%; height:auto; display:block; margin:20px auto;">Go Back</button>
     </div>
 </main>
 <div th:replace="~{fragments/header :: page_footer}"></div>

@@ -337,7 +337,7 @@
                                 <input type="hidden" name="status" value="INACTIVE" />
                                 <button type="submit" class="btn btn-icon btn-danger"
                                         th:disabled="${u.status == 'INACTIVE'}"
-                                        th:onclick="${u.status != 'INACTIVE'} ? 'return confirm(\'Khóa tài khoản người dùng này?\')' : null"
+                                        th:onclick="${u.status != 'INACTIVE'} ? 'return confirm(\'Inactive this user?\')' : null"
                                         title="Lock user">
                                     <i class="fas fa-times"></i>
                                 </button>
@@ -349,7 +349,7 @@
                                 <input type="hidden" name="status" value="ACTIVE" />
                                 <button type="submit" class="btn btn-icon btn-primary"
                                         th:disabled="${u.status == 'ACTIVE'}"
-                                        th:onclick="${u.status != 'ACTIVE'} ? 'return confirm(\'Kích hoạt người dùng này?\')' : null"
+                                        th:onclick="${u.status != 'ACTIVE'} ? 'return confirm(\'Active this user?\')' : null"
                                         title="Activate user">
                                     <i class="far fa-heart"></i>
                                 </button>
@@ -357,7 +357,7 @@
                             </td>
                         </tr>
                         <tr th:if="${#lists.isEmpty(pageData.content)}">
-                            <td colspan="7" class="text-center text-muted py-3">Không có người dùng nào phù hợp.</td>
+                            <td colspan="7" class="text-center text-muted py-3">No users found.</td>
                         </tr>
 
                         </tbody>

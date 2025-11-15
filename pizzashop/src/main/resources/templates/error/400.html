@@ -9,7 +9,7 @@
 <!--<div th:replace="~{fragments/header :: page_header}"></div>-->
 <main style="max-width: 860px; margin: 40px auto; padding: 0 16px;">
     <h1>400 - Bad Request</h1>
-    <p>Your request couldn’t be processed. It may contain invalid or missing data.</p>
+    <p th:if="${message == null}">Your request couldn’t be processed. It may contain invalid or missing data.</p>
     <p th:if="${message}" th:text="${message}"></p>
     <div th:if="${details}">
         <h3>Details:</h3>
@@ -17,7 +17,7 @@
             <li th:each="d : ${details}" th:text="${d}"></li>
         </ul>
     </div>
-    <a th:href="@{/}" href="/">Back to Home</a>
+    <button class="btn primary" onclick="window.history.back()"style=" max-width:100%; height:auto; display:block; margin:20px auto;">Go Back</button>
 </main>
 <div th:replace="~{fragments/header :: page_footer}"></div>
 </body>

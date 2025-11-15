@@ -9,9 +9,11 @@
 <div th:replace="~{fragments/header :: page_header}"></div>
 <main style="max-width: 860px; margin: 40px auto; padding: 0 16px;">
     <h1>500 - Something went wrong</h1>
-    <p>We’re sorry, but something went wrong on our side.</p>
+    <p th:if="${message == null}">We’re sorry, but something went wrong on our side.</p>
     <p th:if="${message}" th:text="${message}"></p>
-    <a th:href="@{/}" href="/">Back to Home</a>
+    <img th:src="@{/images/error_500.png}" src="/images/error_500.png" alt="500 Error"
+         style="max-width:100%; height:auto; margin:20px 0;"/>
+    <button class="btn primary" onclick="window.history.back()"style=" max-width:100%; height:auto; display:block; margin:20px auto;">Go Back</button>
 </main>
 <div th:replace="~{fragments/header :: page_footer}"></div>
 </body>
