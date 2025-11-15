@@ -5,21 +5,17 @@ title Category Management (Admin)
 
 |Admin|
 start
-:Open Categories (/admin/categories);
+:Open Categories ;
 |Website|
-:Show paged list (q, sort, dir);
+:Show paged list ;
 |Admin|
 :Create Category;
 |Website|
-:Validate name unique; Save; Return to list;
+:Validate and create;
 |Admin|
 :Edit Category;
 |Website|
-:Update name/description;
-|Admin|
-:Soft Delete or Restore Category;
-|Website|
-:Set isDeleted flag; Hide from menus;
+:Update category;;
 stop
 
 @enduml

@@ -1,0 +1,168 @@
+5.3 Non-UI Functions
+
+No. 1
+Feature: Authentication
+System Function: Authenticate user (form login)
+Description: Verifies credentials and logs users in using Spring Security with a custom failure mapping by error code.
+Class/Module: config.SecurityConfig (UserDetailsService, AuthenticationFailureHandler)
+
+No. 2
+Feature: Authorization
+System Function: Role-based access control
+Description: Enforces access rules by roles (Admin, Customer, Cashier) for server-side routes.
+Class/Module: config.SecurityConfig (SecurityFilterChain)
+
+No. 3
+Feature: CSRF Handling
+System Function: CSRF policy and exemptions
+Description: Applies CSRF protection and excludes specific server routes (API and payment integration) from CSRF checks.
+Class/Module: config.SecurityConfig
+
+No. 4
+Feature: CORS
+System Function: Cross-origin resource sharing configuration
+Description: Enables CORS to allow controlled cross-origin requests for backend endpoints like payment integration.
+Class/Module: config.SecurityConfig
+
+No. 5
+Feature: User Directory
+System Function: Load user details by email
+Description: Loads user records and granted authorities for authentication and backend processing.
+Class/Module: config.SecurityConfig (UserDetailsService) + service.UserService
+
+No. 6
+Feature: User Management
+System Function: Paginated user search
+Description: Retrieves users with pagination and optional keyword filtering for administrative processing.
+Class/Module: controller.admin.UserController → service.UserService
+
+No. 7
+Feature: User Management
+System Function: Create user with role assignment
+Description: Creates a user account and assigns selected role; validates unique email.
+Class/Module: controller.admin.UserController → service.UserService
+
+No. 8
+Feature: User Management
+System Function: Toggle user status
+Description: Activates or deactivates a user account for access control and operational policies.
+Class/Module: controller.admin.UserController → service.UserService
+
+No. 9
+Feature: Category Management
+System Function: Paginated category listing
+Description: Returns categories with pagination, sorting, and optional keyword filter for backend workflows.
+Class/Module: controller.admin.CategoryController → service.FoodCategoryService
+
+No. 10
+Feature: Category Management
+System Function: Create/Update category
+Description: Validates unique name and persists category name/description updates.
+Class/Module: controller.admin.CategoryController → service.FoodCategoryService
+
+No. 11
+Feature: Category Management
+System Function: Soft delete/restore category
+Description: Marks category as deleted/restored to control visibility and data retention.
+Class/Module: controller.admin.CategoryController → service.FoodCategoryService
+
+No. 12
+Feature: Food Inventory
+System Function: Admin food listing (N+1 safe)
+Description: Lists foods with eager-loading of category to avoid N+1 queries using EntityGraph.
+Class/Module: service.FoodServiceImpl + repository.FoodRepository (@EntityGraph)
+
+No. 13
+Feature: Food Inventory
+System Function: Create food (with image storage)
+Description: Validates category, stores image (upload or URL), and persists food metadata.
+Class/Module: service.FoodServiceImpl (ImageStorageService, FoodCategoryRepository)
+
+No. 14
+Feature: Food Inventory
+System Function: Update food (with image replacement)
+Description: Updates fields and replaces stored image with best‑effort cleanup of the old asset.
+Class/Module: service.FoodServiceImpl (ImageStorageService)
+
+No. 15
+Feature: Food Inventory
+System Function: Soft delete food
+Description: Marks food as deleted to remove from operational listings without physical deletion.
+Class/Module: service.FoodServiceImpl
+
+No. 16
+Feature: Menu Data
+System Function: Query active foods for customers
+Description: Provides paginated datasets of active, non-deleted foods with optional search/category filters.
+Class/Module: service.FoodServiceImpl → repository.FoodRepository
+
+No. 17
+Feature: Cart
+System Function: Get or create active cart for user
+Description: Retrieves existing cart or creates a new one for the user when needed.
+Class/Module: service.CartServiceImpl (CartRepository, UserRepository)
+
+No. 18
+Feature: Cart
+System Function: Add item to cart
+Description: Validates quantity/size, finds price, and inserts or increments cart item rows.
+Class/Module: service.CartServiceImpl (FoodRepository, CartItemRepository)
+
+No. 19
+Feature: Checkout
+System Function: Compute checkout totals
+Description: Computes subtotal, tax (10%), and total for the current cart.
+Class/Module: controller.CheckoutController (totals logic)
+
+No. 20
+Feature: Order Placement
+System Function: Create order from cart (CASH)
+Description: Builds Order and OrderItem entities from the cart, associates delivery address, and clears the cart.
+Class/Module: controller.CheckoutController (OrderRepository, OrderItemRepository, CartRepository)
+
+No. 21
+Feature: Customer Orders
+System Function: List orders by customer
+Description: Returns paginated order detail DTOs for the authenticated customer, including totals.
+Class/Module: controller.OrderCustomerController → service.OrderService → repository.OrderRepository
+
+No. 22
+Feature: Customer Orders
+System Function: Get order by id (authorization enforced)
+Description: Retrieves an order and ensures it belongs to the requesting user.
+Class/Module: service.OrderService.getOrderById + controller.OrderCustomerController guard
+
+No. 23
+Feature: Operational Orders
+System Function: Search today’s orders
+Description: Finds today’s orders by id or payment method for operational dashboards.
+Class/Module: service.OrderServiceImpl → repository.OrderRepository
+
+No. 24
+Feature: Operational Orders
+System Function: Order summaries (DTO projections)
+Description: Supplies summary DTOs (status, payment, totals, timestamps) for reporting.
+Class/Module: repository.OrderRepository (projection queries)
+
+No. 25
+Feature: Operational Orders
+System Function: Update order status with transition rules
+Description: Applies controlled transitions (PAID→COOKING→DELIVERING→COMPLETED, or CANCELLED with constraints).
+Class/Module: service.OrderServiceImpl.updateStatus
+
+No. 26
+Feature: Operational Orders
+System Function: Cancel order (from PAID)
+Description: Cancels an order only when current status is PAID per business rule.
+Class/Module: service.OrderServiceImpl.cancelOrder
+
+No. 27
+Feature: Payments
+System Function: Record payment entries
+Description: Persists payment records including type, status, amount, transaction id, and paid timestamp.
+Class/Module: model.Payment (entity) + repository.PaymentRepository
+
+Notes:
+- This section lists backend (non‑UI) behavior only; UI templates and rendering concerns are intentionally excluded.
+- Class/Module names follow package segments from the project for quick code traceability.
+- Payment via Stripe is supported by dependency; server routing and CSRF policies are configured but UI steps are omitted here.

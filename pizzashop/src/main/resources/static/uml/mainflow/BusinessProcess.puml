@@ -2,54 +2,35 @@
 ' Simplified high-level swimlane for Pizza Shop online order
 ' Focus on major phases and actors only
 
-title Pizza Shop Order Process (Simplified)
+skinparam linetype ortho
+
+title Pizza Shop Order Process
 
 |Customer|
 start
 :Browse & select items;
 :Add to cart;
-:Checkout & choose delivery or pickup;
-:Select payment (Stripe or Cash);
-
-if (Stripe?) then (Yes)
-  |Website|
-  :Create order (PENDING);
-  :Init Stripe session & redirect;
-  |Stripe|
-  :Process payment;
-  |Website|
-  :Mark order PAID;
-else (Cash)
-  |Website|
-  :Create order (PENDING, CASH);
-  |Cashier|
-  :Collect cash & confirm;
-  |Website|
-  :Mark order PAID;
-endif
+:Checkout ;
+:Select payment method;
 
 |Website|
-:Send order to kitchen (status COOKING);
+:Create order (PENDING);
+:Process payment;
+:Mark order PAID;
 
-|Kitchen|
-:Prepare pizza;
-:Mark READY;
 
-if (Delivery?) then (Delivery)
-  |Delivery|
-  :Deliver order (status DELIVERING);
-  |Customer|
-  :Receive order;
-else (Pickup)
-  |Customer|
-  :Pickup order;
-endif
+|Staff|
+:Cook order (status COOKING);
+:Deliver order (status DELIVERING);
 
-|Cashier|
+|Customer|
+:Receive order ;
+
+|Staff|
 :Mark COMPLETED;
 
 |Website|
-:Show order history to customer;
+:Show order history ;
 stop
 
 @enduml
