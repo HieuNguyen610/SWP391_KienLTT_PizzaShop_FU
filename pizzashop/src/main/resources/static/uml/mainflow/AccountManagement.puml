@@ -1,0 +1,22 @@
+@startuml
+' Account Management (Simplified) — based on /admin/users flows
+
+title Account Management (Admin)
+
+|Admin|
+start
+:Open Users (/admin/users);
+|Website|
+:Show paged users with search;
+|Admin|
+:Create User (email, name, password, role);
+|Website|
+:Validate email unique; Create account + assign role; Return to list;
+|Admin|
+:Toggle User Status (ACTIVE/INACTIVE);
+|Website|
+:Update status;
+stop
+
+
+@enduml

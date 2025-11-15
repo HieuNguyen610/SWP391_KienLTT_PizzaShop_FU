@@ -1,0 +1,25 @@
+@startuml
+' Category Management (Simplified) — based on /admin/categories flows
+
+title Category Management (Admin)
+
+|Admin|
+start
+:Open Categories (/admin/categories);
+|Website|
+:Show paged list (q, sort, dir);
+|Admin|
+:Create Category;
+|Website|
+:Validate name unique; Save; Return to list;
+|Admin|
+:Edit Category;
+|Website|
+:Update name/description;
+|Admin|
+:Soft Delete or Restore Category;
+|Website|
+:Set isDeleted flag; Hide from menus;
+stop
+
+@enduml

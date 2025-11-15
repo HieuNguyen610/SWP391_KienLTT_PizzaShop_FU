@@ -1,0 +1,43 @@
+@startuml
+' Simplified Food & Category Management (Admin)
+' High-level lifecycle: Category must exist before Food
+
+title Food Management
+
+|Admin|
+start
+:Navigate to /admin/categories list;
+|Website|
+:Show active categories (paginated);
+|Admin|
+:Create / Edit Category (name, description);
+|Website|
+:Persist category; :Return to list;
+|Admin|
+:Optional: Soft delete / deactivate category;
+|Website|
+:Hide deleted categories & dependent foods from customer menu;
+
+|Admin|
+:Navigate to /admin/foods list;
+|Website|
+:Load foods (joined with category, not deleted);
+|Admin|
+:Create Food (choose existing category);
+|Website|
+:Persist food (isDeleted=false, isActive flag);
+|Admin|
+:Edit / Toggle Active Food;
+|Website|
+:Update food record;
+|Admin|
+:Soft delete Food;
+|Website|
+:Mark isDeleted=true (removed from listings);
+|Customer|
+:View menu shows only active + not deleted foods whose category is not deleted;
+stop
+
+
+
+@enduml
