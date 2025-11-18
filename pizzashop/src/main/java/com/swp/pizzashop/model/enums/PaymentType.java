@@ -6,5 +6,7 @@ public enum PaymentType {
     VNPAY,       // Cổng thanh toán VNPAY
     ZALOPAY,     // Ví ZaloPay
     CARD, // Thẻ tín dụng
-    OTHER        // Khác
+    OTHER,       // Khác
+    STRIPE,      // Thẻ tín dụng qua Stripe
+    PAYPAL       // Thẻ tín dụng qua Paypal
 }

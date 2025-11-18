@@ -316,6 +316,7 @@ CREATE TABLE IF NOT EXISTS refunds (
     idempotency_key VARCHAR(150),
     failure_reason VARCHAR(255),
     processed_at TIMESTAMP NULL,
+    attempts INT DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     is_deleted BOOLEAN DEFAULT FALSE,

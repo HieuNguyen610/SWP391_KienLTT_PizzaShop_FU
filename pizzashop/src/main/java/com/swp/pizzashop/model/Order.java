@@ -6,6 +6,8 @@ import lombok.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+import com.swp.pizzashop.model.enums.PaymentType;
+
 @Entity
 @Table(name = "orders")
 @Getter
@@ -32,8 +34,9 @@ public class Order extends BaseEntity {
     @Column(name = "total_price", nullable = false, precision = 10, scale = 2)
     private BigDecimal totalPrice;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "payment_method", length = 30)
-    private String paymentMethod;
+    private PaymentType paymentMethod;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "delivery_address_id")

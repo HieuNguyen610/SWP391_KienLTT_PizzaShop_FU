@@ -21,6 +21,9 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import com.swp.pizzashop.model.enums.OrderStatus;
+import com.swp.pizzashop.model.enums.PaymentType;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -59,9 +62,9 @@ public class PaymentServiceImpl implements PaymentService {
         Order newOrder = Order.builder()
                 .user(user)
                 .orderTime(LocalDateTime.now())
-                .status("PAID")
+                .status(OrderStatus.PENDING.toString())
                 .totalPrice(total)
-                .paymentMethod("CASH")
+                .paymentMethod(PaymentType.CASH)
                 .deliveryAddress(addressService.findDefaultByUser(user))
                 .build();
         final Order savedOrder = orderRepository.save(newOrder);
@@ -84,7 +87,7 @@ public class PaymentServiceImpl implements PaymentService {
 
         Payment payment = Payment.builder()
                 .order(savedOrder)
-                .paymentType("CASH")
+                .paymentType(PaymentType.CASH)
                 .amount(total)
                 .status("SUCCESS")
                 .transactionId(txnRef)
@@ -141,9 +144,9 @@ public class PaymentServiceImpl implements PaymentService {
             Order newOrder = Order.builder()
                     .user(user)
                     .orderTime(LocalDateTime.now())
-                    .status("PAID")
+                    .status(OrderStatus.PENDING.name())
                     .totalPrice(total)
-                    .paymentMethod("STRIPE")
+                    .paymentMethod(PaymentType.STRIPE)
                     .deliveryAddress(addressService.findDefaultByUser(user))
                     .build();
             final Order savedOrder = orderRepository.save(newOrder);
@@ -165,7 +168,7 @@ public class PaymentServiceImpl implements PaymentService {
 
             Payment payment = Payment.builder()
                 .order(savedOrder)
-                .paymentType("STRIPE")
+                .paymentType(PaymentType.STRIPE)
                 .amount(total)
                 .status("SUCCESS")
                 .transactionId(txnRef)

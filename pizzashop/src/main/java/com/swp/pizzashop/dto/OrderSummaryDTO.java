@@ -1,6 +1,7 @@
 package com.swp.pizzashop.dto;
 
 import com.swp.pizzashop.model.enums.OrderStatus;
+import com.swp.pizzashop.model.enums.PaymentType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,6 +20,6 @@ public class OrderSummaryDTO {
     private BigDecimal totalPrice;
     private String status;
     private String paymentStatus;
-    private String paymentType;
+    private PaymentType paymentType;
     private LocalDateTime orderTime;
 }

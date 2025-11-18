@@ -3,6 +3,7 @@ package com.swp.pizzashop.service.impl;
 import com.swp.pizzashop.model.Order;
 import com.swp.pizzashop.model.Payment;
 import com.swp.pizzashop.model.Refund;
+import com.swp.pizzashop.model.enums.PaymentType;
 import com.swp.pizzashop.repository.OrderRepository;
 import com.swp.pizzashop.repository.PaymentRepository;
 import com.swp.pizzashop.repository.RefundRepository;
@@ -41,7 +42,7 @@ public class OrderCancellationServiceImpl implements OrderCancellationService {
 
         for (Payment p : payments) {
             try {
-                if (p.getPaymentType() != null && "STRIPE".equalsIgnoreCase(p.getPaymentType())
+                if (p.getPaymentType() != null && PaymentType.STRIPE == (p.getPaymentType())
                         && p.getStatus() != null && "SUCCESS".equalsIgnoreCase(p.getStatus())) {
 
                     Refund refund = Refund.builder()
