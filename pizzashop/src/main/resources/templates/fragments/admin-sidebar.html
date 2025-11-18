@@ -41,7 +41,7 @@
             <!--            </li>-->
 
             <!-- Cashier-only links -->
-            <li sec:authorize="hasRole('Cashier')">
+            <li sec:authorize="hasAnyRole('Cashier', 'Chef')">
                 <a th:classappend="${activeSection}=='orders' ? ' active'"
                    th:href="@{/cashier/orders}">
                     Orders

@@ -42,10 +42,9 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
             redirectStrategy.sendRedirect(request, response, context + "/admin");
             return;
         }
-        if (hasRole(authorities, "ROLE_Cashier")) {
+        if (hasRole(authorities, "ROLE_Cashier") || hasRole(authorities, "ROLE_Chef")) {
             redirectStrategy.sendRedirect(request, response, context + "/cashier/orders");
             return;
-
         }
         // Other roles fallback
         redirectStrategy.sendRedirect(request, response, context + "/admin");

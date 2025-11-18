@@ -48,5 +48,7 @@ public class Refund extends BaseEntity {
     @Column(name = "processed_at")
     private LocalDateTime processedAt;
 
-}
+    @Column(name = "attempts")
+    private Integer attempts = 0;
 
+}

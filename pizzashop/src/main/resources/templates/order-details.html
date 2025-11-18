@@ -153,9 +153,6 @@
         </form>
 
         <!-- Disabled Cancel for non-cancellable statuses (UX) -->
-        <button type="button" class="btn" style="opacity:0.5;"
-                th:if="${order != null and order.status != 'PENDING' and order.status != 'ACCEPTED'}"
-                disabled>Cancel</button>
 
         <a class="btn secondary" th:href="@{/user/orders}">Back</a>
     </div>

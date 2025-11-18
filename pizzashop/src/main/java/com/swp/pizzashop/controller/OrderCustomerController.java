@@ -6,8 +6,8 @@ import com.swp.pizzashop.model.OrderItem;
 import com.swp.pizzashop.model.User;
 import com.swp.pizzashop.repository.OrderItemRepository;
 import com.swp.pizzashop.repository.UserRepository;
+import com.swp.pizzashop.service.OrderCancellationService;
 import com.swp.pizzashop.service.OrderService;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -29,6 +29,7 @@ public class OrderCustomerController {
 
     private final OrderService orderService;
     private final UserRepository userRepository;
+    private final OrderCancellationService orderCancellationService;
     private final OrderItemRepository orderItemRepository;
 
     @GetMapping("/orders")
@@ -138,7 +139,7 @@ public class OrderCustomerController {
             ra.addFlashAttribute("error", "This order does not belong to you");
             return "redirect:/user/orders";
         }
-        orderService.cancelOrder(orderId);
+        orderCancellationService.cancelOrderByCustomer(orderId);
         return "redirect:/user/orders";
     }
 }

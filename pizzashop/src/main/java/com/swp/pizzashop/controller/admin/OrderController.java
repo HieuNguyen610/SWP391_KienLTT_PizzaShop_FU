@@ -30,7 +30,7 @@ import java.util.Map;
 @RequestMapping("/cashier/orders")
 @RequiredArgsConstructor
 @Slf4j
-@PreAuthorize("hasRole('Cashier')")
+@PreAuthorize("hasAnyRole('Cashier', 'Chef')")
 public class OrderController {
     private final OrderService orderService;
     private final OrderItemRepository orderItemRepository;
