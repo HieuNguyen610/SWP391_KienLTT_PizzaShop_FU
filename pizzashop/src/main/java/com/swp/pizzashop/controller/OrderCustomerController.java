@@ -7,6 +7,7 @@ import com.swp.pizzashop.model.User;
 import com.swp.pizzashop.repository.OrderItemRepository;
 import com.swp.pizzashop.repository.UserRepository;
 import com.swp.pizzashop.service.OrderService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -14,10 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.math.BigDecimal;
@@ -113,5 +111,34 @@ public class OrderCustomerController {
         model.addAttribute("activeSection", "orders");
 
         return "order-details";
+    }
+
+    @PostMapping("/orders/{orderId}/cancel")
+    public String cancelOrder(@PathVariable Long orderId, Authentication authentication, RedirectAttributes ra) {
+        // ensure user is authenticated
+        if (authentication == null || !authentication.isAuthenticated()) {
+            ra.addFlashAttribute("error", "Please login to view order details");
+            return "redirect:/login";
+        }
+        String email = authentication.getName();
+        User user = userRepository.findByEmail(email);
+        if (user == null) {
+            ra.addFlashAttribute("error", "User not found. Please log in");
+            return "redirect:/login";
+        }
+
+        Order order = orderService.getOrderById(orderId);
+        if (order == null) {
+            ra.addFlashAttribute("err", "Order id = " + orderId + " not found");
+            return "redirect:/user/orders";
+        }
+
+        // Authorization: only allow the owner of the order to cancel
+        if (order.getUser() == null || !order.getUser().getId().equals(user.getId())) {
+            ra.addFlashAttribute("error", "This order does not belong to you");
+            return "redirect:/user/orders";
+        }
+        orderService.cancelOrder(orderId);
+        return "redirect:/user/orders";
     }
 }

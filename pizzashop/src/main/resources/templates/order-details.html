@@ -141,6 +141,22 @@
     </div>
 
     <div style="margin:16px 0; display:flex; justify-content:flex-end; gap:8px;">
+        <!-- Show POST cancel form only when order is in cancelable status (PENDING) -->
+        <form th:if="${order != null and order.status == 'ACCEPTED' or order.status == 'PENDING'}"
+              th:action="@{/user/orders/{orderId}/cancel(orderId=${order.id})}"
+              method="post"
+              onsubmit="return confirm('Are you sure you want to cancel this order? Any refund or fees will be processed according to our policy.');"
+              style="display:inline;">
+            <!-- CSRF token for Spring Security (if configured) -->
+            <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+            <button type="submit" class="btn danger">Cancel</button>
+        </form>
+
+        <!-- Disabled Cancel for non-cancellable statuses (UX) -->
+        <button type="button" class="btn" style="opacity:0.5;"
+                th:if="${order != null and order.status != 'PENDING' and order.status != 'ACCEPTED'}"
+                disabled>Cancel</button>
+
         <a class="btn secondary" th:href="@{/user/orders}">Back</a>
     </div>
 
