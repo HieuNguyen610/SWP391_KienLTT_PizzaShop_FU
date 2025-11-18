@@ -46,4 +46,14 @@ public class Order extends BaseEntity {
     // Payments associated with this order
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private java.util.List<Payment> payments = new java.util.ArrayList<>();
+
+    // Cancellation metadata
+    @Column(name = "cancelled_at")
+    private LocalDateTime cancelledAt;
+
+    @Column(name = "cancelled_by", length = 50)
+    private String cancelledBy; // CUSTOMER, SHOP, SYSTEM
+
+    @Column(name = "cancel_reason", length = 255)
+    private String cancelReason;
 }

@@ -37,5 +37,14 @@ public class Payment extends BaseEntity {
 
     @Column(name = "paid_at")
     private LocalDateTime paidAt;
-}
 
+    // Refund tracking
+    @Column(name = "refund_status", length = 30)
+    private String refundStatus; // e.g., NONE, PENDING, REFUNDED, PARTIALLY_REFUNDED
+
+    @Column(name = "refunded_at")
+    private LocalDateTime refundedAt;
+
+    @Column(name = "refunded_amount", precision = 10, scale = 2)
+    private BigDecimal refundedAmount;
+}

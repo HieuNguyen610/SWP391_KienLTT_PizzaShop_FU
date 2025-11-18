@@ -303,3 +303,34 @@ CREATE TABLE IF NOT EXISTS password_reset_tokens (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Creation timestamp
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
+
+-- Refunds table: record refund attempts and results (Stripe refund id, status, idempotency)
+CREATE TABLE IF NOT EXISTS refunds (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    order_id BIGINT NOT NULL,
+    payment_id BIGINT,
+    amount DECIMAL(10,2) NOT NULL,
+    currency VARCHAR(10),
+    status VARCHAR(30), -- PENDING, PROCESSING, SUCCEEDED, FAILED
+    provider_refund_id VARCHAR(100),
+    idempotency_key VARCHAR(150),
+    failure_reason VARCHAR(255),
+    processed_at TIMESTAMP NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    is_deleted BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
+    FOREIGN KEY (payment_id) REFERENCES payments(id) ON DELETE SET NULL
+);
+
+-- Add refund tracking fields to payments (if not exists)
+ALTER TABLE payments
+    ADD COLUMN refund_status VARCHAR(30) AFTER status,
+    ADD COLUMN refunded_at TIMESTAMP NULL AFTER paid_at,
+    ADD COLUMN refunded_amount DECIMAL(10,2) NULL AFTER refunded_at;
+
+-- Add cancellation metadata to orders (if not exists)
+ALTER TABLE orders
+    ADD COLUMN cancelled_at TIMESTAMP NULL AFTER payment_method,
+    ADD COLUMN cancelled_by VARCHAR(50) NULL AFTER cancelled_at,
+    ADD COLUMN cancel_reason VARCHAR(255) NULL AFTER cancelled_by;
